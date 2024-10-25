@@ -2,7 +2,7 @@
 
 Este proyecto es una aplicación desarrollada con [Angular](https://angular.io/). A continuación, se detallan los comandos comunes y la estructura básica del proyecto para facilitar su uso y comprensión.
 
-## Contenidos
+## Contenidos:
 
 - [Requisitos previos](#)
 - [Instalación](#)
