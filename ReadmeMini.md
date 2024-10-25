@@ -21,6 +21,11 @@ Este proyecto es una aplicación desarrollada con [Angular](https://angular.io/)
 1. Clona el repositorio:
 
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_PROYECTO>
+   git clone https://<TOKEN>@github.com/zeytol/agro-inversiones-dashboard.git
+
+   ```
+
+   ```bash
+   cd agro-inversiones-dashboard
+
    ```
