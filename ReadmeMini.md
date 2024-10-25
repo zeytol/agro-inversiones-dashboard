@@ -4,17 +4,17 @@ Este proyecto es una aplicación desarrollada con [Angular](https://angular.io/)
 
 ## Contenidos
 
-- [Requisitos previos](#requisitos-previos)
-- [Instalación](#instalación)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Comandos Comunes](#comandos-comunes)
-- [Scripts Adicionales](#scripts-adicionales)
-- [ documentaion](#documentación)
+- [Requisitos previos](#)
+- [Instalación](#)
+- [Estructura del Proyecto](#)
+- [Comandos Comunes](#)
+- [Scripts Adicionales](#)
+- [ documentaion](#)
 
 ## Requisitos previos
 
 - [Node.js](https://nodejs.org/) v14+ y [npm](https://www.npmjs.com/) (incluido con Node)
-- [Angular CLI](https://angular.io/cli) (si aún no lo tienes, instala con `npm install -g @angular/cli`)
+- [Angular](https://angular.dev/installation) (si aún no lo tienes, instala con `npm install -g @angular/cli`)
 
 ## Instalación del project
 
