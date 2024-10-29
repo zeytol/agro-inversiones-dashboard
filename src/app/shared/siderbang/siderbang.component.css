@@ -1,0 +1,60 @@
+/* Style the sidebar */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 500px; /* Ajusta la altura mínima según sea necesario */
+    width: 16rem; /* Adjust width as needed */
+    background-color: #1a202c;
+    color: white;
+    padding: 20px; /* Add padding for inner spacing */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+}
+
+/* Sidebar title styles */
+.sidebar h1 {
+    font-size: 1.5rem; /* Increased font size for the title */
+    margin-bottom: 5px; /* Add margin for spacing */
+}
+
+.sidebar p {
+    font-size: 0.9rem; /* Slightly smaller font size for the subtitle */
+}
+
+/* Sidebar link style */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    padding: 12px 20px;
+    color: white;
+    font-size: 1rem;
+    text-decoration: none;
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+    margin: 8px 0; /* Adjusted margin for better spacing */
+}
+
+/* Hover effect */
+.sidebar-link:hover {
+    background-color: #2b6cb0; /* Darker blue on hover */
+    transform: translateX(5px); /* Slight movement effect on hover */
+}
+
+/* Active link style */
+.sidebar-link.active {
+    background-color: #2b6cb0; /* Same color as hover for active */
+    color: white;
+}
+
+/* Optional: Add a footer to the sidebar */
+.sidebar::after {
+    content: '';
+    flex-grow: 1; /* Pushes the footer to the bottom */
+}
+
+.sidebar-footer {
+    text-align: center;
+    padding: 10px 0;
+    color: #aaa; /* Light gray for footer text */
+    font-size: 0.8rem;
+}
