@@ -4,7 +4,6 @@
     flex-direction: column;
     min-height: 500px; /* Ajusta la altura mínima según sea necesario */
     width: 16rem; /* Adjust width as needed */
-
     color: white;
     padding: 20px; /* Add padding for inner spacing */
 
@@ -61,3 +60,4 @@
     color: #aaa; /* Light gray for footer text */
     font-size: 0.8rem;
 }
+
