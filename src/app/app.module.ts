@@ -7,6 +7,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { VentasComponent } from './components/ventas/ventas.component';
+import { FormsModule } from '@angular/forms';
+import { AgregarClienteComponent } from './agregar-cliente/agregar-cliente.component'; // Asegúrate de importar FormsModule
 
 
 
@@ -15,12 +18,16 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     AppComponent,
     DashboardComponent,
     SiderbangComponent,
-    HeaderComponent
+    HeaderComponent,
+    VentasComponent,
+    AgregarClienteComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    FormsModule // Añade FormsModule aquí
+
   ],
   providers: [
     provideClientHydration()
