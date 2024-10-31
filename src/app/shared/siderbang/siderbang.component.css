@@ -2,11 +2,11 @@
 .sidebar {
     display: flex;
     flex-direction: column;
-    min-height: 500px; /* Ajusta la altura mínima según sea necesario */
-    width: 16rem; /* Adjust width as needed */
+    height: 100%; /* Cambiado a 100% para ocupar toda la altura del contenedor */
+    width: 16rem; /* Ajusta el ancho según sea necesario */
     color: white;
-    padding: 20px; /* Add padding for inner spacing */
-
+    padding: 20px; /* Agrega relleno para el espaciado interno */
+    background: linear-gradient(180deg, #066828, #A8D08D); /* Fondo del sidebar */
 }
 
 /* Sidebar title styles */
@@ -29,7 +29,7 @@
     color: white;
     font-size: 1rem;
     text-decoration: none;
-    background-color: #1e3a8a; /* Default blue color for buttons */
+    background-color: #d1930e; /* Default blue color for buttons */
     border-radius: 8px; /* Rounded corners */
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
     margin: 8px 0; /* Adjusted margin for better spacing */

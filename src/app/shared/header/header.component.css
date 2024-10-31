@@ -1,7 +1,7 @@
 /* Estilos del header */
 header {
     height: 64px; /* Ajusta la altura según sea necesario */
-    background-color: #2d3748; /* Color de fondo del header */
+    background: linear-gradient(180deg, #066828, #A8D08D); /* Color de fondo del header */
     color: white; /* Color del texto */
     display: flex; /* Usar flexbox para alinear el contenido */
     justify-content: space-between; /* Espacio entre los elementos */
