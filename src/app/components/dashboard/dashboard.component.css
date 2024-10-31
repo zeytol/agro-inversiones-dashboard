@@ -1,0 +1,50 @@
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
+.siderbang {
+    width: 250px;
+    background-color: #2d3748;
+}
+
+.dashboard-container {
+    flex: 1;
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+.dashboard-container.expanded {
+    margin-left: 0;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas fijas */
+    gap: 20px; /* Espacio entre los gráficos */
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a202c;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 300px; /* Altura fija para uniformidad */
+}
+
+.chart-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
