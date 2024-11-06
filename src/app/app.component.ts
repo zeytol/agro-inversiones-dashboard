@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   sidebarOpen = true;
+  title = 'AgroInversiones';
+  isSidebarVisible = true;
+
+  toggleSidebar() {
+    this.isSidebarVisible = !this.isSidebarVisible;
+  }
 }

@@ -43,9 +43,12 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/apexcharts/dist/apexcharts.min.js"
+            ],
             "server": "src/main.server.ts",
             "prerender": true,
             "ssr": {

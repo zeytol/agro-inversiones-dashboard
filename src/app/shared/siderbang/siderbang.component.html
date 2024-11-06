@@ -1,0 +1,33 @@
+<div class="sidebar">
+    <div class="p-4 text-center">
+        <h1 class="text-xl font-bold">Bienvenido, "USUARIO"</h1>
+        <p class="text-sm">AL JARDIN DEL EDEN</p>
+    </div>
+
+    <nav class="mt-10 flex-1">
+        <a routerLink="/dashboard" class="sidebar-link" [class.active]="isActive('/dashboard')">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a routerLink="/roles" class="sidebar-link" [class.active]="isActive('/roles')">
+            <i class="fas fa-user-shield"></i> Roles
+        </a>
+        <a routerLink="/clientes" class="sidebar-link" [class.active]="isActive('/clientes')">
+            <i class="fas fa-users"></i> Clientes
+        </a>
+        <a routerLink="/productos" class="sidebar-link" [class.active]="isActive('/productos')">
+            <i class="fas fa-box"></i> Productos
+        </a>
+        <a routerLink="/inventario" class="sidebar-link" [class.active]="isActive('/inventario')">
+            <i class="fas fa-warehouse"></i> Inventario
+        </a>
+        <a routerLink="/proveedores" class="sidebar-link" [class.active]="isActive('/proveedores')">
+            <i class="fas fa-truck"></i> Proveedores
+        </a>
+        <a routerLink="/ventas" class="sidebar-link" [class.active]="isActive('/ventas')">
+            <i class="fas fa-shopping-cart"></i> Nueva Venta
+        </a>
+        <a routerLink="/reportes" class="sidebar-link" [class.active]="isActive('/reportes')">
+            <i class="fas fa-chart-line"></i> Reportes
+        </a>
+    </nav>
+</div>

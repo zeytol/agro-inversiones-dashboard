@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./proveedores.component.css']
 })
 export class ProveedoresComponent implements OnInit {
+  isSidebarVisible = true;
   searchTerm: string = '';
   selectedCategory: string = 'all';
   // Estado de los checkboxes para activos e inactivos
@@ -35,6 +36,15 @@ export class ProveedoresComponent implements OnInit {
   showEditModal = false;
   showDeleteModal = false;
   showViewModal = false;
+
+  toggleSidebar() {
+    this.isSidebarVisible = !this.isSidebarVisible;
+    setTimeout(() => this.updateChartsSize(), 300);
+  }
+
+  private updateChartsSize() {
+    // Aquí puedes actualizar las opciones de los gráficos si es necesario
+  }
 
   constructor(private http: HttpClient) { }
 

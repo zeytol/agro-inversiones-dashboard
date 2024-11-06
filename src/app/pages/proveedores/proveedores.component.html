@@ -1,3 +1,13 @@
+<div class="dashboard-layout flex flex-col h-screen">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
+
+
 <div class="w-full p-8 bg-gray-100 min-h-screen">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-black underline">Gestión de Proveedores</h1>
