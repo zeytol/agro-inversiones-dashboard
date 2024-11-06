@@ -1,1 +1,7 @@
-<h1 class="pt-4 text-3xl font-bold  text-red-900 text-center">Hola Agro Inversiones</h1>
+<app-navbar (sidebarToggle)="sidebarOpen = !sidebarOpen"></app-navbar>
+<div class="main-layout" [class.sidebar-open]="sidebarOpen">
+  <app-sidebar></app-sidebar>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
