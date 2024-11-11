@@ -12,7 +12,7 @@ interface Cliente {
   dniRuc: string;
   direccion: string;
   telefono: string;
-  correo: string;
+  correo: string; 
   estado: string;
   fotoUrl: string;
 }

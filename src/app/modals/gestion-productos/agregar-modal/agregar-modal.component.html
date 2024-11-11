@@ -1,0 +1,75 @@
+<!-- Modal para Agregar Producto -->
+<div *ngIf="modalVisible" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-3xl">
+      <h2 class="text-lg font-semibold mb-4">Agregar Producto</h2>
+      <form (ngSubmit)="agregarProducto()">
+         <!-- Campo para subir la foto -->
+         <div class="col-span-1 sm:col-span-2 md:col-span-3 mb-4 w-full flex flex-col items-center">
+          <input 
+            type="file" 
+            (change)="onFileSelected($event)" 
+            id="file-input-upload" 
+            class="hidden" 
+            accept="image/*" 
+            required 
+          />
+          <label 
+                  for="file-input-upload" 
+                  class="flex items-center justify-center cursor-pointer  text-white rounded-lg w-full h-32 hover:bg-secondary-600 transition duration-150">
+                  <div class="flex flex-col items-center justify-center">
+                    <img src="assets/images/Agregar.jpg" alt="imagen refente" class="h-40  mb-2" />
+                    <span>Seleccionar imagen</span>
+                  </div>
+                </label>
+        </div>
+  
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Código</label>
+            <input [(ngModel)]="nuevoProducto.codigo" name="codigo" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un código" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Modelo</label>
+            <input [(ngModel)]="nuevoProducto.modelo" name="modelo" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un modelo" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Nombre del Producto</label>
+            <input [(ngModel)]="nuevoProducto.nombre" name="nombre" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un nombre" />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Precio</label>
+            <input type="number" [(ngModel)]="nuevoProducto.precio" name="precio" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un precio" />
+          </div>
+  
+  
+          <div>
+            <label class="block text-sm font-medium mb-1">Stock</label>
+            <input type="number" [(ngModel)]="nuevoProducto.stock" name="stock" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Stock disponible" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Estado</label>
+            <select [(ngModel)]="nuevoProducto.estado" name="estado" class="border border-gray-300 rounded-md w-full p-2">
+              <option value="" disabled selected>Seleccione un estado</option>
+              <option value="disponible">Disponible</option>
+              <option value="no-disponible">No Disponible</option>
+            </select>
+          </div>
+  
+          <div class="col-span-1 sm:col-span-2 md:col-span-3">
+            <label class="block text-sm font-medium mb-1">Descripción</label>
+            <textarea [(ngModel)]="nuevoProducto.descripcion" name="descripcion" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingrese una descripción"></textarea>
+          </div>
+  
+          <div>
+            <label class="block text-sm font-medium mb-1">Proveedor</label>
+            <input [(ngModel)]="nuevoProducto.proveedor" name="proveedor" required class="border border-gray-300 rounded-md w-50% p-2" placeholder="Seleccione un proveedor" />
+          </div>
+        </div>
+        <div class="flex justify-end mt-4">
+          <button type="submit" class="bg-blue-500 text-white rounded py-2 px-4 hover:bg-blue-600">Agregar</button>
+          <button (click)="cerrarModals()" type="button" class="bg-gray-300 text-black rounded py-2 px-4 hover:bg-gray-400 ml-2">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>

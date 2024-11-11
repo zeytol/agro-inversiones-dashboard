@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
+import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,8 +21,8 @@ import { ConfirmDeleteModalComponent } from './modals/confirm-delete-modal/confi
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { AgregarUsuarioComponent } from './modals/agregar-usuario/agregar-usuario.component';
 import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.component'; 
-
-
+import { GestionProductosComponent } from './components/gestion-productos/gestion-productos.component';
+import { AgregarModalComponent } from './modals/gestion-productos/agregar-modal/agregar-modal.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,9 @@ import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.c
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
-    EditarClienteComponent
+    EditarClienteComponent,
+    GestionProductosComponent,
+    AgregarModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.c
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule 
+    MatSelectModule,
+    HttpClientModule
   ],
   providers: [
     provideClientHydration(),

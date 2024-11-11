@@ -1,0 +1,300 @@
+<div class="dashboard-layout flex flex-col h-screen">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang"></app-siderbang>
+
+    <!-- Contenedor de productos -->
+    <div class="container mx-auto p-4">
+      <!-- Barra de navegación -->
+      <div class="flex justify-between items-center mb-6">
+        <!-- Botón de filtro a la izquierda -->
+        <button (click)="abrirFiltroModal()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
+          Filtrar Productos
+        </button>
+
+         <!-- Botón de Agregar Producto a la derecha -->
+            <button (click)="abrirModalAgregarProducto()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
+              + Agregar Producto
+            </button>
+
+            <!-- Modal para agregar producto -->
+            <app-agregar-modal 
+              *ngIf="mostrarModalAgregarProducto" 
+              (cerrarModal)="cerrarModalAgregarProducto()">
+</app-agregar-modal>
+
+        <!-- Botón de carrito -->
+        <button (click)="abrirCarrito()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+          Ver Carrito
+        </button>
+      </div>
+
+      <!-- Categorías -->
+      <section class="flex justify-around mb-8">
+        <div class="text-center" *ngFor="let categoria of categorias">
+          <img [src]="categoria.imagen" alt="Categoria" class="w-24 h-24 mx-auto mb-2" />
+          <p class="font-semibold">{{ categoria.nombre }}</p>
+          <span class="text-gray-500">{{ categoria.cantidadProductos }} productos</span>
+        </div>
+      </section>
+
+      <!-- Productos más vendidos -->
+      <section>
+        <h2 class="text-2xl font-bold mb-6 text-center">PRODUCTOS MÁS VENDIDOS</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div *ngFor="let producto of productos" class="bg-gradient-to-b from-[#066828] to-[#A8D08D]
+          p-6 rounded-lg relative max-w-xs transition-transform duration-300 transform hover:scale-105 hover:shadow-lg">
+            <img [src]="producto.imagen" alt="Producto" class="w-full h-40 object-cover mb-4 rounded" />
+            <div class="flex flex-col justify-between h-full">
+              <div>
+                <h3 class="text-lg font-semibold">{{ producto.nombre }}</h3>
+                <p class="text-green-600 font-bold">{{ producto.precio }}</p>
+                <p class="text-gray-500">{{ producto.categoria }}</p>
+                <p class="text-sm text-gray-600">{{ producto.descripcion }}</p>
+                <p class="text-sm text-gray-600 mt-2">
+                  Costo: <span class="font-bold">{{ producto.costoPrecio }}</span> | Venta: <span class="font-bold">{{ producto.ventaPrecio }}</span>
+                </p>
+                <!-- Botones de Agregar al carrito y Editar -->
+                <div class="flex space-x-2 mt-4">
+                  <button (click)="agregarACarrito(producto)" class="bg-[#007D14] text-white font-semibold py-2 px-4 rounded hover:bg-green-700 w-full">
+                    Agregar al carrito
+                  </button>
+                  <button (click)="abrirEditarModal(producto)" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 w-full">
+                    Editar
+                  </button>
+                </div>
+              </div>
+            </div>
+            <span *ngIf="producto.stock" class="bg-[#007D14] text-white font-semibold rounded-full px-3 py-1 absolute top-4 left-4">
+              Stock: {{ producto.stock }}
+          </span>
+            <div *ngIf="producto.descuento" class="bg-yellow-300 text-yellow-900 font-semibold rounded-full px-3 py-1 absolute top-2 right-2">
+              {{ producto.descuento }}% OFF
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Modal para Editar Producto -->
+      <div *ngIf="editarModalVisible" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-3xl">
+          <h2 class="text-lg font-semibold mb-4">Editar Producto</h2>
+          <form (ngSubmit)="editarProducto()">
+            <!-- Grid de formulario -->
+      
+            <div class="col-span-1 sm:col-span-2 md:col-span-3 mb-4 w-full flex flex-col items-center">
+              <input 
+                type="file" 
+                (change)="onFileSelected($event)" 
+                id="file-input-upload" 
+                class="hidden" 
+                accept="image/*" 
+                required 
+              />
+              <label 
+                      for="file-input-upload" 
+                      class="flex items-center justify-center cursor-pointer  text-white rounded-lg w-full h-32 hover:bg-secondary-600 transition duration-150">
+                      <div class="flex flex-col items-center justify-center">
+                        <img src="assets/images/Editar.jpg" alt="imagen refente" class="h-40  mb-2" />
+                        <span>Seleccionar imagen</span>
+                      </div>
+                    </label>
+            </div>
+      
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Código</label>
+                <input [(ngModel)]="productoSeleccionado.codigo" name="codigo" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un código" />
+              </div>
+      
+              <div>
+                <label class="block text-sm font-medium mb-1">Modelo</label>
+                <input [(ngModel)]="productoSeleccionado.modelo" name="modelo" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un modelo" />
+              </div>
+      
+              <div>
+                <label class="block text-sm font-medium mb-1">Nombre del Producto</label>
+                <input [(ngModel)]="productoSeleccionado.nombre" name="nombre" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un nombre" />
+              </div>
+      
+              <div class="col-span-1 sm:col-span-2 md:col-span-3">
+                <label class="block text-sm font-medium mb-1">Descripción</label>
+                <textarea [(ngModel)]="productoSeleccionado.descripcion" name="descripcion" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingrese una descripción"></textarea>
+              </div>
+      
+              <div>
+                <label class="block text-sm font-medium mb-1">Precio</label>
+                <input type="number" [(ngModel)]="productoSeleccionado.precio" name="precio" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Ingresa un precio" />
+              </div>
+      
+              <div>
+                <label class="block text-sm font-medium mb-1">Stock</label>
+                <input type="number" [(ngModel)]="productoSeleccionado.stock" name="stock" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Stock disponible" />
+              </div>
+       
+              <div>
+                <label class="block text-sm font-medium mb-1">Proveedor</label>
+                <input [(ngModel)]="productoSeleccionado.proveedor" name="proveedor" required class="border border-gray-300 rounded-md w-full p-2" placeholder="Seleccione un proveedor" />
+              </div>
+      
+              <div>
+                <label class="block text-sm font-medium mb-1">Estado</label>
+                <select [(ngModel)]="productoSeleccionado.estado" name="estado" class="border border-gray-300 rounded-md w-full p-2">
+                  <option value="" disabled selected>Seleccione un estado</option>
+                  <option value="disponible">Disponible</option>
+                  <option value="no-disponible">No Disponible</option>
+                </select>
+              </div>
+            </div>
+      
+            <div class="flex justify-end mt-4">
+              <button type="submit" class="bg-blue-500 text-white rounded py-2 px-4 hover:bg-blue-600">Guardar</button>
+              <button (click)="cerrarEditarModal()" type="button" class="bg-gray-300 text-black rounded py-2 px-4 hover:bg-gray-400 ml-2">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal de actualizar -->
+<div *ngIf="actualizarModalEditar" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+  <div class="bg-white rounded-lg p-6 w-64 flex flex-col items-center">
+    <h2 class="text-lg font-semibold mb-4">Registro Actualizado</h2>
+    <div class="flex items-center mb-4">
+      <img src="assets/images/check.jpg" alt="Check" class="h-21 w-20 mr-2" />
+      <span class="text-green-500">El producto ha sido actualizado correctamente.</span>
+    </div>
+    <button (click)="cerrarSuccessModal()" class="bg-blue-500 text-white rounded py-2 px-4 hover:bg-blue-600 transition duration-150">
+      Aceptar
+    </button>
+  </div>
+</div>
+
+
+<!-- Modal para Filtrar Productos -->
+<div *ngIf="filterModalVisible" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
+    <h2 class="text-2xl font-bold mb-4">Filtrar Productos</h2>
+    
+    <div class="mb-4">
+      <div class="bg-[#C7F4C3] p-4 rounded-md">
+        <h3 class="font-semibold mb-2">FILTRAR POR PRECIO</h3>
+        <input type="range" min="12" max="500" class="w-full mb-2" />
+        <p class="text-sm mb-2">hasta S/12 - S/500</p>
+
+        <h3 class="font-semibold mt-4 mb-2">BUSCAR POR PROVEEDOR</h3>
+        <div class="flex items-center mb-2">
+          <input type="text" class="border border-gray-300 rounded p-2 flex-1" placeholder="Buscar por proveedor" />
+          <button class="ml-2 p-1 border border-gray-300 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 14l9 5-9 5-9-5 9-5zm0 0V5.5M12 5.5l9 5-9 5-9-5 9-5z" />
+            </svg>
+          </button>
+        </div>
+
+        <ul class="mb-4">
+          <li>Tubermix <span class="text-gray-500">(5)</span></li>
+          <li>FruitLand <span class="text-gray-500">(3)</span></li>
+          <li>VeggiesCorp <span class="text-gray-500">(5)</span></li>
+        </ul>
+
+        <h3 class="font-semibold mb-2">BUSCAR POR</h3>
+        <div class="mb-4">
+          <div class="flex items-center">
+            <label class="mr-4"><input type="checkbox" class="mr-2" /> Fungicidas</label>
+            <label class="mr-4"><input type="checkbox" class="mr-2" /> Insecticidas</label>
+            <label><input type="checkbox" class="mr-2" checked /> Herbicidas</label>
+          </div>
+        </div>
+
+        <h3 class="font-semibold mb-2">PLAGA/OBJETIVO</h3>
+        <input type="text" class="border border-gray-300 rounded p-2 w-full mb-2" placeholder="Buscar por plaga" />
+        
+        <div>
+          <label class="flex items-center mb-1"><input type="checkbox" class="mr-2" /> Alternaria</label>
+          <label class="flex items-center mb-1"><input type="checkbox" class="mr-2" /> Pyricularia</label>
+          <label class="flex items-center"><input type="checkbox" class="mr-2" checked /> Cercosporiosis</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button (click)="cerrarFiltroModal()" class="bg-gray-300 text-black rounded py-2 px-4 mr-2">Cancelar</button>
+      <button (click)="aplicarFiltros()" class="bg-green-500 text-white rounded py-2 px-4">Aplicar Filtros</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modal de Éxito -->
+<div *ngIf="successModalVisible" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+  <div class="bg-white rounded-lg p-6 w-64 flex flex-col items-center">
+    <h2 class="text-lg font-semibold mb-4">Registro Guardado</h2>
+    <div class="flex items-center mb-4">
+      <img src="assets/images/check.jpg" alt="Check" class="h-21 w-20 mr-2" />
+      <span class="text-green-500">El producto ha sido guardado correctamente.</span>
+    </div>
+    <button (click)="cerrarSuccessModal()" class="bg-blue-500 text-white rounded py-2 px-4 hover:bg-blue-600 transition duration-150">
+      Aceptar
+    </button>
+  </div>
+</div>
+
+
+
+     <!-- Modal para Ver Carrito -->
+<div *ngIf="carritoVisible" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-[#d2f8d8] rounded-lg p-6 w-80 relative">
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Carrito</h2>
+      <button (click)="cerrarCarrito()" class="text-black text-lg font-semibold">cerrar</button>
+    </div>
+
+    <!-- Lista de Productos -->
+    <ul class="mb-4">
+      <li *ngFor="let item of carrito" class="flex flex-col border-b border-gray-300 py-2">
+        <div class="flex justify-between items-center">
+          <img [src]="item.imagen" alt="{{ item.nombre }}" class="w-16 h-16 rounded" />
+          <div class="flex flex-col ml-2">
+            <span class="text-md font-semibold">{{ item.nombre }}</span>
+            <span class="text-gray-500 text-sm">Proveedor: {{ item.proveedor }}</span>
+            <span class="text-green-600 text-xs">stock actual: {{ item.stock }}</span>
+          </div>
+          <button class="text-black font-bold text-lg">&times;</button>
+        </div>
+
+        <!-- Precio y Cantidad -->
+        <div class="flex items-center justify-between mt-2">
+          <div class="flex items-center">
+            <span class="text-lg">{{ item.cantidad }} x S/{{ item.precio }}</span>
+          </div>
+          <div class="flex items-center border rounded">
+            <button (click)="decrementarCantidad(item)" class="px-2 py-1 bg-green-600 text-white font-bold">-</button>
+            <span class="px-3">{{ item.cantidad }}</span>
+            <button (click)="incrementarCantidad(item)" class="px-2 py-1 bg-green-600 text-white font-bold">+</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Total y Botón Finalizar -->
+    <div class="mt-4">
+      <div class="flex justify-between border-t border-gray-300 pt-2">
+        <span class="font-semibold">SUBTOTAL:</span>
+        <span>S/{{ totalCarrito }}</span>
+      </div>
+      <div class="flex justify-center mt-4">
+        <button (click)="finalizarCompra()" class="bg-yellow-500 text-white font-bold rounded py-2 px-4 w-full">finalizar compra</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>

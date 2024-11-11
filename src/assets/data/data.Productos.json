@@ -1,0 +1,48 @@
+[
+    {
+      "imagen": "assets/images/categoria1.jpg",
+      "nombre": "GOLDEN 40 EC",
+      "precio": "$10",
+      "costoPrecio": "$8",
+      "ventaPrecio": "$10",
+      "categoria": "Categoria 1",
+      "descripcion": "Descripción del producto 1",
+      "stock": 100,
+      "descuento": 20
+    },
+    {
+      "imagen": "assets/images/categoria1.jpg",
+      "nombre": "GOLDEN 30 EC",
+      "precio": "$10",
+      "costoPrecio": "$8",
+      "ventaPrecio": "$10",
+      "categoria": "Categoria 1",
+      "descripcion": "Descripción del producto 1",
+      "stock": 100,
+      "descuento": 20
+    },
+    {
+      "imagen": "assets/images/categoria1.jpg",
+      "nombre": "GOLDEN 20 EC",
+      "precio": "$10",
+      "costoPrecio": "$8",
+      "ventaPrecio": "$10",
+      "categoria": "Categoria 1",
+      "descripcion": "Descripción del producto 1",
+      "stock": 100,
+      "descuento": 20
+    },
+    {
+      "imagen": "assets/images/categoria1.jpg",
+      "nombre": "GOLDEN 10 EC",
+      "precio": "$10",
+      "costoPrecio": "$8",
+      "ventaPrecio": "$10",
+      "categoria": "Categoria 1",
+      "descripcion": "Descripción del producto 1",
+      "stock": 100,
+      "descuento": 20
+    }
+   
+  ]
+  
