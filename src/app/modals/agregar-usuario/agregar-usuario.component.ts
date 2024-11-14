@@ -43,8 +43,21 @@ export class AgregarUsuarioComponent {
         width: '400px',
         height: 'auto'
       });
+
+      const nuevoCliente = {
+        nombre: this.nombre,
+        tipoCliente: this.tipoCliente,
+        tipoDocumento: this.tipoDocumento,
+        dniRuc: this.numeroDocumento,
+        direccion: this.direccion,
+        telefono: this.telefono,
+        correo: this.correo,
+        estado: this.estado,
+        fotoUrl: this.imagePreview || ''
+      };
+
       this.dialogRef.afterClosed().subscribe(() => {
-        this.parentDialogRef.close(); // Cierra el modal principal después de mostrar el mensaje de éxito
+        this.parentDialogRef.close(nuevoCliente); // Cierra el modal principal después de mostrar el mensaje de éxito y pasa los datos
       });
     } else {
       // Faltan campos, mostrar modal de error

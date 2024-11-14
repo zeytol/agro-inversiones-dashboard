@@ -1,0 +1,49 @@
+<div class="modal-content">
+    <h2>Mostrar Cliente</h2>
+  
+    <!-- Foto del cliente -->
+    <div class="client-photo">
+      <img *ngIf="photoUrl" [src]="photoUrl" alt="Foto del cliente" class="client-image" />
+    </div>
+  
+    <!-- Información del cliente -->
+    <div class="client-info">
+      <p><strong>Nombre o Razón Social:</strong> {{ nombre }}</p>
+      <p><strong>Tipo de Cliente:</strong> {{ tipoCliente }}</p>
+      <p><strong>Tipo Documento:</strong> {{ tipoDocumento }}</p>
+      <p><strong>Nro. Documento:</strong> {{ numeroDocumento }}</p>
+      <p><strong>Dirección:</strong> {{ direccion }}</p>
+      <p><strong>Teléfono:</strong> {{ telefono }}</p>
+      <p><strong>Correo:</strong> {{ correo }}</p>
+      <p><strong>Estado:</strong> {{ estado }}</p>
+    </div>
+  
+    <!-- Historial de última factura emitida -->
+    <div class="invoice-history">
+      <h3>Historial del Cliente</h3>
+      <p><strong>Última factura emitida:</strong></p>
+      <p><strong>Nro Factura:</strong> {{ lastInvoice.number }}</p>
+      <p><strong>Monto:</strong> {{ lastInvoice.amount | currency }}</p>
+      <p><strong>Fecha:</strong> {{ lastInvoice.date }}</p>
+      <p><strong>Estado de Pago:</strong> {{ lastInvoice.status }}</p>
+    </div>
+  
+    <!-- Documentos adjuntos -->
+    <div class="attachments">
+      <h3>Documentos Adjuntos</h3>
+      <div class="document-types">
+        <div *ngFor="let doc of attachedDocuments" class="document">
+          <a [href]="doc.url" target="_blank">
+            <img [src]="doc.icon" alt="{{ doc.name }}" />
+            <span>{{ doc.name }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Botón para cerrar el modal -->
+    <div class="modal-actions">
+      <button mat-button (click)="onClose()" class="close-button">Cerrar</button>
+    </div>
+  </div>
+  

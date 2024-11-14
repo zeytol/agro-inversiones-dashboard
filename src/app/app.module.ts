@@ -19,7 +19,9 @@ import { ClientesComponent } from './components/clientes/clientes.component';
 import { ConfirmDeleteModalComponent } from './modals/confirm-delete-modal/confirm-delete-modal.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { AgregarUsuarioComponent } from './modals/agregar-usuario/agregar-usuario.component';
-import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.component'; 
+import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.component';
+import { DetalleClienteComponent } from './modals/detalle-cliente/detalle-cliente.component'; 
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -34,7 +36,8 @@ import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.c
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
-    EditarClienteComponent
+    EditarClienteComponent,
+    DetalleClienteComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.c
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    HttpClientModule,
     MatSelectModule 
   ],
   providers: [

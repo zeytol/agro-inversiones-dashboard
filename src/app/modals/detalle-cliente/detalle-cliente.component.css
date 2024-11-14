@@ -1,0 +1,74 @@
+.modal-content {
+    width: 100%;
+    max-width: 900px; /* Aumenta el tamaño máximo */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+    background-color: #ffffff;
+    overflow-y: auto; /* Permite scroll si el contenido es grande */
+  }
+  
+  h2, h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .client-photo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .client-image {
+    width: 150px; /* Aumenta el tamaño de la imagen */
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  .client-info, .invoice-history, .attachments {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: left;
+    gap: 10px;
+  }
+  
+  .client-info p, .invoice-history p {
+    flex: 1 1 48%;
+    margin: 5px 0;
+  }
+  
+  .attachments .document-types {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .document {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    font-size: 14px;
+  }
+  
+  .document img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+  }
+  
+  .modal-actions {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .close-button {
+    color: #f44336;
+    font-weight: bold;
+  }
+  
