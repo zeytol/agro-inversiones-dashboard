@@ -7,7 +7,7 @@
       "direccion": "Av. Panama 332",
       "telefono": "987654321",
       "correo": "usuario1@gmail.com",
-      "estado": "Disponible",
+      "estado": "Activo",
       "fotoUrl": "ruta/a/foto1.jpg"
     },
     {
@@ -18,7 +18,18 @@
       "direccion": "Calle Ejemplo 123",
       "telefono": "912345678",
       "correo": "usuario2@gmail.com",
-      "estado": "No Disponible",
+      "estado": "Desactivado",
+      "fotoUrl": "ruta/a/foto2.jpg"
+    },
+    {
+      "nombre": "Felipe",
+      "tipoCliente": "Natural",
+      "tipoDocumento": "DNI",
+      "dniRuc": "985842942",
+      "direccion": "Calle 123",
+      "telefono": "9167645678",
+      "correo": "usuario4@gmail.com",
+      "estado": "Activo",
       "fotoUrl": "ruta/a/foto2.jpg"
     }
   ]

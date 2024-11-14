@@ -19,8 +19,12 @@ export class ConfirmDeleteModalComponent {
   }
 
   onConfirm(): void {
-    this.isDeleted = true; // Marca como eliminado
-    this.dialogRef.close(this.data.clienteNombre); // Pasa el nombre del cliente a eliminar
+    this.isDeleted = true; // Cambia el estado para mostrar el mensaje de eliminación
+    
+    // Agrega un retraso para mostrar el mensaje antes de cerrar el modal
+    setTimeout(() => {
+      this.dialogRef.close(this.data.clienteNombre); // Pasa el nombre del cliente después del retraso
+    }, 500); // 1500 ms = 1.5 segundos de retraso
   }
 
   onClose(): void {

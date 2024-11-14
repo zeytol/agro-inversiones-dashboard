@@ -14,26 +14,26 @@
   
         <!-- Filtros -->
         <div class="filter-container">
-          <input type="text" placeholder="Ingrese Nombre o Razón Social" class="filter-input" />
-          <input type="text" placeholder="Ingrese Nro.Documento" class="filter-input" />
-          <select class="filter-select">
-            <option>Ingrese Tipo</option>
-            <option>Empresa</option>
-            <option>Persona Natural</option>
-            <option>Persona Jurídica</option>
+          <input 
+            type="text" 
+            placeholder="Ingrese Nombre o Razón Social" 
+            class="filter-input" 
+            [(ngModel)]="filtroNombre" 
+          />
+          <input 
+            type="text" 
+            placeholder="Ingrese Nro. Documento" 
+            class="filter-input" 
+            [(ngModel)]="filtroDocumento" 
+          />
+          <select class="filter-select" [(ngModel)]="filtroTipo">
+            <option value="">Ingrese Tipo</option>
+            <option value="Empresa">Empresa</option>
+            <option value="Natural">Natural</option>
+            <option value="Particular">Particular</option>
           </select>
-          <select class="filter-select">
-            <option>Ingrese Estado</option>
-            <option>Disponible</option>
-            <option>No Disponible</option>
-          </select>
-          <button class="button-with-icon">
-            <svg
-              class="icon"
-              id="Search"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+          <button class="button-with-icon" (click)="aplicarFiltro()">
+            <svg class="icon" id="Search" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 class="color000000 svgShape"
                 fill="#ffffff"
@@ -65,13 +65,12 @@
               <th>Dirección</th>
               <th>Teléfono</th>
               <th>Correo</th>
-              <th>Estado</th>
               <th>Foto</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let cliente of clientes">
+            <tr *ngFor="let cliente of clientesFiltrados">
               <td>{{ cliente.nombre }}</td>
               <td>{{ cliente.tipoCliente }}</td>
               <td>{{ cliente.tipoDocumento }}</td>
@@ -79,9 +78,6 @@
               <td>{{ cliente.direccion }}</td>
               <td>{{ cliente.telefono }}</td>
               <td>{{ cliente.correo }}</td>
-              <td [ngClass]="{ 'estado-disponible': cliente.estado === 'Disponible', 'estado-no-disponible': cliente.estado === 'No Disponible' }">
-                {{ cliente.estado }}
-              </td>
               <td><img [src]="cliente.fotoUrl" alt="Foto" class="foto-cliente" /></td>
               <td class="acciones">
                 <button class="editBtn" (click)="openEditarClienteModal(cliente)">

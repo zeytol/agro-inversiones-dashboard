@@ -14,7 +14,6 @@ interface Cliente {
   direccion: string;
   telefono: string;
   correo: string;
-  estado: string;
   fotoUrl: string;
 }
 
@@ -26,6 +25,12 @@ interface Cliente {
 export class ClientesComponent implements OnInit {
   isSidebarVisible = true;
   clientes: Cliente[] = [];
+  clientesFiltrados: Cliente[] = [];
+  
+  // Variables de filtrado
+  filtroNombre: string = '';
+  filtroDocumento: string = '';
+  filtroTipo: string = '';
 
   constructor(private dialog: MatDialog, private http: HttpClient) {}
 
@@ -37,12 +42,23 @@ export class ClientesComponent implements OnInit {
     this.http.get<Cliente[]>('assets/datacliente.json').subscribe(
       data => {
         this.clientes = data;
+        this.clientesFiltrados = data; // Inicia con todos los clientes
       },
       error => {
         console.error('Error loading client data:', error);
-        
       }
     );
+  }
+
+  // Método para aplicar el filtrado
+  aplicarFiltro(): void {
+    this.clientesFiltrados = this.clientes.filter(cliente => {
+      const nombreMatch = cliente.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase());
+      const documentoMatch = cliente.dniRuc.includes(this.filtroDocumento);
+      const tipoMatch = this.filtroTipo ? cliente.tipoCliente === this.filtroTipo : true;
+      
+      return nombreMatch && documentoMatch && tipoMatch;
+    });
   }
 
   openConfirmDeleteModal(clienteNombre: string): void {
@@ -50,16 +66,18 @@ export class ClientesComponent implements OnInit {
       width: '400px',
       data: { clienteNombre } // Pasa el nombre del cliente al modal
     });
-
+  
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.deleteCliente(result); // El cliente fue confirmado para eliminar, eliminamos de la lista
+        this.deleteCliente(result); // Llama a deleteCliente con el nombre confirmado
       }
     });
   }
-
+  
   deleteCliente(clienteNombre: string): void {
+    // Elimina el cliente basado en el nombre
     this.clientes = this.clientes.filter(cliente => cliente.nombre !== clienteNombre);
+    console.log('Cliente eliminado:', clienteNombre); // Agregar esta línea para verificar si se está eliminando correctamente
   }
 
   toggleSidebar() {
@@ -68,27 +86,38 @@ export class ClientesComponent implements OnInit {
 
   openAgregarUsuarioModal(): void {
     const dialogRef = this.dialog.open(AgregarUsuarioComponent, {
-      width: '400px',
+      width: '800px',
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Se agrega el nuevo cliente a la lista de clientes
         this.clientes.push(result);
+        this.aplicarFiltro(); // Re-aplicar el filtro después de agregar un cliente
       }
     });
   }
 
   openDetalleClienteModal(cliente: Cliente): void {
+    console.log('fotoUrl:', cliente.fotoUrl);  // Verifica si la URL está bien pasada
     this.dialog.open(DetalleClienteComponent, {
-      width: '400px',
-      data: cliente
+      width: '800px',
+      data: {
+        nombre: cliente.nombre,
+        tipoCliente: cliente.tipoCliente,
+        tipoDocumento: cliente.tipoDocumento,
+        numeroDocumento: cliente.dniRuc,
+        direccion: cliente.direccion,
+        telefono: cliente.telefono,
+        correo: cliente.correo,
+        fotoUrl: cliente.fotoUrl,  // Aquí debes asegurarte de que esto sea el dato correcto
+      }
     });
   }
 
   openEditarClienteModal(cliente: Cliente): void {
     const dialogRef = this.dialog.open(EditarClienteComponent, {
-      width: '400px',
+      width: '800px',
       data: cliente
     });
 
@@ -97,6 +126,7 @@ export class ClientesComponent implements OnInit {
         const index = this.clientes.findIndex(c => c.nombre === cliente.nombre);
         if (index !== -1) {
           this.clientes[index] = result;
+          this.aplicarFiltro(); // Re-aplicar el filtro después de editar un cliente
         }
       }
     });

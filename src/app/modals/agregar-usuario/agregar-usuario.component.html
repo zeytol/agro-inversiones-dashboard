@@ -4,9 +4,7 @@
   <!-- Área de carga de imagen -->
   <div class="image-upload">
     <label for="file-input">
-      <!-- Solo se muestra el ícono si no hay imagen cargada -->
       <i *ngIf="!imagePreview" class="material-icons upload-icon">cloud_upload</i>
-      <!-- Imagen de previsualización (se muestra solo si imagePreview tiene valor) -->
       <img *ngIf="imagePreview" [src]="imagePreview" alt="Imagen seleccionada" class="preview-image" />
     </label>
     <input id="file-input" type="file" (change)="onFileSelected($event)" />
@@ -37,7 +35,7 @@
 
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Nro. Documento</mat-label>
-      <input matInput name="numeroDocumento" required [(ngModel)]="numeroDocumento">
+      <input matInput name="numeroDocumento" required [(ngModel)]="numeroDocumento" maxlength="8" minlength="8" pattern="^[0-9]{8}$">
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="input-field">
@@ -47,17 +45,14 @@
 
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Teléfono</mat-label>
-      <input matInput type="tel" name="telefono" required [(ngModel)]="telefono">
+      <input matInput type="tel" name="telefono" required [(ngModel)]="telefono" maxlength="9" minlength="9" pattern="^[0-9]{9}$">
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Correo</mat-label>
-      <input matInput type="email" name="correo" required [(ngModel)]="correo">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="input-field">
-      <mat-label>Estado</mat-label>
-      <input matInput name="estado" required [(ngModel)]="estado">
+      <input matInput type="email" name="correo" required [(ngModel)]="correo" #correoInput="ngModel"
+        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+      <mat-error *ngIf="correoInput.invalid && correoInput.touched">Debe ser un correo válido</mat-error>
     </mat-form-field>
   </form>
 

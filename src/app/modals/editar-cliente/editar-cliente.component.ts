@@ -18,7 +18,6 @@ export class EditarClienteComponent {
   direccion: string;
   telefono: string;
   correo: string;
-  estado: string;
   imagePreview: string | null = null; // Variable para la previsualización de la imagen
   dialogRef!: MatDialogRef<any>;
 
@@ -35,7 +34,6 @@ export class EditarClienteComponent {
     this.direccion = data.direccion;
     this.telefono = data.telefono;
     this.correo = data.correo;
-    this.estado = data.estado;
     this.imagePreview = data.fotoUrl;
   }
 
@@ -51,8 +49,7 @@ export class EditarClienteComponent {
       this.numeroDocumento &&
       this.direccion &&
       this.telefono &&
-      this.correo &&
-      this.estado
+      this.correo
     ) {
       // Todos los campos están llenos, muestra el modal de éxito
       this.dialogRef = this.dialog.open(this.successModal, {
@@ -68,7 +65,6 @@ export class EditarClienteComponent {
           direccion: this.direccion,
           telefono: this.telefono,
           correo: this.correo,
-          estado: this.estado,
           fotoUrl: this.imagePreview
         });
       });

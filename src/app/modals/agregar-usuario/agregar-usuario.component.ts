@@ -1,5 +1,6 @@
 import { Component, ViewChild, TemplateRef, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { NgForm } from '@angular/forms'; // Importa NgForm para el formulario
 
 @Component({
   selector: 'app-agregar-usuario',
@@ -9,6 +10,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 export class AgregarUsuarioComponent {
   @ViewChild('successModal') successModal!: TemplateRef<any>;
   @ViewChild('errorModal') errorModal!: TemplateRef<any>;
+  @ViewChild('userForm') userForm!: NgForm; // Referencia al formulario
 
   nombre: string = '';
   tipoCliente: string = '';
@@ -17,7 +19,6 @@ export class AgregarUsuarioComponent {
   direccion: string = '';
   telefono: string = '';
   correo: string = '';
-  estado: string = '';
   imagePreview: string | null = null; // Variable para la previsualización de la imagen
   dialogRef!: MatDialogRef<any>;
 
@@ -28,17 +29,9 @@ export class AgregarUsuarioComponent {
   }
 
   onAdd(): void {
-    if (
-      this.nombre &&
-      this.tipoCliente &&
-      this.tipoDocumento &&
-      this.numeroDocumento &&
-      this.direccion &&
-      this.telefono &&
-      this.correo &&
-      this.estado
-    ) {
-      // Todos los campos están llenos, mostrar modal de éxito
+    // Verificar si el formulario es válido
+    if (this.userForm.valid) {
+      // Todos los campos están completos y válidos, mostrar modal de éxito
       this.dialogRef = this.dialog.open(this.successModal, {
         width: '400px',
         height: 'auto'
@@ -52,7 +45,6 @@ export class AgregarUsuarioComponent {
         direccion: this.direccion,
         telefono: this.telefono,
         correo: this.correo,
-        estado: this.estado,
         fotoUrl: this.imagePreview || ''
       };
 
@@ -60,7 +52,7 @@ export class AgregarUsuarioComponent {
         this.parentDialogRef.close(nuevoCliente); // Cierra el modal principal después de mostrar el mensaje de éxito y pasa los datos
       });
     } else {
-      // Faltan campos, mostrar modal de error
+      // Faltan campos o son inválidos, mostrar modal de error
       this.dialogRef = this.dialog.open(this.errorModal, {
         width: '400px',
         height: 'auto'
