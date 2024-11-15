@@ -19,29 +19,25 @@
             placeholder="Ingrese Nombre o Razón Social" 
             class="filter-input" 
             [(ngModel)]="filtroNombre" 
+            (ngModelChange)="aplicarFiltro()"
           />
           <input 
             type="text" 
             placeholder="Ingrese Nro. Documento" 
             class="filter-input" 
             [(ngModel)]="filtroDocumento" 
+            (ngModelChange)="aplicarFiltro()"
           />
-          <select class="filter-select" [(ngModel)]="filtroTipo">
+          <select 
+            class="filter-select" 
+            [(ngModel)]="filtroTipo" 
+            (ngModelChange)="aplicarFiltro()"
+          >
             <option value="">Ingrese Tipo</option>
             <option value="Empresa">Empresa</option>
             <option value="Natural">Natural</option>
             <option value="Particular">Particular</option>
           </select>
-          <button class="button-with-icon" (click)="aplicarFiltro()">
-            <svg class="icon" id="Search" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                class="color000000 svgShape"
-                fill="#ffffff"
-                d="M10.5 0C4.699 0 0 4.699 0 10.5S4.699 21 10.5 21c2.337 0 4.5-.791 6.227-2.111l5.623 5.623c.078.078.174.144.285.174.117.03.237.042.353.028.117-.014.224-.058.313-.137.077-.079.121-.189.137-.307.017-.118.002-.238-.028-.353-.03-.111-.096-.207-.174-.285l-5.623-5.623C20.709 14 21.5 11.837 21.5 10.5 21.5 4.699 16.801 0 10.5 0zm0 3c4.034 0 7.5 3.466 7.5 7.5S14.534 18 10.5 18 3 14.534 3 10.5 6.466 3 10.5 3z"
-              ></path>
-            </svg>
-            <span class="text">Filtrar</span>
-          </button>
         </div>
   
         <!-- Botón de agregar -->
