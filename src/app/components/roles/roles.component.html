@@ -1,0 +1,71 @@
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  rel="stylesheet"
+/>
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-6">Usuario</h1>
+  <div class="bg-white overflow-hidden shadow">
+    <table class="w-full">
+      <thead style="background-color: #709a9e" class="text-white">
+        <tr>
+          <th class="py-3 px-4 text-left">#</th>
+          <th class="py-3 px-4 text-left">Foto</th>
+          <th class="py-3 px-4 text-left">Username</th>
+          <th class="py-3 px-4 text-left">Password</th>
+          <th class="py-3 px-4 text-left">Email</th>
+          <th class="py-3 px-4 text-left">Teléfono</th>
+          <th class="py-3 px-4 text-left">Estado</th>
+          <th class="py-3 px-4 text-left">Fecha de Ingreso</th>
+          <th class="py-3 px-4 text-left">Última conexión</th>
+          <th class="py-3 px-4 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of roles">
+          <td class="py-3 px-4">{{ role.id }}</td>
+          <td class="py-3 px-4">
+            <img
+              src="https://static.vecteezy.com/system/resources/thumbnails/019/014/884/small_2x/user-icon-vector.jpg"
+              alt="Descripción de la imagen"
+              class="w-10 h-10 rounded-full"
+            />
+          </td>
+          <td class="py-3 px-4">{{ role.name }}</td>
+          <td class="py-3 px-4"></td>
+
+          <td class="py-3 px-4"></td>
+          <td class="py-3 px-4"></td>
+          <td class="py-3 px-4"></td>
+          <td class="py-3 px-4"></td>
+
+          <td class="py-3 px-4">{{ role.description }}</td>
+          <td class="py-3 px-4 flex gap-2">
+            <button
+              (click)="editRole(role.id)"
+              class="p-2 bg-amber-500 text-white rounded flex items-center justify-center"
+              title="Editar"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+
+            <button
+              (click)="deleteRole(role.id)"
+              class="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+              title="Eliminar"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+
+            <button
+              (click)="editRole(role.id)"
+              class="p-2 bg-blue-500 text-white rounded flex items-center justify-center"
+              title="Configuración"
+            >
+              <i class="fas fa-cog"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
