@@ -1,14 +1,13 @@
-<div class="dashboard-layout flex flex-col h-screen">
+<div class="dashboard-layout flex flex-col min-h-screen bg-gray-100">
   <!-- Header -->
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
   <!-- Contenedor principal -->
-  <div class="main-container flex flex-grow">
+  <div class="flex-grow flex">
     <!-- Sidebar -->
     <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
 
-   <div class="min-h-screen bg-gray-100 py-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex-grow flex justify-center px-4 py-6 sm:px-6 lg:px-8">  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
  <!-- Header Section -->
  <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
   <div class="flex justify-between items-center mb-6">
@@ -71,116 +70,17 @@
   </div>
 
   <!-- Botón para buscar el cliente -->
-  <button
-    (click)="buscarCliente()"
-    class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-  >
-    Buscar Cliente
+  <button (click)="abrirAgregarCliente()" class="bg-green-500 text-white px-4 py-2 rounded-md">
+    Agregar Cliente
   </button>
-</div>
 
 <!-- Modal -->
-<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-<!-- Contenedor del Modal -->
-<!-- Título y Botón de Búsqueda -->
-<div class="mb-4">
-  <h2 class="text-2xl font-semibold text-center mb-4">Buscar Cliente</h2>
-  <div class="flex justify-center">
-    <input 
-      type="text" 
-      [(ngModel)]="dni" 
-      placeholder="Ingresa el DNI del cliente"
-      class="border border-gray-300 rounded-md px-3 py-2 mr-2 focus:outline-none"
-    />
-    <button (click)="buscarCliente()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-      Buscar
-    </button>
-  </div>
-</div>
 
-<!-- Modal para Agregar Cliente -->
-<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto">
-    <h2 class="text-2xl font-semibold text-center mb-4">Agregar Cliente</h2>
-    <form (ngSubmit)="agregarCliente()">
-      <div class="grid grid-cols-1 gap-4">
-        
-        <!-- Campos de entrada -->
-        <div>
-          <label for="dniModal" class="block text-sm font-medium text-gray-700">DNI</label>
-          <input type="text" id="dniModal" [(ngModel)]="dniModal" name="dniModal" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa un DNI" 
-          />
-        </div>
-        
-        <div>
-          <label for="nombre" class="block text-sm font-medium text-gray-700">Nombres</label>
-          <input type="text" id="nombre" [(ngModel)]="nombre" name="nombre" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa nombres" 
-          />
-        </div>
+  <app-agregar-cliente [showModal]="mostrarAgregarCliente"></app-agregar-cliente>
 
-        <div>
-          <label for="apellido" class="block text-sm font-medium text-gray-700">Apellidos</label>
-          <input type="text" id="apellido" [(ngModel)]="apellido" name="apellido" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa apellidos" 
-          />
-        </div>
-
-        <div>
-          <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección</label>
-          <input type="text" id="direccion" [(ngModel)]="direccion" name="direccion" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa una dirección" 
-          />
-        </div>
-
-        <div>
-          <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-          <input type="text" id="telefono" [(ngModel)]="telefono" name="telefono" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa un teléfono" 
-          />
-        </div>
-
-        <div>
-          <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
-          <input type="email" id="correo" [(ngModel)]="correo" name="correo" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa un correo electrónico" 
-          />
-        </div>
-
-        <div>
-          <label for="frecuencia" class="block text-sm font-medium text-gray-700">Frecuencia</label>
-          <input type="text" id="frecuencia" [(ngModel)]="frecuencia" name="frecuencia" 
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-            placeholder="Ingresa la frecuencia del cliente" 
-          />
-        </div>
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="mt-6 flex justify-center">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mr-2">
-          Agregar
-        </button>
-        <button type="button" (click)="cancelar()" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500">
-          Cancelar
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
 
 
 </div>
-
-
-
 
      <!-- Campo de Búsqueda de Producto -->
         <div class="flex items-end space-x-2">
@@ -468,7 +368,6 @@
     Guardar
   </button>
 </div>
-
   </div>
 </div>
   </div>

@@ -9,10 +9,9 @@ import Swal from 'sweetalert2';
 export class VentasComponent {
   isSidebarVisible = true;
   dni: string = '';
-  showModal = false;
-  showDniModal = false;  // Controla la visibilidad del segundo modal
+  mostrarAgregarCliente = false;
+  mostrarConfirmacionDni = false;  
 
-  // Propiedades para el formulario de cliente en el modal
   dniModal: string = '';
   nombre: string = '';
   apellido: string = '';
@@ -20,6 +19,7 @@ export class VentasComponent {
   telefono: string = '';
   correo: string = '';
   frecuencia: string = '';
+  selectedImage: File | null = null;
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
@@ -27,7 +27,6 @@ export class VentasComponent {
   }
 
   private updateChartsSize() {
-    // Aquí puedes actualizar las opciones de los gráficos si es necesario
   }
 
   buscarCliente() {
@@ -45,15 +44,23 @@ export class VentasComponent {
         cancelButtonColor: '#d33'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.showModal = true; // Muestra el modal para agregar un nuevo cliente
+          this.abrirAgregarCliente();
         }
       });
     }
   }
 
   private verificarClienteExistente(dni: string): boolean {
-    // Implementa la lógica de verificación del cliente
-    return false; // Esto es solo un ejemplo; cámbialo por la lógica real
+    return false; 
+  }
+
+  abrirAgregarCliente() {
+    this.mostrarAgregarCliente = true;
+  }
+
+  cerrarAgregarCliente() {
+    this.mostrarAgregarCliente = false;
+    this.resetForm(); 
   }
 
   agregarCliente() {
@@ -62,19 +69,22 @@ export class VentasComponent {
       return;
     }
 
-    // Lógica para agregar el cliente
-    console.log(`Cliente agregado: ${this.nombre}, DNI: ${this.dniModal}`);
-    this.showModal = false; // Cierra el modal de agregar cliente
-    this.resetForm(); // Resetea el formulario
+    if (this.selectedImage) {
+      const formData = new FormData();
+      formData.append('image', this.selectedImage, this.selectedImage.name);
+      console.log(`Imagen subida: ${this.selectedImage.name}`);
+    }
 
-    // Muestra un mensaje de éxito y el segundo modal
+    console.log(`Cliente agregado: ${this.nombre}, DNI: ${this.dniModal}`);
+    this.cerrarAgregarCliente();
+
     Swal.fire({
       icon: 'success',
       title: 'Registro guardado',
       text: 'El cliente ha sido guardado correctamente',
       confirmButtonText: 'OK'
     }).then(() => {
-      this.showDniModal = true; // Muestra el segundo modal para ingresar el DNI
+      this.mostrarConfirmacionDni = true; 
     });
   }
 
@@ -89,18 +99,15 @@ export class VentasComponent {
   }
 
   confirmarDniCliente() {
-    // Lógica para confirmar el DNI e iniciar la venta
     console.log(`DNI confirmado: ${this.dni}`);
-    this.showDniModal = false; // Cierra el modal de confirmación
+    this.mostrarConfirmacionDni = false; 
   }
 
   cancelar() {
-    this.showModal = false; // Cierra el modal de agregar cliente
-    this.resetForm();
+    this.cerrarAgregarCliente(); 
   }
 
   private resetForm() {
-    // Resetea todos los campos del formulario
     this.dniModal = '';
     this.nombre = '';
     this.apellido = '';
@@ -108,5 +115,13 @@ export class VentasComponent {
     this.telefono = '';
     this.correo = '';
     this.frecuencia = '';
+    this.selectedImage = null;
+  }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImage = file;
+    }
   }
 }
