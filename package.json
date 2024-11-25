@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:AgroInversiones": "node dist/agro-inversiones/server/server.mjs",
-    "build:ssr": "ng build --prod && ng run agro-inversiones:server:production"
+    "build:ssr": "ng build --configuration production && ng run agro-inversiones:server:production"
   },
   "private": true,
   "dependencies": {
