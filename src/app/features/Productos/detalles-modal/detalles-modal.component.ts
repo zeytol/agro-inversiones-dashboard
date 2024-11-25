@@ -67,7 +67,7 @@ export class DetallesModalComponent implements OnInit {
     this.productoSeleccionado = producto;
     this.eliminarModalAbierto = true;
   }
-// Método para traducir el estado numérico
+
 // Método para determinar el estado basado en el stock
 getEstadoPorStock(stock: number): string {
   return stock >= 1 ? 'disponible' : 'no disponible';
