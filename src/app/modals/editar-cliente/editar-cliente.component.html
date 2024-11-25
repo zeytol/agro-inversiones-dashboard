@@ -1,0 +1,93 @@
+<div class="modal-content">
+    <h2>Editar Cliente</h2>
+  
+    <!-- Área de carga de imagen -->
+    <div class="image-upload">
+      <label for="file-input">
+        <!-- Solo se muestra el ícono si no hay imagen cargada -->
+        <i *ngIf="!imagePreview" class="material-icons upload-icon">cloud_upload</i>
+        <!-- Imagen de previsualización (se muestra solo si imagePreview tiene valor) -->
+        <img *ngIf="imagePreview" [src]="imagePreview" alt="Imagen seleccionada" class="preview-image" />
+      </label>
+      <input id="file-input" type="file" (change)="onFileSelected($event)" />
+    </div>
+  
+    <!-- Formulario de datos del cliente -->
+    <form #userForm="ngForm" class="form-content">
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Nombre / Razón Social</mat-label>
+        <input matInput name="nombre" required [(ngModel)]="nombre">
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Tipo de Cliente</mat-label>
+        <mat-select name="tipoCliente" required [(ngModel)]="tipoCliente">
+          <mat-option value="Persona Natural">Persona Natural</mat-option>
+          <mat-option value="Empresa">Empresa</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Tipo Documento</mat-label>
+        <mat-select name="tipoDocumento" required [(ngModel)]="tipoDocumento">
+          <mat-option value="DNI">DNI</mat-option>
+          <mat-option value="RUC">RUC</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Nro. Documento</mat-label>
+        <input matInput name="numeroDocumento" required [(ngModel)]="numeroDocumento">
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Dirección</mat-label>
+        <input matInput name="direccion" required [(ngModel)]="direccion">
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Teléfono</mat-label>
+        <input matInput type="tel" name="telefono" required [(ngModel)]="telefono">
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Correo</mat-label>
+        <input matInput type="email" name="correo" required [(ngModel)]="correo">
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="input-field">
+        <mat-label>Estado</mat-label>
+        <input matInput name="estado" required [(ngModel)]="estado">
+      </mat-form-field>
+    </form>
+  
+    <!-- Botón para editar el cliente -->
+    <div class="modal-actions">
+      <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>
+      <button mat-raised-button (click)="onEdit()" class="confirm-button">Editar Cliente</button>
+    </div>
+  
+    <!-- Modales de éxito y error -->
+    <ng-template #successModal>
+      <div class="success-message">
+        <i class="material-icons success-icon">check_circle</i>
+        <p>Registro actualizado</p>
+        <p>El cliente ha sido actualizado correctamente.</p>
+        <button mat-button (click)="closeSuccessModal()">Ok</button>
+      </div>
+    </ng-template>
+  
+    <ng-template #errorModal>
+      <div class="error-message">
+        <i class="material-icons error-icon">error</i>
+        <p>Cliente no Editado!</p>
+        <p>Faltan campos por completar</p>
+        <p>¿Rellenar de nuevo?</p>
+        <div class="modal-actions">
+          <button mat-button (click)="closeErrorModal()" class="cancel-button">No, Cancelar</button>
+          <button mat-raised-button (click)="retryEdit()" class="confirm-button">Sí, Editar</button>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  

@@ -1,0 +1,43 @@
+<!-- Modal para Ver Carrito -->
+<div *ngIf="carritoVisible" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-[#d2f8d8] rounded-lg p-6 w-80 relative">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Carrito</h2>
+      <button (click)="cerrarCarrito()" class="text-black text-lg font-semibold">cerrar</button>
+    </div>
+    <ul class="mb-4">
+      <li *ngFor="let item of carrito" class="flex flex-col border-b border-gray-300 py-2">
+        <div class="flex justify-between items-center">
+          <img [src]="item.imagen" alt="{{ item.nombre }}" class="w-16 h-16 rounded" />
+          <div class="flex flex-col ml-2">
+            <span class="text-md font-semibold">{{ item.nombre }}</span>
+            <span class="text-gray-500 text-sm">Proveedor: {{ item.proveedor }}</span>
+            <span class="text-green-600 text-xs">stock actual: {{ item.stock }}</span>
+          </div>
+          <div class="flex items-center">
+            <button (click)="decrementarCantidad(item)" class="bg-gray-600 text-white text-xs py-1 px-2 rounded mr-2">
+              -
+            </button>
+            <span class="text-sm">{{ item.cantidad }}</span>
+            <button (click)="incrementarCantidad(item)" class="bg-gray-600 text-white text-xs py-1 px-2 rounded ml-2">
+              +
+            </button>
+          </div>
+          <button (click)="eliminarProducto(item)" class="bg-red-600 text-white text-xs py-1 px-2 rounded">
+            Eliminar
+          </button>
+        </div>
+      </li>
+    </ul>
+    <div class="flex justify-between items-center mt-4">
+      <button (click)="aceptarCarrito()" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-200">
+        Finalizar compra
+      </button>
+      <div class="font-semibold">Subtotal: ${{ subtotal() }}</div> <!-- Mostrar el subtotal -->
+    </div>
+    <div class="flex justify-between items-center mt-4">
+      
+      <div class="font-semibold">Total: ${{ totalCarrito }}</div> <!-- Mostrar el total -->
+    </div>
+  </div>
+</div>

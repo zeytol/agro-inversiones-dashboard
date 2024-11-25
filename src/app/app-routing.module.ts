@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-
+import { ClientesComponent } from './components/clientes/clientes.component';
+import { GestionProductosComponent } from './features/Productos/gestion-productos/gestion-productos.component';
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { RolesListComponent } from './components/roles/roles-list/roles-list.component';
 import { RoleDetailComponent } from './components/roles/role-detail/role-detail.component';
@@ -19,8 +20,9 @@ import { RolesComponent } from './components/roles/roles/roles.component';
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
-
-  { path: 'ventas', component: VentasComponent },
+  { path: 'ventas', component: VentasComponent }, 
+  { path: 'clientes', component: ClientesComponent },
+  { path: 'productos', component: GestionProductosComponent },
   { path: 'roles', component: RolesListComponent },
   { path: 'roles/ajustes', component: AssignPermissionsComponent },
   { path: 'roles/detalle/:id', component: RoleDetailComponent }, // Ruta para ver detalles de un rol específico
@@ -31,6 +33,7 @@ const routes: Routes = [
 
   { path: 'proveedores', component: ProveedoresComponent },
   // Ruta para el componente de ventas
+
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // Redirige a dashboard por defecto
   { path: '**', redirectTo: '/dashboard' } // Manejo de rutas no encontradas
 
