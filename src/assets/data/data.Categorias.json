@@ -3,10 +3,7 @@
     { "imagen": "assets/images/producto1.jpg", "nombre": "Categoria 2", "cantidadProductos": 5 },
     { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 3", "cantidadProductos": 10 },
     { "imagen": "assets/images/producto1.jpg", "nombre": "Categoria 4", "cantidadProductos": 5 },
-    { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 5", "cantidadProductosss": 10 },
-    { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 5", "cantidadProductosssss": 10 },
-    { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 5", "cantidadProdusssctos": 10 },
-    { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 5", "cantidadProductsssos": 10 }
+    { "imagen": "assets/images/categoria1.jpg", "nombre": "Categoria 5", "cantidadProductosss": 10 }
 
   ]
   
