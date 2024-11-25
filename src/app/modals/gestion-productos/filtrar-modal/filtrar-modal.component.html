@@ -1,0 +1,69 @@
+<!-- Modal para Filtrar Productos -->
+<div *ngIf="filterModalVisible" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+      <h2 class="text-2xl font-bold mb-6 text-center">Filtrar Productos</h2>
+  
+      <div class="space-y-6">
+        <!-- Filtro por Precio -->
+        <div class="bg-[#C7F4C3] p-4 rounded-md">
+          <h3 class="font-semibold text-lg mb-3">FILTRAR POR PRECIO</h3>
+          <input type="range" min="12" max="500" class="w-full mb-4"
+                 [(ngModel)]="precio" /> <!-- Bindeo de ngModel al precio -->
+          <p class="text-sm text-gray-700">Desde S/{{precio}} hasta S/500</p>
+        </div>
+  
+        <!-- Filtro por Proveedor -->
+        <div>
+          <label for="proveedor" class="font-semibold text-sm mb-2 block">Selecciona un proveedor:</label>
+          <select id="proveedor" class="border border-gray-300 rounded p-2 w-full mb-4"
+                  [(ngModel)]="proveedor"> <!-- Bindeo de ngModel al proveedor -->
+            <option value="">Selecciona...</option>
+            <option value="Tubermix">Tubermix (5)</option>
+            <option value="FruitLand">FruitLand (3)</option>
+            <option value="VeggiesCorp">VeggiesCorp (5)</option>
+          </select>
+        </div>
+  
+        <!-- Filtro por Categorías -->
+        <div>
+          <h3 class="font-semibold text-lg mb-3">BUSCAR POR CATEGORÍA</h3>
+          <div class="flex items-center space-x-6 mb-4">
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-2" (change)="onCategoriaChange('Fungicidas', $event)" /> Fungicidas
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-2" (change)="onCategoriaChange('Insecticidas', $event)" /> Insecticidas
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" class="mr-2" (change)="onCategoriaChange('Herbicidas', $event)" checked /> Herbicidas
+            </label>
+          </div>
+        </div>
+  
+        <!-- Filtro por Plaga/Objetivo -->
+        <div>
+          <label for="plaga" class="font-semibold text-sm mb-2 block">Selecciona una plaga/objetivo:</label>
+          <select id="plaga" class="border border-gray-300 rounded p-2 w-full mb-4"
+                  [(ngModel)]="plaga"> 
+            <option value="">Selecciona...</option>
+            <option value="Alternaria">Alternaria</option>
+            <option value="Pyricularia">Pyricularia</option>
+            <option value="Cercosporiosis" selected>Cercosporiosis</option>
+          </select>
+        </div>
+  
+        <div class="flex justify-end mt-6 space-x-4">
+          <!-- Botón Cancelar -->
+          <button (click)="cerrarFiltroModal()" class="bg-gray-300 text-black rounded py-2 px-6 hover:bg-gray-400 transition duration-200">
+            Cancelar
+          </button>
+  
+          <!-- Botón Aplicar -->
+          <button (click)="aplicarFiltroModal()" class="bg-blue-500 text-white rounded py-2 px-6 hover:bg-blue-600 transition duration-200">
+            Aplicar Filtro
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-
 
 
 
@@ -25,25 +24,140 @@ export class GestionProductosComponent {
   proveedoresSeleccionados: string[] = []; // Proveedores seleccionados
   editarModalVisible: boolean = false; // Estado del modal de edición
   productoSeleccionado: any = {}; // Producto seleccionado para editar
+  productoVerDetalle : any = {} // producto para ver detalles
   nuevoProducto: any = {};  
   constructor(private http: HttpClient,private router: Router) {}
-  
-
   categorias: any[] = [];
   productos: any[] = [];
+  detallesModalAbierto: boolean = false;
+// Para Categorías
+selectedCategoria: string | null = null; // Almacena la categoría seleccionada
+productosFiltrados: any[] = []; // Productos filtrados por categoría
 
-  mostrarModalAgregarProducto: boolean = false;
+// Método para filtrar productos al hacer clic en una categoría
+filtrarPorCategoria(categoria: string) {
+  this.selectedCategoria = categoria;
+  this.productosFiltrados = this.productos.filter(producto => producto.categoria === categoria);
+}
 
-  abrirModalAgregarProducto() {
-    this.mostrarModalAgregarProducto = true; // Esto debería mostrar el modal
+// Método para mostrar todos los productos al deseleccionar la categoría
+mostrarTodosLosProductos() {
+  this.selectedCategoria = null;
+  this.productosFiltrados = this.productos;
+}
+itemsPerPage = 4;
+currentPage = 1;
+filtro: string = ''; // Campo para almacenar el criterio de filtro
+
+// Método para obtener las categorías filtradas según el criterio
+getCategoriasFiltradas() {
+  return this.categorias.filter(categoria =>
+    categoria.nombre.toLowerCase().includes(this.filtro.toLowerCase())
+  );
+}
+
+// Método para calcular las páginas según las categorías filtradas
+getPages(): number[] {
+  return Array(Math.ceil(this.getCategoriasFiltradas().length / this.itemsPerPage))
+    .fill(0)
+    .map((_, i) => i + 1);
+}
+
+// Método para cambiar la página actual
+setPage(page: number) {
+  this.currentPage = page;
+}
+
+// Método para obtener las categorías paginadas según las categorías filtradas
+categoriasPaginadas() {
+  const start = (this.currentPage - 1) * this.itemsPerPage;
+  return this.getCategoriasFiltradas().slice(start, start + this.itemsPerPage);
+}
+
+
+  @Output() cerrarModal = new EventEmitter<void>();
+  @Output() productoAgregado = new EventEmitter<any>();  // Nombre correcto
+
+
+  abrirModal() {
+    this.modalVisible = true; // Abre el modal para agregar productos
   }
 
-  cerrarModalAgregarProducto() {
-    this.mostrarModalAgregarProducto = false; // Esto debería ocultar el modal
+  cerrar() {
+    this.cerrarModal.emit();
   }
+  cerrarModals() {
+    
+    this.modalVisible = false; // Cierra el modal
+  }
+
+  cerrarSuccessModal() {
+    this.successModalVisible = false; // Cierra el modal de éxito
+    this.resetForm(); // Reinicia el formulario
+  }
+
+  resetForm() {
+    this.nuevoProducto = {
+      nombre: '',
+      descripcion: '',
+      precio: 0,
+      costoPrecio: 0,
+      ventaPrecio: 0,
+      stock: 0,
+      imagen: '',
+      categoria: '',
+      descuento: 0,
+    };
+  }
+  
+
+
+  agregarProducto(): void {
+    // Lógica para agregar el nuevo producto
+    console.log('Producto agregado:', this.nuevoProducto);
+
+    // Agregar el nuevo producto a la lista
+    this.productos.push(this.nuevoProducto);
+
+    // Emitir el nuevo producto
+    this.productoAgregado.emit(this.nuevoProducto);
+
+    // Cierra el modal de agregar producto
+    this.modalVisible = false;
+
+    // Muestra el modal de éxito
+    this.successModalVisible = true;
+
+    // Limpia el objeto nuevoProducto si es necesario
+    this.nuevoProducto = {};
+
+    // Resetea el formulario después de agregar el producto
+    this.resetForm();
+  }
+
+
+  
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      console.log('Archivo seleccionado:', file);
+      // Almacena la imagen en `nuevoProducto`
+      this.nuevoProducto.imagen = file; // Asumiendo que tienes un campo `imagen` en `nuevoProducto`
+    }
+    
+  }
+  onFileSelected2(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.productoSeleccionado.imagen = URL.createObjectURL(file);
+    }
+  }
+  
   ngOnInit() {
     this.cargarCategorias();
     this.cargarProductos();
+    this.productosFiltrados = this.productos;
   }
 
   cargarCategorias() {
@@ -71,71 +185,52 @@ export class GestionProductosComponent {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
-  abrirModal() {
-    this.modalVisible = true; // Abre el modal para agregar productos
-  }
-
-  cerrarModal() {
-    
-    this.modalVisible = false; // Cierra el modal
-  }
 
   abrirFiltroModal() {
-    this.filterModalVisible = true; // Abre el modal para aplicar filtros
+    this.filterModalVisible = true;
   }
 
+  // Método para cerrar el modal
   cerrarFiltroModal() {
-    this.filterModalVisible = false; // Cierra el modal de filtros
-    
+    this.filterModalVisible = false;
   }
 
-  // Método para abrir el modal de edición y asignar el producto seleccionado
-  abrirEditarModal(producto: any) {
-    this.productoSeleccionado = { ...producto }; // Clona el producto seleccionado
-    this.editarModalVisible = true;
+  // Método para aplicar el filtro (este puede emitir el filtro seleccionado)
+  aplicarFiltroModal() {
+    // Lógica para aplicar el filtro
+    console.log("Filtro aplicado");
+    this.cerrarFiltroModal(); // Cerrar el modal después de aplicar el filtro
   }
 
-  // Método para cerrar el modal de edición
-  cerrarEditarModal() {
-    this.editarModalVisible = false;
-  }
+// Método para abrir el modal de edición y asignar el producto seleccionado
+abrirEditarModal(producto: any) {
+  this.productoSeleccionado = { ...producto }; // Clona el producto seleccionado
+  this.editarModalVisible = true; // Abre el modal de edición
+}
 
-  cerrarSuccessModal() {
-    this.successModalVisible = false; // Cierra el modal de éxito
-    this.resetForm(); // Reinicia el formulario
-    this.actualizarModalEditar = false;
-  }
+// Método para cerrar el modal de edición
+cerrarEditarModal() {
+  this.editarModalVisible = false;
+}
 
-  resetForm() {
-    this.nuevoProducto = {
-      nombre: '',
-      descripcion: '',
-      precio: 0,
-      costoPrecio: 0,
-      ventaPrecio: 0,
-      stock: 0,
-      imagen: '',
-      categoria: '',
-      descuento: 0,
-    };
-  }
+// Método para recibir el producto actualizado desde el modal
+actualizarProducto(producto: any) {
+  // Lógica para actualizar el producto
+  console.log('Producto actualizado:', producto);
+  // Aquí puedes llamar a un servicio para actualizar el producto en la base de datos
+  this.productos = this.productos.map(p => p.id === producto.id ? producto : p); // Ejemplo para actualizar el producto en el listado
+  this.mostrarConfirmarModal();
+  this.cerrarEditarModal(); // Cierra el modal de edición
+}
+mostrarConfirmarModal() {
+  this.actualizarModalEditar = true;
+}
 
-  // Método para editar el producto
-  editarProducto() {
-    // Aquí debes implementar la lógica para actualizar el producto en tu servicio
-    console.log('Producto actualizado:', this.productoSeleccionado);
-    this.modalVisible = false;
+// Método para cerrar el modal de confirmación
+cerrarConfirmarModal() {
+  this.actualizarModalEditar = false;
+}
 
-    // Simular un éxito en la actualización
-    this.actualizarModalEditar = true; // Muestra el modal de éxito
-
-    // Cerrar el modal de editar después de un tiempo (opcional)
-    setTimeout(() => {
-      this.cerrarEditarModal();
-      this.actualizarModalEditar = false; // Oculta el modal de éxito después de cerrarlo
-    }, 1000); // Cerrar después de 2 segundos, puedes ajustar este tiempo
-    this.resetForm();
-  }
 
   // Método para realizar el pago
   realizarPago() {
@@ -143,16 +238,22 @@ export class GestionProductosComponent {
     // Implementa más lógica según sea necesario.
   }
 
-  // Método para cerrar el carrito
-  cerrarCarrito() {
-    this.carritoVisible = false; // Cambia el estado del carrito a no visible
-    console.log("El carrito ha sido cerrado."); // Mensaje de cierre
-  }
+ // Método para abrir el carrito
+ abrirCarrito() {
+  this.carritoVisible = true;
+  console.log("El carrito ha sido abierto.");
+}
 
-  abrirCarrito() {
-    this.carritoVisible = true; // Cambia el estado del carrito a visible
-    console.log("El carrito ha sido abierto."); // Mensaje de apertura
-  }
+// Método para cerrar el carrito
+cerrarCarritoModal() {
+  this.carritoVisible = false;
+  console.log("El carrito ha sido cerrado.");
+}
+
+// Método para actualizar el total
+calcularTotal() {
+  this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
+}
 
   aplicarFiltros() {
     // Lógica para aplicar los filtros
@@ -224,31 +325,15 @@ export class GestionProductosComponent {
     this.totalCarrito = 0;
     
   }
-
-  agregarProducto() {
-    // Lógica para agregar el nuevo producto
-    console.log('Producto agregado:', this.nuevoProducto);
-
-    // Cierra el modal de agregar producto
-    this.modalVisible = false;
-
-    // Muestra el modal de éxito
-    this.successModalVisible = true;
-
-    // Limpia el objeto nuevoProducto si es necesario
-    this.nuevoProducto = {};
-    
-    // Resetea el formulario después de agregar el producto
-    this.resetForm();
+  abrirDetallesModal(producto: any) {
+    this.productoSeleccionado = producto;
+    this.detallesModalAbierto = true;
   }
-  
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      console.log('Archivo seleccionado:', file);
-      // Almacena la imagen en `nuevoProducto`
-      this.nuevoProducto.imagen = file; // Asumiendo que tienes un campo `imagen` en `nuevoProducto`
-    }
+  cerrarDetallesModal() {
+    this.detallesModalAbierto = false;
+    this.productoSeleccionado = null;
   }
+
+
 }

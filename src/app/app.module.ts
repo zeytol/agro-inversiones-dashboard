@@ -23,6 +23,10 @@ import { AgregarUsuarioComponent } from './modals/agregar-usuario/agregar-usuari
 import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.component'; 
 import { GestionProductosComponent } from './components/gestion-productos/gestion-productos.component';
 import { AgregarModalComponent } from './modals/gestion-productos/agregar-modal/agregar-modal.component';
+import { EditarModalComponent } from './modals/gestion-productos/editar-modal/editar-modal.component';
+import { FiltrarModalComponent } from './modals/gestion-productos/filtrar-modal/filtrar-modal.component';
+import { CarritoModalComponent } from './modals/gestion-productos/carrito-modal/carrito-modal.component';
+import { DetallesModalComponent } from './modals/gestion-productos/detalles-modal/detalles-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +42,10 @@ import { AgregarModalComponent } from './modals/gestion-productos/agregar-modal/
     EditarClienteComponent,
     GestionProductosComponent,
     AgregarModalComponent,
+    EditarModalComponent,
+    FiltrarModalComponent,
+    CarritoModalComponent,
+    DetallesModalComponent,
   ],
   imports: [
     BrowserModule,
