@@ -17,6 +17,7 @@ export class InventarioComponent implements OnInit {
   productoAVisualizar: any = {};
   filtroNombre: string = '';
 
+
   productosJson: any[] = []; // Productos cargados desde JSON
   codigoProducto: string = ''; // Código del producto que se ingresa
   productoSeleccionado: any = null; // Producto seleccionado para agregar a la tabla
@@ -29,6 +30,7 @@ export class InventarioComponent implements OnInit {
     this.loadProductsFromJson(); // Cargar los productos desde JSON
     this.loadProductsFromLocalStorage();
   }
+  
   loadProductsFromLocalStorage(): void {
     if (typeof window !== 'undefined' && window.localStorage) {  // Verifica que estamos en un navegador
       const productosGuardados = localStorage.getItem('productos');
@@ -62,11 +64,12 @@ export class InventarioComponent implements OnInit {
       );
   }
   editProduct(producto: any) {
-    this.isViewModalOpen=false;
+    this.isViewModalOpen = false;
     this.isEditModalOpen = true;
-    this.productoAEditar = JSON.parse(JSON.stringify(producto));
-    console.log('Producto editado: ', this.productoAEditar);
+    this.productoAEditar = { ...producto };  // Uso de spread operator para copiar el objeto
+    console.log('Producto a editar: ', this.productoAEditar);
   }
+  
   openAddModal(){
     this.isAddModalOpen = true;
     this.codigoProducto = '';
@@ -151,17 +154,16 @@ export class InventarioComponent implements OnInit {
   }
   updateProduct() {
     const index = this.productos.findIndex(p => p.codigo === this.productoAEditar.codigo);
-    console.log('Index encontrado:', index);
     if (index !== -1) {
-      console.log('Producto antes de actualizar:', this.productos[index]);
-      this.productos[index] = { ...this.productoAEditar };
-      console.log('Producto actualizado:', this.productos[index]);
+      // Usar spread operator para asegurarse de que no se muten otras propiedades no deseadas
+      this.productos[index] = { ...this.productoAEditar }; 
       this.saveProductsToLocalStorage();
       this.calculateTotalPages();
       this.isEditModalOpen = false;
     }
   }
   
+
   // Navegar a la página anterior
   prevPage() {
     if (this.paginaActual > 1) {

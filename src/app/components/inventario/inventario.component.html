@@ -1,3 +1,12 @@
+<div class="dashboard-layout flex flex-col h-screen">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
+    
 <h2 class="text-center mb-4">Administrar Inventario</h2>
 
   <!-- Botón para abrir el modal -->
