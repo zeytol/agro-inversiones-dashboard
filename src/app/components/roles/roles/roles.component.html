@@ -1,0 +1,62 @@
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-6">Usuarios</h1>
+
+  <div class="bg-white overflow-hidden shadow">
+    <div class="flex items-center justify-between px-4 py-3 border-b">
+      <div class="flex items-center space-x-4">
+        <input type="text" placeholder="Buscar por codigo" class="px-4 py-2 border border-gray-300 rounded-md w-64 focus:outline-none focus:ring focus:border-blue-500" />
+        <input type="text" placeholder="Buscar por nombre" class="px-4 py-2 border border-gray-300 rounded-md w-64 focus:outline-none focus:ring focus:border-blue-500" />
+
+      </div>
+      <div class="flex items-center space-x-2">
+        <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          <i class="fas fa-plus mr-2"></i> ver roles
+        </button>
+        <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          <i class="fas fa-plus mr-2"></i> crear neuvo rol
+        </button>
+      </div>
+    </div>
+
+    <table class="w-full">
+      <thead style="background-color: #709a9e" class="text-white">
+        <tr>
+          <th class="py-3 px-4 text-left">#</th>
+          <th class="py-3 px-4 text-left">Name</th>
+          <th class="py-3 px-4 text-left">Description</th>
+          <th class="py-3 px-4 text-left">Email</th>
+          <th class="py-3 px-4 text-left">Phone</th>
+          <th class="py-3 px-4 text-left">Status</th>
+          <th class="py-3 px-4 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of roles">
+          <td class="py-3 px-4">{{ role.id }}</td>
+          <td class="py-3 px-4">{{ role.name }}</td>
+          <td class="py-3 px-4">{{ role.description }}</td>
+          <td class="py-3 px-4">{{ role.email }}</td>
+          <td class="py-3 px-4">{{ role.phone }}</td>
+          <td class="py-3 px-4">{{ role.state }}</td>
+          <td class="py-3 px-4 flex gap-2">
+            <button (click)="editRole(role.id)"
+              class="p-2 bg-amber-500 text-white rounded flex items-center justify-center"
+              title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button (click)="deleteRole(role.id)"
+              class="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+              title="Delete">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button (click)="configureRole(role.id)"
+              class="p-2 bg-blue-500 text-white rounded flex items-center justify-center"
+              title="Configure">
+              <i class="fas fa-cog"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
