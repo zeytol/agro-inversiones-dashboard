@@ -1,0 +1,134 @@
+<h2 class="text-center mb-4">Administrar Inventario</h2>
+
+  <!-- Botón para abrir el modal -->
+  <div class="input-container">
+    <input type="text" [(ngModel)]="filtroNombre" class="form-control w-50" placeholder="Buscar producto por Nombre" />
+    <button class="btn btn-success ms-3" (click)="openAddModal()">Agregar Producto</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" [ngClass]="{'show d-block': isAddModalOpen}" *ngIf="isAddModalOpen" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ingrese el Código del Producto</h5>
+          <button type="button" class="btn-close" (click)="closeAddModal()"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" [(ngModel)]="codigoProducto" class="form-control" placeholder="Código del Producto" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeAddModal()">Cancelar</button>
+          <button class="btn btn-primary" (click)="confirmarCodigo()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de productos -->
+  <div class="table-responsive">
+  <table class="table table-striped table-bordered text-center mx-auto" style="max-width: 80%;">
+    <thead class="table-dark">
+      <tr>
+        <th>Total de productos</th>
+        <th>Nombre Producto</th>
+        <th>Fecha Registro</th>
+        <th>Precio Unitario</th>
+        <th>Precio Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let producto of getProductosFiltrados()">
+        <td>{{ producto.total }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.fechaRegistro }}</td>
+        <td>{{ producto.precioUnitario }}</td>
+        <td [ngClass]="{'text-success fw-bold': producto.precioTotal > 0}">{{ producto.precioTotal }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="editProduct(producto)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="m7 17.013 4.413-.015 9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583v4.43zM18.045 4.458l1.589 1.583-1.597 1.582-1.586-1.585 1.594-1.58zM9 13.417l6.03-5.973 1.586 1.586-6.029 5.971L9 15.006v-1.589z"></path><path d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2z"></path></svg>
+          </button>
+          <button class="btn btn-danger btn-sm me-2" (click)="deleteProduct(producto)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+          </button>
+          <button class="btn btn-info btn-sm" (click)="viewProduct(producto)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M13.707 2.293A.996.996 0 0 0 13 2H6c-1.103 0-2 .897-2 2v16c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V9a.996.996 0 0 0-.293-.707l-6-6zM6 4h6.586L18 9.414l.002 9.174-2.568-2.568c.35-.595.566-1.281.566-2.02 0-2.206-1.794-4-4-4s-4 1.794-4 4 1.794 4 4 4c.739 0 1.425-.216 2.02-.566L16.586 20H6V4zm6 12c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"></path></svg>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="modal" [ngClass]="{'show d-block': isEditModalOpen}" *ngIf="isEditModalOpen">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Producto</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="updateProduct()">
+          <!-- Input: Total de Productos -->
+          <div class="form-group mb-3">
+            <label>Total de Productos:</label>
+            <input type="number" [(ngModel)]="productoAEditar.total" name="total" class="form-control" required (input) = "updatePriceTotal()" />
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group mb-3">
+            <label>Nombre del Producto:</label>
+            <input type="text" [(ngModel)]="productoAEditar.nombre" name="nombre" class="form-control" required />
+          </div>
+
+          <!-- Precio Uni -->
+          <div class="form-group mb-3">
+            <label>Precio Unitario:</label>
+            <input type="number" [(ngModel)]="productoAEditar.precioUnitario" name="precioUnitario" class="form-control" required (input)="updatePriceTotal()"/>
+          </div>
+          
+          <!-- Precio Uni -->
+          <div class="form-group mb-3">
+          <label>Precio Total:</label>
+          <input type="number" [(ngModel)]="productoAEditar.precioTotal" name="precioTotal" class="form-control" readonly /> </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para visualizar producto -->
+<div class="modal" [ngClass]="{'show d-block': isViewModalOpen}" *ngIf="isViewModalOpen">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Información del Producto</h5>
+        <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Total de Productos:</strong> {{ productoAVisualizar.total }}</p>
+        <p><strong>Nombre del Producto:</strong> {{ productoAVisualizar.nombre }}</p>
+        <p><strong>Fecha de Registro:</strong> {{ productoAVisualizar.fechaRegistro }}</p>
+        <p><strong>Precio Unitario:</strong> {{ productoAVisualizar.precioUnitario }}</p>
+        <p><strong>Precio Total:</strong> {{ productoAVisualizar.precioTotal }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeViewModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Paginación -->
+
+  <div class="pagination-container">
+    <button class="btn btn-primary" (click)="prevPage()">Anterior</button>
+    <button class="btn btn-primary" (click)="nextPage()">Siguiente</button>
+  </div>

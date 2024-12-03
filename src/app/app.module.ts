@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { InventarioComponent } from './components/inventario/inventario.component';
 
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -16,7 +17,7 @@ import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { VentasComponent } from './components/ventas/ventas.component';
-import { AgregarClienteComponent } from './agregar-cliente/agregar-cliente.component'; // Asegúrate de importar FormsModule
+import { AgregarClienteComponent } from './agregar-cliente/agregar-cliente.component';
 
 
 
@@ -29,7 +30,8 @@ import { AgregarClienteComponent } from './agregar-cliente/agregar-cliente.compo
     SiderbangComponent,
     HeaderComponent,
     VentasComponent,
-    AgregarClienteComponent
+    AgregarClienteComponent,
+    InventarioComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +40,7 @@ import { AgregarClienteComponent } from './agregar-cliente/agregar-cliente.compo
     FormsModule,
     HttpClientModule,
     NgApexchartsModule,
-    FormsModule // Añade FormsModule aquí
+    FormsModule 
 
   ],
   providers: [
