@@ -1,10 +1,17 @@
 
 
 h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   text-align: center;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 20px 0;
+}
+h2.text-center{
+  text-align: left;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 /* Button Styles */
@@ -12,13 +19,21 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  padding: 10px 15px;
+  padding: 12px 15px;
   transition: all 0.3s ease;
 }
 
 .btn-success {
   background-color: #28a745;
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 12px 30px;
+  min-width: 150px;
+  text-align: center;
+  white-space: nowrap;
+  
 }
 
 .btn-success:hover {
@@ -55,7 +70,7 @@ button {
 /* Table Styles */
 table {
   width: 100%;
-  margin-top: 30px;
+  margin-top: 60px;
   border-collapse: collapse;
 }
 
@@ -70,7 +85,7 @@ table {
 
 .table td,
 .table th {
-  padding: 15px;
+  padding: 25px;
   text-align: center;
   border: 1px solid #ddd;
 }
@@ -158,7 +173,9 @@ button:disabled {
 }
 /* Estilo para el contenedor principal */
 .container {
-  margin-top: 20px;
+  padding: 0 ;
+  margin: 0;
+  width: 100%;
 }
 
 /* Título centrado */
@@ -167,37 +184,81 @@ h2.text-center {
 }
 
 /* Estilo para el input de búsqueda y el botón de "Agregar Producto" */
+
 .input-container {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 10px ;
+}
+.input-group {
+  display: flex;
+  position: relative;
+  width: 100%;
 }
 
+.input-group-text {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 16px;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 .input-container input {
-  width: 60%; /* Ajusta el ancho al 60% del contenedor */
+  width: 30%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   margin-right: 10px;
 }
 
 .input-container button {
-  width: 30%; /* Ajusta el ancho al 30% del contenedor */
-  font-size: 1.1rem;
-  padding: 10px;
-  text-align: center;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 /* Estilo para la tabla */
 .table-responsive {
-  margin-top: 20px;
+  border-bottom: none;
+  background-color: #fff;
+  margin-top: 30px;
+  flex-grow: 1;
+  min-height: 525px;
+  
 }
 
 .table {
-  width: 90%; /* Ajusta el ancho al 90% del contenedor */
-  margin: 0 auto; /* Centra la tabla */
+  margin-bottom: 0;
 }
 
-.table th, .table td {
-  padding: 12px; /* Espaciado de celdas */
-  text-align: center;
+
+.table th{
+  background-color: #000000;
+  color: #fff;
+  font-weight: bold;
+  padding: 15px;
+  
+}
+
+.table tbody tr:hover{
+  background-color: #f2f2f2;
+}
+
+.table td{
+  vertical-align: middle;
+  padding: 10px;
 }
 
 .table-dark {
@@ -211,21 +272,49 @@ h2.text-center {
 
 /* Estilo para los botones de acción en la tabla */
 .table .btn {
-  margin-right: 5px;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 0.9rem;
 }
 
 /* Estilo para la paginación */
 .pagination-container {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  justify-content: start;
+  gap: 0; /* Sin espacio entre los botones */
+  margin-top: 30px;
+  padding: 20px 30px;
+  position: relative;
 }
 
-.pagination-container .btn {
-  margin: 0 10px;
+.custom-btn {
+  background-color: rgb(197, 234, 176); /* Color de fondo */
+  border: 2px solid #000000; /* Borde del botón */
+  color: rgb(0, 0, 0); /* Color del texto */
+  font-size: 16px;
   padding: 10px 20px;
-  font-size: 1rem;
+  border-radius: 50px 0 0 50px; /* Esquinas redondeadas para el primer botón */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones para suavizar el cambio de fondo */
 }
+
+.custom-btn:last-child {
+  border-radius: 0 50px 50px 0; /* Esquinas redondeadas para el segundo botón */
+}
+
+.custom-btn:hover {
+  background-color: #218838; /* Fondo más oscuro cuando se pasa el mouse */
+  border-color: #1e7e34; /* Borde más oscuro cuando se pasa el mouse */
+  transform: translateY(-3px); /* Efecto de elevación al hacer hover */
+}
+
+.custom-btn:active {
+  transform: translateY(1px); /* Efecto de presionar el botón */
+}
+
+.custom-btn:focus {
+  outline: none; /* Eliminar el borde de enfoque predeterminado */
+}
+
 
 /* Modal */
 .modal-dialog {

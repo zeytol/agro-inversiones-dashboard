@@ -32,6 +32,38 @@
     "fechaRegistro": "2022-11-12 10:24:23"
   },
   {
+    "codigo": "M234",
+    "nombre": "Lampara",
+    "total": 10,
+    "precioUnitario": 10,
+    "precioTotal": 100,
+    "fechaRegistro": "2022-11-12 10:24:23"
+  },
+  {
+    "codigo": "J674",
+    "nombre": "Mouse",
+    "total": 50,
+    "precioUnitario": 13,
+    "precioTotal": 650,
+    "fechaRegistro": "2022-11-12 10:24:23"
+  },
+  {
+    "codigo": "L003",
+    "nombre": "Regla",
+    "total": 27,
+    "precioUnitario": 3,
+    "precioTotal": 81,
+    "fechaRegistro": "2022-11-12 10:24:23"
+  },
+  {
+    "codigo": "X009",
+    "nombre": "Gancho",
+    "total": 27,
+    "precioUnitario": 3,
+    "precioTotal": 81,
+    "fechaRegistro": "2022-11-12 10:24:23"
+  },
+  {
     "codigo": "P456",
     "nombre": "Papel",
     "total": 15,
