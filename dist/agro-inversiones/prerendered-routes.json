@@ -1,0 +1,14 @@
+{
+  "routes": [
+    "/clientes",
+    "/dashboard",
+    "/permisos/crear",
+    "/productos",
+    "/proveedores",
+    "/role",
+    "/roles",
+    "/roles/ajustes",
+    "/roles/crear",
+    "/ventas"
+  ]
+}

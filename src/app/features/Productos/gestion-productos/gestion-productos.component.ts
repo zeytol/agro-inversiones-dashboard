@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./gestion-productos.component.css']
 })
 export class GestionProductosComponent {
-  isSidebarVisible: boolean = false; // Inicializa la propiedad para la barra lateral
+  isSidebarVisible: boolean = true; // Inicializa la propiedad para la barra lateral
   modalVisible: boolean = false; // Estado del modal para agregar productos
   filterModalVisible: boolean = false; // Estado del modal para filtros
   carritoVisible: boolean = false; // Estado del carrito
