@@ -1,8 +1,9 @@
-import { Component, Output, EventEmitter  } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
-
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ProductsService } from '../../../services/products.service';
+import { CategoryProductsService } from '../../../services/category-products.service';
 
 
 @Component({
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
   templateUrl: './gestion-productos.component.html',
   styleUrls: ['./gestion-productos.component.css']
 })
-export class GestionProductosComponent {
+export class GestionProductosComponent implements OnInit {
   isSidebarVisible: boolean = true; // Inicializa la propiedad para la barra lateral
   modalVisible: boolean = false; // Estado del modal para agregar productos
   filterModalVisible: boolean = false; // Estado del modal para filtros
@@ -25,8 +26,14 @@ export class GestionProductosComponent {
   editarModalVisible: boolean = false; // Estado del modal de edición
   productoSeleccionado: any = {}; // Producto seleccionado para editar
   productoVerDetalle : any = {} // producto para ver detalles
-  nuevoProducto: any = {};  
-  constructor(private http: HttpClient,private router: Router) {}
+  newProduct: any = {};  
+  constructor( 
+    private http: HttpClient,
+    private router: Router, 
+    private activatedRoute: ActivatedRoute,
+    private productsService: ProductsService, 
+    private categoryProductsService: CategoryProductsService ) {}
+
   categorias: any[] = [];
   productos: any[] = [];
   detallesModalAbierto: boolean = false;
@@ -40,6 +47,7 @@ filtrarPorCategoria(categoria: string) {
   this.productosFiltrados = this.productos.filter(producto => producto.categoria === categoria);
 }
 
+
 // Método para mostrar todos los productos al deseleccionar la categoría
 mostrarTodosLosProductos() {
   this.selectedCategoria = null;
@@ -52,17 +60,16 @@ filtro: string = ''; // Campo para almacenar el criterio de filtro
 // Método para obtener las categorías filtradas según el criterio
 getCategoriasFiltradas() {
   return this.categorias.filter(categoria =>
-    categoria.nombre.toLowerCase().includes(this.filtro.toLowerCase())
+    categoria.name.toLowerCase().includes(this.filtro.toLowerCase())
   );
 }
 
 // Método para calcular las páginas según las categorías filtradas
 getPages(): number[] {
-  return Array(Math.ceil(this.getCategoriasFiltradas().length / this.itemsPerPage))
+  return Array(Math.ceil(this.categorias.length / this.itemsPerPage))
     .fill(0)
     .map((_, i) => i + 1);
 }
-
 // Método para cambiar la página actual
 setPage(page: number) {
   this.currentPage = page;
@@ -71,7 +78,7 @@ setPage(page: number) {
 // Método para obtener las categorías paginadas según las categorías filtradas
 categoriasPaginadas() {
   const start = (this.currentPage - 1) * this.itemsPerPage;
-  return this.getCategoriasFiltradas().slice(start, start + this.itemsPerPage);
+  return this.categorias.slice(start, start + this.itemsPerPage);
 }
 
 
@@ -97,16 +104,26 @@ categoriasPaginadas() {
   }
 
   resetForm() {
-    this.nuevoProducto = {
-      nombre: '',
-      descripcion: '',
-      precio: 0,
-      costoPrecio: 0,
-      ventaPrecio: 0,
-      stock: 0,
-      imagen: '',
-      categoria: '',
-      descuento: 0,
+    this.newProduct = {
+      "id": 0,
+    "name": "string",
+    "description": "string",
+    "price": 0,
+    "amount": 0,
+    "type": "string",
+    "image": "string",
+    "supplierId": 0,
+    "categoriesProductsId": 0,
+    "codeProduct": "string",
+    "salePrice": 0,
+    "purchasePrice": 0,
+    "state": "string",
+    "composicionIsoprothiolane": "string",
+    "composicionAditivos": "string",
+    "descuento": 0,
+    "modelo": "string",
+    "fechaIngreso": "string",
+    "ubicacion": "string"
     };
   }
   
@@ -114,13 +131,13 @@ categoriasPaginadas() {
 
   agregarProducto(): void {
     // Lógica para agregar el nuevo producto
-    console.log('Producto agregado:', this.nuevoProducto);
+    console.log('Producto agregado:', this.newProduct);
 
     // Agregar el nuevo producto a la lista
-    this.productos.push(this.nuevoProducto);
+    this.productos.push(this.newProduct);
 
     // Emitir el nuevo producto
-    this.productoAgregado.emit(this.nuevoProducto);
+    this.productoAgregado.emit(this.newProduct);
 
     // Cierra el modal de agregar producto
     this.modalVisible = false;
@@ -129,7 +146,7 @@ categoriasPaginadas() {
     this.successModalVisible = true;
 
     // Limpia el objeto nuevoProducto si es necesario
-    this.nuevoProducto = {};
+    this.newProduct = {};
 
     // Resetea el formulario después de agregar el producto
     this.resetForm();
@@ -143,7 +160,7 @@ categoriasPaginadas() {
     if (file) {
       console.log('Archivo seleccionado:', file);
       // Almacena la imagen en `nuevoProducto`
-      this.nuevoProducto.imagen = file; // Asumiendo que tienes un campo `imagen` en `nuevoProducto`
+      this.newProduct.imagen = file; // Asumiendo que tienes un campo `imagen` en `nuevoProducto`
     }
     
   }
@@ -153,33 +170,60 @@ categoriasPaginadas() {
       this.productoSeleccionado.imagen = URL.createObjectURL(file);
     }
   }
-  
-  ngOnInit() {
+ 
+  ngOnInit(): void  {
+    this.loadProducts();
     this.cargarCategorias();
-    this.cargarProductos();
     this.productosFiltrados = this.productos;
+   
+    this.productsService.getProductos().subscribe({
+      next: (productos) => {
+        this.productos = productos;
+        this.productosFiltrados = productos;
+        this.productsService.setProductos(productos);
+      },
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+      },
+    });
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        if (this.activatedRoute.snapshot.routeConfig?.path === 'productos') {
+          this.cargarCategorias();
+          this.loadProducts();
+        }
+      }
+    });
+  }
+  loadProducts(): void {
+    this.productsService.getProductos().subscribe(
+      (data) => {
+        this.productos = data;
+      },
+      (error) => {
+        console.error('Error loading products', error);
+      }
+    );
   }
 
-  cargarCategorias() {
-    this.getCategorias().subscribe(data => {
-      this.categorias = data;
+ cargarCategorias() {
+    this.categoryProductsService.getcategoryProducts().subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+        this.categoryProductsService.setcategoryProducts(categorias);
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+      }
     });
   }
 
-  cargarProductos() {
-    this.getProductos().subscribe(data => {
-      this.productos = data;
-    });
-  }
 
   getCategorias(): Observable<any> {
-    return this.http.get('assets/data/data.Categorias.json');
+    return this.http.get('https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories');
   }
 
-  getProductos(): Observable<any> {
-    return this.http.get('assets/data/data.Productos.json');
-  }
-
+ 
   // Método para alternar la visibilidad de la barra lateral
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
