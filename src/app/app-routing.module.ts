@@ -12,8 +12,7 @@ import { CreatePermissionComponent } from './components/roles/create-permission/
 import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component'; // Importa el componente
 import { RolesComponent } from './components/roles/roles/roles.component';
-
-
+import { ReportesComponent } from './features/reportes/reportes.component';
 
 
 
@@ -23,6 +22,7 @@ const routes: Routes = [
   { path: 'ventas', component: VentasComponent }, 
   { path: 'clientes', component: ClientesComponent },
   { path: 'productos', component: GestionProductosComponent },
+  { path: 'reportes', component: ReportesComponent },
   { path: 'roles', component: RolesListComponent },
   { path: 'roles/ajustes', component: AssignPermissionsComponent },
   { path: 'roles/detalle/:id', component: RoleDetailComponent }, // Ruta para ver detalles de un rol específico
