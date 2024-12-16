@@ -1,0 +1,12 @@
+<!-- app-role-modal.component.html -->
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <h3>Editar Roles de {{user?.username}}</h3>
+    <label for="roles">Roles</label>
+    <select [(ngModel)]="user.roles" multiple>
+      <option *ngFor="let role of availableRoles" [value]="role">{{role}}</option>
+    </select>
+    <button (click)="saveChanges()">Guardar cambios</button>
+    <button (click)="close()">Cerrar</button>
+  </div>
+</div>

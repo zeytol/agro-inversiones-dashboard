@@ -35,6 +35,9 @@ import { RoleManagerComponent } from './components/roles/role-manager/role-manag
 import { RolesComponent } from './components/roles/roles/roles.component';
 import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; // Asegúrate de importar FormsModule
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
+import { UsersComponent } from './users/users.component';
+import { UserEditComponent } from './user-edit/user-edit.component';
+import { RoleModalComponent } from './role-modal/role-modal.component';
 
 // Asegúrate de importar FormsModule
 
@@ -59,7 +62,10 @@ import { VentasComponent } from './features/ventas/ventas/ventas.component';
     AssignPermissionsComponent,
     RoleManagerComponent,
     RolesComponent,
-    RoleDeleteComponent
+    RoleDeleteComponent,
+    UsersComponent,
+    UserEditComponent,
+    RoleModalComponent
     
   ],
   imports: [

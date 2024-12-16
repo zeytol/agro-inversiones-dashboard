@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-
+import { LoginComponent } from '../app/core/login/login.component'
+import { RegisterComponent } from './core/register/register.component';
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { RolesListComponent } from './components/roles/roles-list/roles-list.component';
 import { RoleDetailComponent } from './components/roles/role-detail/role-detail.component';
@@ -11,17 +12,21 @@ import { CreatePermissionComponent } from './components/roles/create-permission/
 import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component'; // Importa el componente
 import { RolesComponent } from './components/roles/roles/roles.component';
-
-
-
+import { UsersComponent } from './users/users.component';
+import { UserEditComponent } from './user-edit/user-edit.component';
+import { RoleModalComponent } from './role-modal/role-modal.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'user', component: UsersComponent },
+  { path: 'user-edit', component: UserEditComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
   { path: 'ventas', component: VentasComponent },
-  { path: 'roles', component: RolesListComponent },
+  { path: 'roles', component: RoleModalComponent },
   { path: 'roles/ajustes', component: AssignPermissionsComponent },
   { path: 'roles/detalle/:id', component: RoleDetailComponent }, // Ruta para ver detalles de un rol específico
   { path: 'roles/crear', component: CreateRoleComponent },       // Ruta para crear un nuevo rol
