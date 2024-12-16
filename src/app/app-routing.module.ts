@@ -12,7 +12,7 @@ import { CreatePermissionComponent } from './components/roles/create-permission/
 import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component'; // Importa el componente
 import { RolesComponent } from './components/roles/roles/roles.component';
-
+import { DocumentosComponent } from './features/documentos/documentos/documentos.component';
 
 
 
@@ -23,6 +23,7 @@ const routes: Routes = [
   { path: 'ventas', component: VentasComponent }, 
   { path: 'clientes', component: ClientesComponent },
   { path: 'productos', component: GestionProductosComponent },
+  { path: 'documento', component: DocumentosComponent },
   { path: 'roles', component: RolesListComponent },
   { path: 'roles/ajustes', component: AssignPermissionsComponent },
   { path: 'roles/detalle/:id', component: RoleDetailComponent }, // Ruta para ver detalles de un rol específico
@@ -35,8 +36,8 @@ const routes: Routes = [
   // Ruta para el componente de ventas
 
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // Redirige a dashboard por defecto
-  { path: '**', redirectTo: '/dashboard' } // Manejo de rutas no encontradas
-
+  { path: '**', redirectTo: '/dashboard' } ,// Manejo de rutas no encontradas
+ 
 
 ];
 

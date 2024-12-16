@@ -19,10 +19,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
-
 import { FormsModule } from '@angular/forms';
-
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { ConfirmDeleteModalComponent } from './modals/confirm-delete-modal/confirm-delete-modal.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -34,7 +31,11 @@ import { EditarModalComponent } from './features/Productos/editar-modal/editar-m
 import { FiltrarModalComponent } from './features/Productos/filtrar-modal/filtrar-modal.component';
 import { CarritoModalComponent } from './features/Productos/carrito-modal/carrito-modal.component';
 import { DetallesModalComponent } from './features/Productos/detalles-modal/detalles-modal.component';
-
+import { DocumentosComponent } from './features/documentos/documentos/documentos.component';
+import { EditarDocComponent } from './features/documentos/modals/editar-doc/editar-doc.component';
+import { AgregarDocComponent } from './features/documentos/modals/agregar-doc/agregar-doc.component';
+import { EnviarDocComponent } from './features/documentos/modals/enviar-doc/enviar-doc.component';
+import { EliminarDocComponent } from './features/documentos/modals/eliminar-doc/eliminar-doc.component';
 
 
  // Asegúrate de importar FormsModule
@@ -81,7 +82,14 @@ import { VentasComponent } from './features/ventas/ventas/ventas.component';
     AssignPermissionsComponent,
     RoleManagerComponent,
     RolesComponent,
-    RoleDeleteComponent
+    RoleDeleteComponent,
+    DocumentosComponent,
+    EditarDocComponent,
+    AgregarDocComponent,
+    EnviarDocComponent ,
+    EliminarDocComponent,
+    
+
   ],
   imports: [
     BrowserModule,
