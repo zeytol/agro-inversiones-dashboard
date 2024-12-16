@@ -21,6 +21,7 @@ import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 
+
 import { FormsModule } from '@angular/forms';
 
 import { ClientesComponent } from './components/clientes/clientes.component';
@@ -49,6 +50,11 @@ import { RoleManagerComponent } from './components/roles/role-manager/role-manag
 import { RolesComponent } from './components/roles/roles/roles.component';
 import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; // Asegúrate de importar FormsModule
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
+import { ReportesComponent } from './features/reportes/reportes.component';
+import { AgregarReporteComponent } from './features/reportes/agregar-reporte/agregar-reporte.component';
+import { EditarReporteComponent } from './features/reportes/editar-reporte/editar-reporte.component';
+import { TipoReporteComponent } from './features/reportes/tipo-reporte/tipo-reporte.component';
+import { ExportarReporteComponent } from './features/reportes/exportar-reporte/exportar-reporte.component';
 
 // Asegúrate de importar FormsModule
 
@@ -81,7 +87,12 @@ import { VentasComponent } from './features/ventas/ventas/ventas.component';
     AssignPermissionsComponent,
     RoleManagerComponent,
     RolesComponent,
-    RoleDeleteComponent
+    RoleDeleteComponent,
+    ReportesComponent,
+    AgregarReporteComponent,
+    EditarReporteComponent,
+    TipoReporteComponent,
+    ExportarReporteComponent,
   ],
   imports: [
     BrowserModule,
@@ -97,6 +108,7 @@ import { VentasComponent } from './features/ventas/ventas/ventas.component';
     MatSelectModule,
     HttpClientModule, 
     ReactiveFormsModule,
+    NgApexchartsModule,
   ],
   providers: [
     provideClientHydration(),

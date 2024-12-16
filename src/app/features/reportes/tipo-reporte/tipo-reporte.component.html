@@ -1,0 +1,68 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-1/2">
+      <h2 class="text-xl font-bold mb-4">Tipo de Reportes</h2>
+      <div>
+        <!-- Selector de tipo de reporte -->
+        <select
+          [(ngModel)]="selectedReportType"
+          (change)="selectReportType(selectedReportType)"
+          class="block w-full border-gray-300 rounded-md p-2 mb-4">
+          <option value="" disabled selected>Seleccione un tipo de reporte</option>
+          <option *ngFor="let reportType of reportTypes" [value]="reportType.name">
+            {{ reportType.name }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Tabla de detalles -->
+      <div *ngIf="filteredData.length > 0">
+        <table class="min-w-full table-auto text-sm text-left border rounded-lg">
+          <thead class="bg-gray-100 text-gray-800 font-semibold">
+            <tr>
+              <th class="px-4 py-2">Nombre</th>
+              <th class="px-4 py-2">Tipo</th>
+              <th class="px-4 py-2">Fecha</th>
+              <th class="px-4 py-2">Direcciòn</th>
+              <th class="px-4 py-2">Permisos</th>
+              <th class="px-4 py-2">Estado</th>
+              <th class="px-4 py-2">Categoría</th>
+
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let item of filteredData"
+              class="hover:bg-gray-50 transition-colors duration-300">
+              <td class="px-4 py-2">{{ item.name }}</td>
+              <td class="px-4 py-2">{{ item.type }}</td>
+              <td class="px-4 py-2">{{ item.date }}</td>
+              <td class="px-4 py-2">{{ item.address }}</td>
+              <td class="px-4 py-2">{{ item.permission }}</td>
+              <td class="px-4 py-2">{{ item.status }}</td>
+              <td class="px-4 py-2">{{ item.category }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="filteredData.length === 0" class="text-center text-gray-500 mt-4">
+        No hay datos disponibles para este tipo de reporte.
+      </div>
+  
+      <!-- Botones de acciones -->
+      <div class="flex justify-between items-center mt-6">
+        <button
+          (click)="closeModal()"
+          class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
+          Cancelar
+        </button>
+        <button
+          (click)="confirmSelection()"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+          [disabled]="!selectedReportType">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+  
