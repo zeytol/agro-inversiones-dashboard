@@ -43,6 +43,22 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
 
+    - name: Install system dependencies for Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libnss3 \
+          libx11-xcb1 \
+          libxcomposite1 \
+          libxcursor1 \
+          libxdamage1 \
+          libxrandr2 \
+          libgbm-dev \
+          libasound2 \
+          libatk1.0-0 \
+          libatk-bridge2.0-0 \
+          libatspi2.0-0
+
     - name: npm install, build, and test
       run: |
         npm install --legacy-peer-deps
