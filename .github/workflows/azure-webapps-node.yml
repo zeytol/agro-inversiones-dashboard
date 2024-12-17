@@ -43,9 +43,14 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
 
-    - name: Install system dependencies for Chrome
+    - name: Install Chrome for Karma
       run: |
         sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+        export CHROME_BIN=/usr/bin/google-chrome
+
+    - name: Install system dependencies for Chrome
+      run: |
         sudo apt-get install -y \
           libnss3 \
           libx11-xcb1 \
