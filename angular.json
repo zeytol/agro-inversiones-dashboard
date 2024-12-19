@@ -45,6 +45,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "/assets"
+              },
+              {
+                "glob": "web.config",
+                "input": "./",
+                "output": "/"
               }
             ],
 
