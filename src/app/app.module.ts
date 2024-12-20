@@ -38,6 +38,10 @@ import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './user-edit/user-edit.component';
 import { RoleModalComponent } from './role-modal/role-modal.component';
+import { UserHeaderComponent } from './users/user-header/user-header.component';
+import { UserSidebarComponent } from './users/user-sidebar/user-sidebar.component';
+import { UserTableComponent } from './users/user-table/user-table.component';
+import { UserModalsComponent } from './users/user-modals/user-modals.component';
 
 // Asegúrate de importar FormsModule
 
@@ -65,7 +69,11 @@ import { RoleModalComponent } from './role-modal/role-modal.component';
     RoleDeleteComponent,
     UsersComponent,
     UserEditComponent,
-    RoleModalComponent
+    RoleModalComponent,
+    UserHeaderComponent,
+    UserSidebarComponent,
+    UserTableComponent,
+    UserModalsComponent,
     
   ],
   imports: [
