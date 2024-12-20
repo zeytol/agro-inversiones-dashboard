@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // Add this import
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,7 +21,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
+import { LoginComponent } from './core/login/login.component';
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
@@ -36,8 +36,7 @@ import { RolesComponent } from './components/roles/roles/roles.component';
 import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; // Asegúrate de importar FormsModule
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { UsersComponent } from './users/users.component';
-import { UserEditComponent } from './user-edit/user-edit.component';
-import { RoleModalComponent } from './role-modal/role-modal.component';
+import { RoleModalComponent } from '../app/components/roles/role-modal/role-modal.component';
 
 // Asegúrate de importar FormsModule
 
@@ -63,10 +62,11 @@ import { RoleModalComponent } from './role-modal/role-modal.component';
     RoleManagerComponent,
     RolesComponent,
     RoleDeleteComponent,
+    LoginComponent, 
+
     UsersComponent,
-    UserEditComponent,
-    RoleModalComponent
-    
+    RoleModalComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -75,10 +75,9 @@ import { RoleModalComponent } from './role-modal/role-modal.component';
     FormsModule,
     HttpClientModule,
     NgApexchartsModule,
-    FormsModule, // Añade FormsModule aquí
-    ReactiveFormsModule, // Importa ReactiveFormsModule aquí
-    HttpClientModule, // Agrega este módulo
-
+    FormsModule, 
+    ReactiveFormsModule, 
+    HttpClientModule,
   ],
   providers: [
     provideClientHydration()
