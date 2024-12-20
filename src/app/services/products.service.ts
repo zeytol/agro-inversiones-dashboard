@@ -21,10 +21,17 @@ export class ProductsService {
       return this.http.get<any[]>(this.apiUrl);
     }
   }
-  
 
   setProductos(productos: any[]) {
     this.productos = productos;
   }
-  
+
+  agregarProducto(producto: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, producto);
+  }
+
+  putProducto(id: number, producto: any): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.put<any>(url, producto);
+  }
 }

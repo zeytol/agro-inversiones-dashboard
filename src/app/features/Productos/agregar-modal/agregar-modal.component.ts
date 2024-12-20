@@ -1,15 +1,18 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CategoryProductsService } from '../../../services/category-products.service';
 
 @Component({
   selector: 'app-agregar-modal',
   templateUrl: './agregar-modal.component.html',
   styleUrls: ['./agregar-modal.component.css']
 })
-export class AgregarModalComponent {
-  @Output() cerrarModal: EventEmitter<void> = new EventEmitter();
-  @Output() agregarProductoEvent: EventEmitter<any> = new EventEmitter();
+export class AgregarModalComponent implements OnInit {
+  @Output() cerrarModal = new EventEmitter<void>();
   @Output() productoAgregado = new EventEmitter<any>();
+
+  imagePreview: string | undefined;
+  mensajeError: string | null = null;
 
   nuevoProducto: any = {
     id: 0,
@@ -24,95 +27,121 @@ export class AgregarModalComponent {
     codeProduct: '',
     salePrice: 0,
     purchasePrice: 0,
-    state: '',
-    composicionIsoprothiolane: '',
-    composicionAditivos: '',
+    state: 'Activo',
     descuento: 0,
-    modelo: '',
-    fechaIngreso: '',
+    fechaIngreso: new Date().toISOString().split('T')[0],
     ubicacion: ''
-  }; 
-  productos: any[] = []; // Lista de productos
+  };
 
-  constructor(private http: HttpClient) { 
-    this.agregarProducto();
+  categorias: any[] = [];
+  proveedores: any[] = [
+    { id: 1, name: 'Proveedor A' },
+    { id: 2, name: 'Proveedor B' },
+    { id: 3, name: 'Proveedor C' }
+  ];
+
+  constructor(
+    private http: HttpClient,
+    private categoryProductsService: CategoryProductsService
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarCategorias();
   }
 
-  // Método para cargar los productos desde el archivo JSON
-  registrarProducto(producto: any) {
-    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
-  
-    this.http.post<any>(url, producto).subscribe({
-      next: (response) => {
-        console.log('Producto registrado con éxito:', response);
-        this.productos.push(response); // Agrega el producto registrado a la lista local
+  cargarCategorias(): void {
+    this.categoryProductsService.getcategoryProducts().subscribe({
+      next: (data) => {
+        this.categorias = data;
+        console.log('Categorías cargadas:', this.categorias);
       },
       error: (err) => {
-        console.error('Error al registrar el producto:', err);
+        console.error('Error al cargar categorías:', err);
       }
     });
   }
 
-  // Método para cerrar el modal
-  cerrar() {
-    this.cerrarModal.emit();
-  }
-
-  // Método para agregar un nuevo producto
-  // agregarProducto(): void {
-  //   console.log('Producto agregado:', this.nuevoProducto);
-  
-  //   // Agregar el nuevo producto al arreglo de productos
-  //   this.productos.push(this.nuevoProducto);
-  
-  //   // Emitir el evento para agregar el producto en el componente padre
-  //   this.agregarProductoEvent.emit(this.nuevoProducto);
-  
-  //   // Cerrar el modal y limpiar el formulario
-  //   this.cerrar();
-  //   this.nuevoProducto = {}; // Limpiar el formulario
-  
-  //   // Emitir el evento de producto agregado
-  //   this.productoAgregado.emit(this.nuevoProducto);
-  
-  //   // Simular la actualización de los productos en la consola
-  //   this.actualizarProductosSimulado();
-  // }
   agregarProducto(): void {
-    if (!this.nuevoProducto.name || !this.nuevoProducto.description || !this.nuevoProducto.codeProduct) {
-      console.error('Por favor, completa todos los campos obligatorios.');
+    // Validar que los campos obligatorios estén completos
+    if (
+      !this.nuevoProducto.name ||
+      !this.nuevoProducto.description ||
+      !this.nuevoProducto.codeProduct ||
+      !this.nuevoProducto.supplierId ||
+      !this.nuevoProducto.categoriesProductsId
+    ) {
+      this.mensajeError = 'Por favor, completa todos los campos obligatorios.';
+      console.error(this.mensajeError);
       return;
     }
   
+    // Validar precios y cantidades
+    if (this.nuevoProducto.salePrice <= 0 || this.nuevoProducto.purchasePrice <= 0 || this.nuevoProducto.amount <= 0) {
+      this.mensajeError = 'Los precios y la cantidad deben ser mayores que cero.';
+      console.error(this.mensajeError);
+      return;
+    }
+  
+    // Validar formato de código de producto
+    const regexCodigoProducto = /^[A-Za-z0-9_-]+$/;
+    if (!regexCodigoProducto.test(this.nuevoProducto.codeProduct)) {
+      this.mensajeError = 'El código del producto solo puede contener letras, números, guiones y guiones bajos.';
+      console.error(this.mensajeError);
+      return;
+    }
+  
+    this.mensajeError = null; 
     const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
   
-    this.http.post<any>(url, this.nuevoProducto).subscribe({
+    // Crear objeto FormData para manejar el envío de datos
+    const formData = new FormData();
+    Object.keys(this.nuevoProducto).forEach((key) => {
+      console.log(key, this.nuevoProducto[key]); // Verifica los valores que se están enviando
+      if (key === 'image' && this.nuevoProducto[key]) {
+        formData.append(key, this.nuevoProducto[key]);
+      } else {
+        formData.append(key, this.nuevoProducto[key]);
+      }
+    });
+  
+    // Enviar datos al servidor
+    this.http.post<any>(url, formData).subscribe({
       next: (response) => {
         console.log('Producto registrado con éxito:', response);
-        this.productos.push(response); // Actualiza la lista local
-        this.nuevoProducto = {}; // Limpia el formulario
-        this.cerrar(); // Cierra el modal
+        this.productoAgregado.emit(response); // Emitir evento de producto agregado
+        this.cerrar(); // Cerrar el modal
       },
       error: (err) => {
         console.error('Error al registrar el producto:', err);
+        if (err.status === 400 && err.error) {
+          console.error('Detalles del error:', err.error);
+          this.mensajeError = err.error.message || 'Error en la solicitud. Verifica los datos.';
+        } else {
+          this.mensajeError = 'Hubo un error al registrar el producto. Intenta nuevamente.';
+        }
       }
     });
   }
   
-  
-  // Método simulado para "guardar" los productos actuales en el cliente
-  actualizarProductosSimulado(): void {
-    // Aquí imprimimos los productos actuales en consola como simulación
-    console.log('Productos actuales:', this.productos);
+
+  cerrar(): void {
+    this.cerrarModal.emit();
   }
-  
-  
-onFileSelected(event: any): void {
-  const file: File = event.target.files[0];
-  if (file) {
-    console.log('Archivo seleccionado:', file);
-    
-    this.nuevoProducto.image = file.name;
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input?.files?.length) {
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      // Actualizar la imagen seleccionada
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+        this.nuevoProducto.image = file; // Asignar el archivo seleccionado al campo image
+      };
+
+      reader.readAsDataURL(file);
+    }
   }
 }
-}
+ 
