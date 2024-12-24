@@ -26,5 +26,17 @@ export class ProductsService {
   setProductos(productos: any[]) {
     this.productos = productos;
   }
+
+  // Método para eliminar un producto
+  eliminarProducto(productId: number): Observable<string> {
+    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/delete/${productId}`;
   
+    return this.http.delete<string>(url, { responseType: 'text' as 'json' });
+  }
+
+  // Método para editar un producto
+  editarProducto(productId: number, producto: any): Observable<any> {
+    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/edit/${productId}`;
+    return this.http.put<any>(url, producto);
+  }
 }
