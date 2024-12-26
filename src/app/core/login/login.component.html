@@ -8,14 +8,12 @@
 >
   <div class="w-full max-w-5xl mx-4">
     <div class="bg-white bg-opacity-90 flex flex-col md:flex-row h-[80vh]">
-      <!-- Login Form Section -->
       <div class="w-full md:w-1/2 p-8 flex flex-col justify-center items-center">
         <div class="text-center mb-6">
           <h1 class="text-3xl font-bold mb-6">Iniciar Sesión</h1>
         </div>
 
         <form class="space-y-4 w-full" (ngSubmit)="onSubmit()">
-          <!-- Username Input -->
           <div>
             <input
               type="text"
@@ -28,7 +26,6 @@
             />
           </div>
 
-          <!-- Password Input -->
           <div class="relative">
             <input
               [type]="passwordVisible ? 'text' : 'password'"
@@ -40,20 +37,19 @@
               required
             />
             <button
-              type="button"
-              class="absolute right-4 top-1/2 transform -translate-y-1/2"
-              (click)="togglePasswordVisibility()"
-            >
-              <i [class]="passwordVisible ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
-            </button>
+            type="button"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2"
+            (click)="togglePasswordVisibility('password', 'icon')"
+          >
+            <i id="icon" [class]="passwordVisible ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+          </button>
+          
           </div>
 
-          <!-- Error Message -->
           <div *ngIf="errorMessage" class="text-red-500 text-center">
             {{ errorMessage }}
           </div>
 
-          <!-- Login Button -->
           <button
             type="submit"
             class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200 ease-in-out"
@@ -61,7 +57,6 @@
             Iniciar Sesión
           </button>
 
-          <!-- Register Link -->
           <div class="text-center mt-4">
             <span class="text-gray-600">¿No tienes una cuenta? </span>
             <a routerLink="/register" class="text-blue-600 hover:text-blue-700">
@@ -71,7 +66,6 @@
         </form>
       </div>
 
-      <!-- Logo Section (Right Side) -->
       <div class="hidden md:flex md:w-1/2 h-full">
         <img
           src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"

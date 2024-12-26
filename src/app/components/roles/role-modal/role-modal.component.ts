@@ -1,28 +1,41 @@
+// role-modal.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+interface RoleDetail {
+  name: string;
+  description: string;
+  permissions: string[];
+}
 
 @Component({
   selector: 'app-role-modal',
-  templateUrl: './role-modal.component.html',
-  styleUrls: ['./role-modal.component.css']
+  templateUrl: './role-modal.component.html'
 })
 export class RoleModalComponent {
-  openModal(user: any) {
-    throw new Error('Method not implemented.');
-  }
   @Input() user: any;
-  @Output() closeModal = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
 
-  availableRoles = ['Admin', 'Usuario']; // Puedes añadir más roles aquí
+  readonly roleDescriptions: { [key: string]: RoleDetail } = {
+    'Admin': {
+      name: 'Administrator',
+      description: 'Full system access with complete control over users, settings, and system configurations.',
+      permissions: ['View', 'Create', 'Edit', 'Delete']
+    },
+    'User': {
+      name: 'Standard User',
+      description: 'Basic access to assigned modules with limited permissions based on role configuration.',
+      permissions: ['View', 'Create']
+    }
+  };
 
-  showModal = false;
-selectedUser: any;
-
-  saveChanges() {
-    console.log('Roles actualizados:', this.user.roles);
-    this.closeModal.emit();
+  getRoleDetails(): RoleDetail[] {
+    return this.user?.roles?.map((role: string) => ({
+      ...this.roleDescriptions[role],
+      permissions: this.user.permissions
+    })) || [];
   }
 
-  close() {
-    this.closeModal.emit();
+  closeModal(): void {
+    this.close.emit();
   }
 }

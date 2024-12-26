@@ -7,15 +7,18 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:AgroInversiones": "node dist/agro-inversiones/server/server.mjs"
+    "serve:ssr:AgroInversiones": "node dist/agro-inversiones/server/server.mjs",
+    "build:ssr": "ng build agro-inversiones --configuration production && ng run agro-inversiones:server:production"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.0",
+    "@angular/cdk": "^18.2.10",
     "@angular/common": "^18.2.0",
     "@angular/compiler": "^18.2.0",
     "@angular/core": "^18.2.0",
     "@angular/forms": "^18.2.0",
+    "@angular/material": "^18.2.10",
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/platform-server": "^18.2.0",
@@ -26,6 +29,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "apexcharts": "^3.54.1",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.5",
     "crypto-js": "^4.2.0",
     "express": "^4.18.2",

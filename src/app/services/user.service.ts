@@ -12,28 +12,25 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // Simula la carga de usuarios desde el archivo JSON
   getUsers(): Observable<any[]> {
     if (this.users.length === 0) {
       return this.http.get<any[]>(this.jsonUrl).pipe(
         map((data) => {
-          this.users = data; // Guarda los usuarios en memoria
+          this.users = data; 
           return this.users;
         })
       );
     } else {
-      return of(this.users); // Devuelve los usuarios ya cargados
+      return of(this.users);
     }
   }
 
-  // Simula agregar un nuevo usuario
   addUser(newUser: any): Observable<any> {
-    newUser.id = this.generateId(); // Genera un ID único
+    newUser.id = this.generateId(); 
     this.users.push(newUser);
-    return of(newUser); // Simula la respuesta del servidor
+    return of(newUser);
   }
 
-  // Simula actualizar un usuario existente
   updateUser(editingUser: any): Observable<any> {
     const index = this.users.findIndex((user) => user.id === editingUser.id);
     if (index > -1) {
@@ -43,13 +40,11 @@ export class UserService {
     throw new Error('Usuario no encontrado');
   }
 
-  // Simula eliminar un usuario
   deleteUser(id: number): Observable<any> {
     this.users = this.users.filter((user) => user.id !== id);
     return of({ message: 'Usuario eliminado con éxito' });
   }
 
-  // Generador de ID único (puedes usar una lógica más compleja si lo necesitas)
   private generateId(): number {
     return this.users.length > 0
       ? Math.max(...this.users.map((user) => user.id)) + 1
