@@ -13,15 +13,13 @@ import { AssignPermissionsComponent } from './components/roles/assign-permission
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component'; // Importa el componente
 import { RolesComponent } from './components/roles/roles/roles.component';
 import { UsersComponent } from './users/users.component';
-import { UserEditComponent } from './user-edit/user-edit.component';
-import { RoleModalComponent } from './role-modal/role-modal.component';
+import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'user', component: UsersComponent },
-  { path: 'user-edit', component: UserEditComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 

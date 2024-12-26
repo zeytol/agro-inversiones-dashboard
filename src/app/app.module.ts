@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // Add this import
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,7 +21,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
+import { LoginComponent } from './core/login/login.component';
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
@@ -36,12 +36,16 @@ import { RolesComponent } from './components/roles/roles/roles.component';
 import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; // Asegúrate de importar FormsModule
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { UsersComponent } from './users/users.component';
+<<<<<<< HEAD
 import { UserEditComponent } from './user-edit/user-edit.component';
 import { RoleModalComponent } from './role-modal/role-modal.component';
 import { UserHeaderComponent } from './users/user-header/user-header.component';
 import { UserSidebarComponent } from './users/user-sidebar/user-sidebar.component';
 import { UserTableComponent } from './users/user-table/user-table.component';
 import { UserModalsComponent } from './users/user-modals/user-modals.component';
+=======
+import { RoleModalComponent } from '../app/components/roles/role-modal/role-modal.component';
+>>>>>>> 77a4919fc53af631a89c6103a9c4cc8c7cf0fb50
 
 // Asegúrate de importar FormsModule
 
@@ -67,7 +71,10 @@ import { UserModalsComponent } from './users/user-modals/user-modals.component';
     RoleManagerComponent,
     RolesComponent,
     RoleDeleteComponent,
+    LoginComponent, 
+
     UsersComponent,
+<<<<<<< HEAD
     UserEditComponent,
     RoleModalComponent,
     UserHeaderComponent,
@@ -75,6 +82,10 @@ import { UserModalsComponent } from './users/user-modals/user-modals.component';
     UserTableComponent,
     UserModalsComponent,
     
+=======
+    RoleModalComponent,
+
+>>>>>>> 77a4919fc53af631a89c6103a9c4cc8c7cf0fb50
   ],
   imports: [
     BrowserModule,
@@ -83,10 +94,9 @@ import { UserModalsComponent } from './users/user-modals/user-modals.component';
     FormsModule,
     HttpClientModule,
     NgApexchartsModule,
-    FormsModule, // Añade FormsModule aquí
-    ReactiveFormsModule, // Importa ReactiveFormsModule aquí
-    HttpClientModule, // Agrega este módulo
-
+    FormsModule, 
+    ReactiveFormsModule, 
+    HttpClientModule,
   ],
   providers: [
     provideClientHydration()

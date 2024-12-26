@@ -1,49 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../core/auth.service';
 
 @Component({
   selector: 'app-roles',
-  templateUrl: './roles.component.html',
-  styleUrls: ['./roles.component.css']
+  template: `
+    <div class="roles-container">
+      <h2>User Roles and Permissions</h2>
+      <div *ngIf="rolesAndPermissions" class="roles-content">
+        <pre>{{ rolesAndPermissions }}</pre>
+      </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </div>
+  `,
+  styles: [`
+    .roles-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .roles-content {
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .error-message {
+      color: red;
+    }
+  `]
 })
 export class RolesComponent implements OnInit {
-isModalOpen: any;
-closeModal() {
-throw new Error('Method not implemented.');
-}
-  roles: any[] = [];
-  filteredRoles: any[] = [];
-  searchRole: string = '';
-  user: any;
+  rolesAndPermissions: string = '';
+  errorMessage: string = '';
 
-  constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
-
+  constructor(private authService: AuthService) {}
   ngOnInit(): void {
-    // Obtener el usuario seleccionado desde el estado de la navegación
-    this.user = this.router.getCurrentNavigation()?.extras.state?.['user'];
-    this.loadRoles();
+    throw new Error('Method not implemented.');
   }
 
-  loadRoles(): void {
-    this.http.get<any[]>('assets/datUsers.json').subscribe((data) => {
-      this.roles = data;
-      this.filteredRoles = data;
 
-      // Filtrar los roles del usuario seleccionado
-      this.filteredRoles = this.filteredRoles.filter(role => this.user.roles.includes(role.name));
-    });
-  }
-
-  filterRoles(): void {
-    this.filteredRoles = this.roles.filter(role => {
-      return role.name.toLowerCase().includes(this.searchRole.toLowerCase());
-    });
-  }
-
-  // Otras acciones como ver permisos, editar y eliminar roles...
 }

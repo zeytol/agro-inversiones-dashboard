@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -8,31 +8,49 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  passwordVisible: boolean = false;
+togglePasswordVisibility() {
+throw new Error('Method not implemented.');
+}
+passwordVisible: any;
+onGoogleSignIn() {
+throw new Error('Method not implemented.');
+}
+  username: string = '';
+  password: string = '';
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-    });
-  }
+  constructor(private http: HttpClient, private router: Router) {}
 
-  togglePasswordVisibility() {
-    this.passwordVisible = !this.passwordVisible;
-  }
+  onSubmit(): void {
+    const params = new HttpParams()
+      .set('username', this.username)
+      .set('password', this.password);
 
-  onLogin() {
-    if (this.loginForm.valid) {
-      // Lógica de autenticación aquí
-      console.log('Formulario de inicio de sesión:', this.loginForm.value);
-      this.router.navigate(['/dashboard']);
-    } else {
-      console.error('Formulario inválido');
-    }
-  }
+    console.log('Login params:', params.toString());
 
-  onGoogleSignIn() {
-    console.log('Iniciar sesión con Google');
+    this.http
+      .post(
+        'http://localhost:8091/login',
+        null,
+        {
+          params: params,
+          observe: 'response',
+          responseType: 'text',
+          withCredentials: true
+        }
+      )
+      .subscribe({
+        next: (response: HttpResponse<string>) => {
+          if (response.body && response.body.includes('<!DOCTYPE html>')) {
+            this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Error en la autenticación:', error.message);
+          this.errorMessage = 'Error del servidor. Inténtalo más tarde.';
+        },
+      });
   }
 }
