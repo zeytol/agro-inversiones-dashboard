@@ -80,11 +80,11 @@ export class DetallesModalComponent implements OnInit {
         next: (response) => {
           // Maneja la respuesta del mensaje como texto
           console.log('Respuesta de la eliminación:', response);
-          
-          // Actualiza la lista de productos en el frontend (esto es lo que ya tienes)
+  
+          // Opcional: Si quieres actualizar la lista de productos sin recargar
           this.productos = this.productos.filter(p => p.id !== this.productoSeleccionado.id);
-          
-          // Opcionalmente, puedes recargar los productos desde el servidor
+  
+          // Recarga los productos desde el servidor
           this.cargarProductos();
   
           // Cierra el modal de eliminación
@@ -92,6 +92,9 @@ export class DetallesModalComponent implements OnInit {
   
           // Muestra el mensaje de éxito
           alert(response); // Aquí el mensaje que viene de la API
+  
+          // Refresca la página
+          window.location.reload(); // Recarga la página para asegurarte de que se refleja la eliminación
         },
         error: (error) => {
           console.error('Error al eliminar el producto:', error);
