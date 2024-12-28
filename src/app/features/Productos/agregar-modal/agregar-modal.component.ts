@@ -66,7 +66,6 @@ export class AgregarModalComponent {
     if (file) {
       this.selectedFile = file;
       
-      // Crear vista previa
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result;
@@ -82,7 +81,7 @@ export class AgregarModalComponent {
     }
   
     const formData = new FormData();
-    // Es importante que el nombre del campo coincida exactamente con lo que espera el backend
+   
     formData.append('products', new Blob([JSON.stringify(this.nuevoProducto)], {
       type: 'application/json'
     }));
@@ -90,14 +89,14 @@ export class AgregarModalComponent {
   
     const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
   
-    // Agregamos opciones específicas para la petición
+   
     this.http.post(url, formData, {
-      observe: 'response',  // Para observar la respuesta completa
-      responseType: 'json'  // Especificamos que esperamos JSON
+      observe: 'response',  
+      responseType: 'json'  
     }).subscribe({
       next: (response: any) => {
         console.log('Respuesta completa:', response);
-        if (response.status === 201) { // Created
+        if (response.status === 201) {
           console.log('Producto registrado con éxito');
           this.productos.push(response.body);
           this.productoAgregado.emit(response.body);
@@ -107,14 +106,14 @@ export class AgregarModalComponent {
       },
       error: (err) => {
         console.error('Error completo:', err);
-        // Manejo más detallado del error
+     
         if (err.status === 201) {
-          // Si recibimos 201 en el error, significa que fue exitoso pero hubo un error al parsear
+       
           console.log('Producto probablemente registrado con éxito');
           this.resetForm();
           this.cerrar();
         } else {
-          // Otro tipo de error
+         
           console.error('Error al registrar el producto:', err.message);
         }
       }

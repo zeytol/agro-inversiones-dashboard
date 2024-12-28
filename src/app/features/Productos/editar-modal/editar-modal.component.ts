@@ -22,8 +22,12 @@ export class EditarModalComponent {
   cerrarEditarModal(): void {
     this.cerrarModal.emit();
   }
-
-  // Método para manejar la selección de archivo
+  ngOnInit() {
+    if (this.productoSeleccionado?.image) {
+      this.imagePreview = this.productoSeleccionado.image;
+    }
+  }
+  //Método para manejar la selección de archivo
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -40,38 +44,67 @@ export class EditarModalComponent {
 
   // Método para enviar el producto editado
   editarProducto(): void {
+    // Verificar que todos los campos obligatorios estén completados
     if (!this.productoSeleccionado.name || !this.productoSeleccionado.description || !this.productoSeleccionado.codeProduct) {
       console.error('Por favor, completa todos los campos obligatorios.');
       return;
     }
-
+  
     const formData = new FormData();
-    // Es importante que el nombre del campo coincida exactamente con lo que espera el backend
-    formData.append('products', new Blob([JSON.stringify(this.productoSeleccionado)], {
-      type: 'application/json'
-    }));
+    
+    // Preparar los datos del producto
+    const productoData = {
+      image: this.productoSeleccionado.image,
+      name: this.productoSeleccionado.name,
+      description: this.productoSeleccionado.description,
+      price: this.productoSeleccionado.price,
+      amount: this.productoSeleccionado.amount,
+      type: this.productoSeleccionado.type,
+      supplierId: this.productoSeleccionado.supplierId,
+      categoriesProductsId: this.productoSeleccionado.categoriesProductsId,
+      codeProduct: this.productoSeleccionado.codeProduct,
+      salePrice: this.productoSeleccionado.salePrice,
+      purchasePrice: this.productoSeleccionado.purchasePrice,
+      state: this.productoSeleccionado.state,
+      composicionIsoprothiolane: this.productoSeleccionado.composicionIsoprothiolane,
+      composicionAditivos: this.productoSeleccionado.composicionAditivos,
+      descuento: this.productoSeleccionado.descuento,
+      modelo: this.productoSeleccionado.modelo,
+      fechaIngreso: this.productoSeleccionado.fechaIngreso,
+      ubicacion: this.productoSeleccionado.ubicacion
+    };
+  
+    console.log('Producto a editar:', productoData);
+    
+    // Agregar los datos del producto como JSON
+    formData.append('products', new Blob([JSON.stringify(productoData)], { type: 'application/json' }));
+  
+    //Solo agregar la imagen si hay un archivo seleccionado
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
     }
-
+  
     const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/edit/${this.productoSeleccionado.id}`;
-
+  
+    // Realizar la solicitud PUT
     this.http.put(url, formData, {
       observe: 'response',
       responseType: 'json'
     }).subscribe({
       next: (response: any) => {
-        console.log('Respuesta completa:', response);
-        if (response.status === 200) { // OK
-          console.log('Producto editado con éxito');
-          this.productoEditado.emit(this.productoSeleccionado);
+        console.log('Respuesta:', response);
+        if (response.status === 200 || response.status === 201) {
+          this.productoEditado.emit(response.body);
           this.cerrarEditarModal();
         }
       },
       error: (err) => {
         console.error('Error completo:', err);
-        console.error('Error al editar el producto:', err.message);
+        if (err.status === 200 || err.status === 201) {
+          this.cerrarEditarModal();
+        }
       }
     });
   }
+  
 }
