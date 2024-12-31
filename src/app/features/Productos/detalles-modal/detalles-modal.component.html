@@ -15,17 +15,7 @@
       
       <!-- Composición -->
       <div class="bg-gray-100 rounded-lg p-4 mt-8 w-full">
-        <h4 class="font-semibold text-lg mb-2">Composición</h4>
-        <table class="w-full border border-gray-300 text-gray-700">
-          <tr>
-            <td class="border px-4 py-2 font-semibold">Isoprothiolane</td>
-            <td class="border px-4 py-2">{{ producto.composicionIsoprothiolane }}</td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-2 font-semibold">Aditivos</td>
-            <td class="border px-4 py-2">{{ producto.composicionAditivos }}</td>
-          </tr>
-        </table>
+        
       </div>
     </div>
     
@@ -39,15 +29,17 @@
       <p class="text-sm text-gray-600 mt-2">Proveedor: <span class="font-bold">{{ producto.supplier.name }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Ubicación: <span class="font-bold">{{ producto.ubicacion }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Fecha de Ingreso: <span class="font-bold">{{ producto.fechaIngreso }}</span></p>
-      
-      <!-- Beneficios -->
-      <h4 class="text-md font-semibold mt-4">Beneficios</h4>
-      <ul class="list-disc ml-6">
-        <li>{{ producto.beneficio1 }}</li>
-        <li>{{ producto.beneficio2 }}</li>
-        <li>{{ producto.beneficio3 }}</li>
-      </ul>
-      
+      <h4 class="font-semibold text-lg mb-2">Composición</h4>
+      <table class="w-full border border-gray-300 text-gray-700">
+        <tr>
+          <td class="border px-4 py-2 font-semibold">Isoprothiolane</td>
+          <td class="border px-4 py-2">{{ producto.composicionIsoprothiolane }}</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2 font-semibold">Aditivos</td>
+          <td class="border px-4 py-2">{{ producto.composicionAditivos }}</td>
+        </tr>
+      </table>
       <!-- Acciones -->
       <div class="flex items-center space-x-2 mt-6">
         <button (click)="abrirEditarModal(producto)" class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600">
