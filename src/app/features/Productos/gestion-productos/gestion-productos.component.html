@@ -91,9 +91,9 @@
               <div>
                 <h3 class="text-lg font-semibold"><span class="font-bold">{{ producto.name }}</span></h3>
                 <p class="text-green-800 text-lg font-bold mb-1">
-                  Precio: <span class="text-black">{{ producto.salePrice }}</span>
+                  Proveedor: <span class="text-black">{{ producto.supplier.name }}</span>
                 </p>
-                <p class="text-gray-800">Categoría: <span class="font-bold">{{ producto.categoriesProductsId }}</span></p>
+                <p class="text-gray-800">Categoría: <span class="font-bold">{{ producto.categoryProducts.name }}</span></p>
                 <p class="text-gray-800">Descripción: <span class="font-bold">{{ producto.description }}</span></p>
                 <div class="flex space-x-2 mt-4">
                   <button (click)="agregarACarrito(producto)" class="bg-[#007D14] text-white font-semibold py-2 px-4 rounded hover:bg-green-700 w-full">

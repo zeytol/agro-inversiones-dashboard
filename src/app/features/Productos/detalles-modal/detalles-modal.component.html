@@ -10,8 +10,8 @@
     <!-- Imagen del producto -->
     <div class="flex flex-col items-center space-y-4 w-full sm:w-1/3 mb-4 sm:mb-0">
       <img [src]="producto.image" alt="Imagen del producto" class="w-36 sm:w-48 h-auto rounded-lg object-cover">
-      <span class="text-gray-500 font-semibold">Stock: {{ producto.stock }}</span>
-      <span [ngClass]="getClasePorStock(producto.stock)" class="text-white px-3 py-1 rounded-full">{{ getEstadoPorStock(producto.stock) }}</span>
+      <span class="text-gray-500 font-semibold">Stock: {{ producto.amount }}</span>
+      <span [ngClass]="getClasePorStock(producto.amount)" class="text-white px-3 py-1 rounded-full">{{ getEstadoPorStock(producto.amount) }}</span>
       
       <!-- Composición -->
       <div class="bg-gray-100 rounded-lg p-4 mt-8 w-full">
@@ -36,7 +36,7 @@
       <p class="text-sm text-gray-600 mt-2">Descripción: <span class="font-bold">{{ producto.description }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Costo Inicial: <span class="font-bold">{{ producto.purchasePrice }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Precio de Venta: <span class="font-bold">{{ producto.salePrice }}</span></p>
-      <p class="text-sm text-gray-600 mt-2">Proveedor: <span class="font-bold">{{ producto.proveedor }}</span></p>
+      <p class="text-sm text-gray-600 mt-2">Proveedor: <span class="font-bold">{{ producto.supplier.name }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Ubicación: <span class="font-bold">{{ producto.ubicacion }}</span></p>
       <p class="text-sm text-gray-600 mt-2">Fecha de Ingreso: <span class="font-bold">{{ producto.fechaIngreso }}</span></p>
       

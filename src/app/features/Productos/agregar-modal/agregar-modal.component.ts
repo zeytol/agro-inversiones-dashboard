@@ -2,15 +2,18 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 interface Producto {
-  id: number;
   name: string;
   description: string;
   price: number;
   amount: number;
   type: string;
   image: string;
-  supplierId: number;
-  categoriesProductsId: number;
+  supplier: {                         
+    id: number;                       
+  };
+  categoryProducts: {                
+    id: number;                       
+  };
   codeProduct: string;
   salePrice: number;
   purchasePrice: number;
@@ -34,26 +37,25 @@ export class AgregarModalComponent {
   @Output() productoAgregado = new EventEmitter<any>();
 
   nuevoProducto: Producto = {
-    id: 0,
-    name: '',
-    description: '',
-    price: 0,
+    name: "",
+    description: "",
+    price: 0.0,
     amount: 0,
-    type: '',
-    image: '',
-    supplierId: 0,
-    categoriesProductsId: 0,
-    codeProduct: '',
-    salePrice: 0,
-    purchasePrice: 0,
-    state: '',
-    composicionIsoprothiolane: '',
-    composicionAditivos: '',
+    type: "",
+    image: "",
+    supplier: { id: 0 },
+    categoryProducts: { id: 0 },
+    codeProduct: "",
+    salePrice: 0.0,
+    purchasePrice: 0.0,
+    state: "",
+    composicionIsoprothiolane: "",
+    composicionAditivos: "",
     descuento: 0,
-    modelo: '',
-    fechaIngreso: '',
-    ubicacion: ''
-  };
+    modelo: "",
+    fechaIngreso: "",
+    ubicacion: ""
+  }
 
   productos: Producto[] = [];
   selectedFile: any = null;
@@ -122,15 +124,15 @@ export class AgregarModalComponent {
 
   resetForm(): void {
     this.nuevoProducto = {
-      id: 0,
+
       name: '',
       description: '',
       price: 0,
       amount: 0,
       type: '',
       image: '',
-      supplierId: 0,
-      categoriesProductsId: 0,
+      supplier: { id: 0 },
+    categoryProducts: { id: 0 },
       codeProduct: '',
       salePrice: 0,
       purchasePrice: 0,

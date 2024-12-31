@@ -90,7 +90,7 @@
         <div>
           <label for="categoriesProductsId" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
           <input 
-            [(ngModel)]="productoSeleccionado.categoriesProductsId" 
+            [(ngModel)]="productoSeleccionado.categoryProducts.id" 
             id="categoriesProductsId" 
             name="categoriesProductsId" 
             required 
@@ -153,9 +153,9 @@
 
         <!-- Modelo -->
         <div>
-          <label for="modelo" class="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+          <label for="modelo" class="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
           <input 
-            [(ngModel)]="productoSeleccionado.modelo" 
+            [(ngModel)]="productoSeleccionado.supplier.id" 
             id="modelo" 
             name="modelo" 
             required 

@@ -14,12 +14,17 @@ export class FiltrarModalComponent {
   proveedor: string = ''; // Valor inicial para el proveedor
   categorias: string[] = []; // Array para almacenar las categorías seleccionadas
   plaga: string = ''; // Valor inicial para la plaga/objetivo
-
+  selectedCategoria: string | null = null; // Almacena la categoría seleccionada
+  productosFiltrados: any[] = []; // Productos filtrados por categoría
+  productos: any[] = [];
   // Método para cerrar el modal
   cerrarFiltroModal() {
     this.cerrarModal.emit(); // Emitir evento para cerrar el modal
   }
-
+  mostrarTodosLosProductos() {
+    this.selectedCategoria = null;
+    this.productosFiltrados = this.productos;
+  }
   // Método para aplicar el filtro
   aplicarFiltroModal() {
     // Emitir evento con los valores de los filtros

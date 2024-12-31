@@ -44,7 +44,7 @@ productosFiltrados: any[] = []; // Productos filtrados por categoría
 // Método para filtrar productos al hacer clic en una categoría
 filtrarPorCategoria(categoria: string) {
   this.selectedCategoria = categoria;
-  this.productosFiltrados = this.productos.filter(producto => producto.categoria === categoria);
+  this.productosFiltrados = this.productos.filter(producto => producto.categoryProducts.name === categoria);
 }
 
 
@@ -309,7 +309,7 @@ calcularTotal() {
 
   // Método para agregar productos al carrito
   agregarACarrito(producto: any) {
-    const itemEnCarrito = this.carrito.find(item => item.nombre === producto.nombre);
+    const itemEnCarrito = this.carrito.find(item => item.name === producto.name);
 
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Aumenta la cantidad si el producto ya está en el carrito
@@ -318,7 +318,7 @@ calcularTotal() {
     }
 
     this.actualizarTotal(); // Actualiza el total después de agregar
-    console.log(`${producto.nombre} ha sido agregado al carrito.`);
+    console.log(`${producto.name} ha sido agregado al carrito.`);
   }
 
   // Método para incrementar la cantidad de un producto en el carrito
@@ -342,7 +342,7 @@ calcularTotal() {
 
   // Método para actualizar el total del carrito
   actualizarTotal() {
-    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
+    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.purchasePrice.replace('$', '')), 0);
   }
 
   // Método para calcular el subtotal del carrito
