@@ -1,7 +1,30 @@
-import { Component, OnInit, Output,EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 
+const apiUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products';
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  amount: number;
+  type: string;
+  image: string;
+  supplierId: string;
+  categoryProducts: { name: string }[];
+  codeProduct: string;
+  salePrice: number;
+  purchasePrice: number;
+  state?: string;
+  composicionIsoprothiolane?: string;
+  composicionAditivos?: string;
+  descuento?: string;
+  modelo?: string;
+  fechaIngreso?: string;
+  ubicacion?: string;
+}
 
 @Component({
   selector: 'app-inventario',
@@ -9,236 +32,87 @@ import Swal from 'sweetalert2';
   styleUrls: ['./inventario.component.css']
 })
 export class InventarioComponent implements OnInit {
-  productos: any[] = [];
-  productosPorPagina: number = 7;
-  paginaActual: number = 1;
-  totalPaginas: number = 0;
-  isAddModalOpen: boolean = false;
-  isEditModalOpen = false;
-  isViewModalOpen = false;
-  productoAVisualizar: any = {};
-  filtroNombre: string = '';
-  isSidebarVisible: boolean = true; 
+  allProducts: Product[] = []; // Todos los productos cargados de la API
+  displayedProducts: Product[] = []; // Productos añadidos a la tabla
+  productIdsInTable = new Set<number>(); // Para evitar duplicados en la tabla
+  searchCode: string = ''; // Código de producto buscado
+  isSidebarVisible: boolean = true;
+
   @Output() sidebarToggle = new EventEmitter<void>();
-
-  
-  productosJson: any[] = []; // Productos cargados desde JSON
-  codigoProducto: string = ''; // Código del producto que se ingresa
-  productoSeleccionado: any = null; // Producto seleccionado para agregar a la tabla
-  productoAEditar: any = {};
-
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.loadProductsFromJson(); // Cargar los productos desde JSON
-    this.loadProductsFromLocalStorage();
+    this.fetchProducts();
+    this.loadDisplayedProducts();
   }
-  toggleSidebar() {
-    this.isSidebarVisible = !this.isSidebarVisible; 
+
+  // Obtener los productos desde la API
+  fetchProducts(): void {
+    this.http.get<Product[]>(apiUrl).subscribe(
+      (data) => {
+        this.allProducts = data;
+        console.log('Datos cargados correctamente: ', this.allProducts);
+      },
+      (error) => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Error al cargar los datos. Intente nuevamente más tarde.', 'error');
+      }
+    );
+  }
+
+  // Agregar un producto a la tabla
+  addRowToTable(product: Product): void {
+    if (this.productIdsInTable.has(product.id)) {
+      Swal.fire('Aviso', 'El producto ya está en la tabla.', 'warning');
+      return;
+    }
+
+    this.productIdsInTable.add(product.id);
+    this.displayedProducts.push(product); // Agrega el producto a la lista de productos mostrados
+    this.saveDisplayedProducts();
+    Swal.fire('Éxito', 'Producto añadido a la tabla.', 'success');
+  }
+  saveDisplayedProducts(): void{
+    localStorage.setItem('displayedProducts', JSON.stringify(this.displayedProducts));
+  }
+  loadDisplayedProducts(): void {
+    const savedProducts = localStorage.getItem('displayedProducts');
+    if(savedProducts) {
+      this.displayedProducts = JSON.parse(savedProducts);
+      this.productIdsInTable = new Set(this.displayedProducts.map((product) => product.id));
+    }
+  }
+
+  // Alternar visibilidad del sidebar
+  toggleSidebar(): void {
+    this.isSidebarVisible = !this.isSidebarVisible;
     this.sidebarToggle.emit();
   }
-  
-  loadProductsFromLocalStorage(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {  // Verifica que estamos en un navegador
-      const productosGuardados = localStorage.getItem('productos');
-      if (productosGuardados) {
-        this.productos = JSON.parse(productosGuardados);
-        this.calculateTotalPages();
-      }
+
+  // Obtener las categorías del producto
+  getCategoryProducts(product: Product): { name: string }[] {
+    return Array.isArray(product.categoryProducts) ? product.categoryProducts : [product.categoryProducts];
+  }
+  //getSupplier(product: Product): { name: string }[] {
+    //return Array.isArray(product.supplier) ? product.supplier : [product.supplier];
+  //}
+
+  // Buscar producto por código
+  searchProduct(): void {
+    if (!this.searchCode.trim()) {
+      Swal.fire('Aviso', 'Por favor, ingrese un código de producto.', 'warning');
+      return;
     }
-  }
-  
 
-  // Cargar productos desde el archivo JSON
-  loadProductsFromJson(): void {
-    this.http.get<any[]>('assets/data.json').subscribe(
-      (data) => {
-        this.productosJson = data;
-        this.calculateTotalPages();
-      },
-      (error) => console.error('Error cargando productos:', error)
+    const product = this.allProducts.find(
+      (p) => p.codeProduct.toLowerCase() === this.searchCode.trim().toLowerCase()
     );
-  }
-   // Método para filtrar productos según el nombre
-   getProductosFiltrados(): any[] {
-    return this.productos
-      .filter((producto) => 
-        producto.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase())
-      )
-      .slice(
-        (this.paginaActual - 1) * this.productosPorPagina,
-        this.paginaActual * this.productosPorPagina
-      );
-  }
-  editProduct(producto: any) {
-    this.isViewModalOpen = false;
-    this.isEditModalOpen = true;
-    this.productoAEditar = { ...producto };  // Uso de spread operator para copiar el objeto
-    console.log('Producto a editar: ', this.productoAEditar);
-  }
-  
-  openAddModal(){
-    this.isAddModalOpen = true;
-    this.codigoProducto = '';
-  }
-  closeAddModal(){
-    this.isAddModalOpen = false;
-  }
 
-  // Agregar un producto por su código
-  confirmarCodigo() {
-    const codigoIngresado = this.codigoProducto.trim().toUpperCase(); // Normalizar el código ingresado
-  
-    // Verificar si el producto ya está en la lista
-    const productoExistente = this.productos.find(
-      (producto) => producto.codigo === codigoIngresado
-    );
-  
-    if (productoExistente) {
-      // Mostrar alerta si el producto ya está agregado
-
-      Swal.fire({
-        title: 'Producto ya agregado',
-        text: 'Este producto ya está en la lista.',
-        icon: 'info',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#3085d6',
-      });
-      return; // Detener la ejecución si el producto ya está en la lista
-    }
-  
-    // Buscar el producto en el JSON
-    const productoEncontrado = this.productosJson.find(
-      (producto) => producto.codigo === codigoIngresado
-    );
-  
-    if (productoEncontrado) {
-      // Agregar el producto si no está en la lista y existe en el JSON
-      const nuevoProducto = {
-        total: productoEncontrado.total,
-        nombre: productoEncontrado.nombre,
-        codigo: codigoIngresado,
-        fechaRegistro: new Date().toISOString(),
-        precioUnitario: productoEncontrado.precioUnitario,
-        precioTotal: productoEncontrado.precioUnitario * productoEncontrado.total,
-      };
-      this.productos.push(nuevoProducto); // Agregar el producto
-      this.saveProductsToLocalStorage(); // Guardar en el almacenamiento local
-      this.closeAddModal(); // Cerrar el modal
-      this.calculateTotalPages(); // Recalcular la paginación
-      // Mostrar alerta de éxito
-    Swal.fire({
-      title: 'Producto agregado',
-      text: `El producto "${productoEncontrado.nombre}" ha sido agregado exitosamente.`,
-      icon: 'success',
-      confirmButtonText: 'Aceptar',
-      confirmButtonColor: '#28a745',
-    });
-
-    this.closeAddModal(); // Cerrar el modal después de agregar
+    if (product) {
+      this.addRowToTable(product);
     } else {
-      // Mostrar alerta si el producto no se encuentra
-      Swal.fire({
-        title: 'Código no encontrado',
-        text: 'El código ingresado no corresponde a ningún producto.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33',
-      });
-    }
-  }
-  
-  
-  
-  saveProductsToLocalStorage(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('productos', JSON.stringify(this.productos));
-    }
-  }
-  
-
-  // Calcular el total de páginas para la paginación
-  calculateTotalPages(): void {
-    this.totalPaginas = Math.ceil(this.productos.length / this.productosPorPagina);
-  }
-
-  // Obtener los productos para mostrar solo los de la página actual
-  getProductosPorPagina(): any[] {
-    const startIndex = (this.paginaActual - 1) * this.productosPorPagina;
-    const endIndex = startIndex + this.productosPorPagina;
-    return this.productos.slice(startIndex, endIndex);
-  }
-
-  // Eliminar un producto de la tabla
-  deleteProduct(producto: any) {
-    Swal.fire({
-      title: '¿Estás seguro que desea eliminar?',
-      text: "Esta acción no se puede deshacer",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Eliminar el producto de la lista
-        this.productos = this.productos.filter((p) => p !== producto);
-        this.calculateTotalPages(); // Actualizar la paginación
-        this.saveProductsToLocalStorage(); // Guardar cambios en LocalStorage
-        Swal.fire(
-          'Eliminado',
-          'El producto ha sido eliminado.',
-          'success'
-        );
-      }
-    });
-  }
-  
-
-  // Ver información de un producto
-  viewProduct(producto: any): void {
-    this.isEditModalOpen=false;
-    this.productoAVisualizar = { ...producto};
-    this.isViewModalOpen = true;
-    ;
-  }
-  closeViewModal():void{
-    this.isViewModalOpen = false;
-  }
-
-  closeEditModal(){
-    this.isEditModalOpen = false;
-  }
-  updatePriceTotal(){
-    const total = this.productoAEditar.total || 0;
-  const precioUnitario = this.productoAEditar.precioUnitario || 0;
-  this.productoAEditar.precioTotal = total * precioUnitario;
-  }
-  updateProduct() {
-    const index = this.productos.findIndex(p => p.codigo === this.productoAEditar.codigo);
-    if (index !== -1) {
-      // Usar spread operator para asegurarse de que no se muten otras propiedades no deseadas
-      this.productos[index] = { ...this.productoAEditar }; 
-      this.saveProductsToLocalStorage();
-      this.calculateTotalPages();
-      this.isEditModalOpen = false;
-    }
-  }
-  
-
-  // Navegar a la página anterior
-  prevPage() {
-    if (this.paginaActual > 1) {
-      this.paginaActual--;
-    }
-  }
-
-  // Navegar a la página siguiente
-  nextPage() {
-    if (this.paginaActual < this.totalPaginas) {
-      this.paginaActual++;
+      Swal.fire('No encontrado', 'Producto no encontrado.', 'info');
     }
   }
 }
