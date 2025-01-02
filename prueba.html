@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Producto</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>Registrar Producto</h1>
+
+  <!-- Campo para subir imagen -->
+  <label for="product-image">Subir Imagen del Producto:</label>
+  <input type="file" id="product-image" accept="image/*">
+  <br><br>
+
+  <!-- Botón para registrar el producto -->
+  <button id="register-btn">Registrar Producto</button>
+
+  <script>
+    async function registerProduct() {
+      // Datos del producto
+      const productData = {
+  
+          "name": "Pesticidas2",
+          "description": "Productos utilizados para controlar plagas en cultivos agrícolas.",
+          "cantidad": 0,
+          "image": ""
+            
+      };
+
+      // Obtener archivo del input
+      const imageInput = document.getElementById('product-image');
+      const imageFile = imageInput.files[0];
+
+      // Crear objeto FormData
+      const formData = new FormData();
+      formData.append("CatProduct", new Blob([JSON.stringify(productData)], { type: 'application/json' })); // Ajusta el nombre aquí si es necesario
+      formData.append("image", imageFile); // Agregar el archivo de imagen
+
+      try {
+        // Enviar los datos con multipart/form-data
+        const response = await axios.post('https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/register', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' } // Asegúrate de usar el Content-Type correcto
+        });
+        alert(`Producto registrado con éxito: ${JSON.stringify(response.data)}`);
+      } catch (error) {
+        console.error('Error al registrar el producto:', error);
+        alert(`Error al registrar el producto: ${error.response ? error.response.data : error.message}`);
+      }
+    }
+
+    // Vincular evento al botón
+    document.getElementById('register-btn').addEventListener('click', registerProduct);
+  </script>
+</body>
+</html>

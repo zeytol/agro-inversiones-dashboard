@@ -5,6 +5,7 @@
     "/permisos/crear",
     "/productos",
     "/proveedores",
+    "/reportes",
     "/role",
     "/roles",
     "/roles/ajustes",

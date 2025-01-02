@@ -1,42 +1,107 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { CategoryProductsService } from '../../../services/category-products.service';
+import { HttpClient } from '@angular/common/http';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-filtrar-modal',
   templateUrl: './filtrar-modal.component.html',
   styleUrls: ['./filtrar-modal.component.css']
 })
-export class FiltrarModalComponent {
-  @Output() cerrarModal = new EventEmitter<void>(); // Emitir evento para cerrar el modal
-  @Output() aplicarModal = new EventEmitter<any>(); // Emitir evento para aplicar el filtro con datos
-  filterModalVisible: boolean = true;
-  // Variables para almacenar los filtros seleccionados
-  precio: number = 12; // Valor inicial para el precio
-  proveedor: string = ''; // Valor inicial para el proveedor
-  categorias: string[] = []; // Array para almacenar las categorías seleccionadas
-  plaga: string = ''; // Valor inicial para la plaga/objetivo
+export class FiltrarModalComponent implements OnInit {
+  @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  @Output() aplicarModal = new EventEmitter<any>(); // Evento para aplicar el filtro
 
-  // Método para cerrar el modal
-  cerrarFiltroModal() {
-    this.cerrarModal.emit(); // Emitir evento para cerrar el modal
-  }
 
-  // Método para aplicar el filtro
-  aplicarFiltroModal() {
-    // Emitir evento con los valores de los filtros
-    this.aplicarModal.emit({
-      precio: this.precio,
-      proveedor: this.proveedor,
-      categorias: this.categorias,
-      plaga: this.plaga
+  // Variables para gestión de categorías
+  agregarCategoriaModalVisible: boolean = false;
+  editarCategoriaModalVisible: boolean = false;
+  categoriaSeleccionada: any = null;
+  categorias: any[] = []; // Lista de categorías
+
+  constructor(
+    private categoryService: CategoryProductsService,
+    private http: HttpClient,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarCategorias();
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        if (this.activatedRoute.snapshot.routeConfig?.path === 'productos') {
+          this.cargarCategorias();
+          
+        }
+      }
     });
   }
 
-  // Método para manejar el cambio en las categorías seleccionadas
-  onCategoriaChange(categoria: string, event: any) {
-    if (event.target.checked) {
-      this.categorias.push(categoria); // Añadir categoría al array
-    } else {
-      this.categorias = this.categorias.filter(c => c !== categoria); // Eliminar categoría del array
-    }
+  cargarCategorias(): void {
+    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories';
+    this.http.get<any[]>(url).subscribe({
+      next: (data) => {
+        this.categorias = data; // Asigna los datos a la lista de categorías
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+      },
+    });
   }
+  
+
+
+  // Métodos del modal de filtro
+  cerrarFiltroModal(): void {
+    this.cerrarModal.emit(); // Emitir evento para cerrar
+  }
+
+  
+
+  // Métodos para manejo de modales de categorías
+  abrirAgregarCategoriaModal(): void {
+    this.agregarCategoriaModalVisible = true;
+  }
+
+  cerrarAgregarCategoriaModal(): void {
+    this.agregarCategoriaModalVisible = false;
+  }
+
+  abrirEditarCategoriaModal(categoria: any): void {
+    this.categoriaSeleccionada = categoria;
+    this.editarCategoriaModalVisible = true;
+  }
+
+  cerrarEditarCategoriaModal(): void {
+    this.editarCategoriaModalVisible = false;
+  }
+
+
+  eliminarCategoria(categoriaSeleccionada: any): void {
+    if (!categoriaSeleccionada || !categoriaSeleccionada.id) {
+      console.error('La categoría seleccionada es inválida o no tiene un ID.');
+      return;
+    }
+  
+    
+    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
+    
+    this.http.delete(url).subscribe({
+      next: () => {
+        console.log('Categoría eliminada correctamente.');
+        this.categorias = this.categorias.filter(c => c.id !== categoriaSeleccionada.id);
+      },
+      error: (err) => {
+        console.error('Error al eliminar la categoría:', err);
+        console.log('Detalles del error:', {
+          status: err.status,
+          statusText: err.statusText,
+          url: err.url,
+          message: err.message,
+        });
+      }
+    });
+  }
+  
 }

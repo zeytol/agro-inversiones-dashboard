@@ -1,20 +1,39 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CategoryProductsService } from '../../../services/category-products.service';
+interface Producto {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  amount: number;
+  type: string;
+  image: string;
+  supplierId: number;
+  categoriesProductsId: number;
+  codeProduct: string;
+  salePrice: number;
+  purchasePrice: number;
+  state: string;
+  composicionIsoprothiolane: string;
+  composicionAditivos: string;
+  descuento: number;
+  modelo: string;
+  fechaIngreso: string;
+  ubicacion: string;
+}
 
 @Component({
   selector: 'app-agregar-modal',
   templateUrl: './agregar-modal.component.html',
   styleUrls: ['./agregar-modal.component.css']
 })
-export class AgregarModalComponent implements OnInit {
-  @Output() cerrarModal = new EventEmitter<void>();
+export class AgregarModalComponent {
+  @Output() cerrarModal: EventEmitter<void> = new EventEmitter();
+  @Output() agregarProductoEvent: EventEmitter<any> = new EventEmitter();
   @Output() productoAgregado = new EventEmitter<any>();
 
-  imagePreview: string | undefined;
-  mensajeError: string | null = null;
-
-  nuevoProducto: any = {
+  nuevoProducto: Producto = {
     id: 0,
     name: '',
     description: '',
@@ -27,18 +46,25 @@ export class AgregarModalComponent implements OnInit {
     codeProduct: '',
     salePrice: 0,
     purchasePrice: 0,
-    state: 'Activo',
+    state: '',
+    composicionIsoprothiolane: '',
+    composicionAditivos: '',
     descuento: 0,
-    fechaIngreso: new Date().toISOString().split('T')[0],
+    modelo: '',
+    fechaIngreso: '',
     ubicacion: ''
   };
-
   categorias: any[] = [];
   proveedores: any[] = [
     { id: 1, name: 'Proveedor A' },
     { id: 2, name: 'Proveedor B' },
     { id: 3, name: 'Proveedor C' }
   ];
+
+
+  productos: Producto[] = [];
+  selectedFile: any = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private http: HttpClient,
@@ -61,87 +87,92 @@ export class AgregarModalComponent implements OnInit {
     });
   }
 
+
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      
+      // Crear vista previa
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   agregarProducto(): void {
-    // Validar que los campos obligatorios estén completos
-    if (
-      !this.nuevoProducto.name ||
-      !this.nuevoProducto.description ||
-      !this.nuevoProducto.codeProduct ||
-      !this.nuevoProducto.supplierId ||
-      !this.nuevoProducto.categoriesProductsId
-    ) {
-      this.mensajeError = 'Por favor, completa todos los campos obligatorios.';
-      console.error(this.mensajeError);
+    if (!this.nuevoProducto.name || !this.nuevoProducto.description || !this.nuevoProducto.codeProduct || !this.selectedFile) {
+      console.error('Por favor, completa todos los campos obligatorios.');
       return;
     }
   
-    // Validar precios y cantidades
-    if (this.nuevoProducto.salePrice <= 0 || this.nuevoProducto.purchasePrice <= 0 || this.nuevoProducto.amount <= 0) {
-      this.mensajeError = 'Los precios y la cantidad deben ser mayores que cero.';
-      console.error(this.mensajeError);
-      return;
-    }
+    const formData = new FormData();
+    // Es importante que el nombre del campo coincida exactamente con lo que espera el backend
+    formData.append('products', new Blob([JSON.stringify(this.nuevoProducto)], {
+      type: 'application/json'
+    }));
+    formData.append('image', this.selectedFile);
   
-    // Validar formato de código de producto
-    const regexCodigoProducto = /^[A-Za-z0-9_-]+$/;
-    if (!regexCodigoProducto.test(this.nuevoProducto.codeProduct)) {
-      this.mensajeError = 'El código del producto solo puede contener letras, números, guiones y guiones bajos.';
-      console.error(this.mensajeError);
-      return;
-    }
-  
-    this.mensajeError = null; 
     const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
   
-    // Crear objeto FormData para manejar el envío de datos
-    const formData = new FormData();
-    Object.keys(this.nuevoProducto).forEach((key) => {
-      console.log(key, this.nuevoProducto[key]); // Verifica los valores que se están enviando
-      if (key === 'image' && this.nuevoProducto[key]) {
-        formData.append(key, this.nuevoProducto[key]);
-      } else {
-        formData.append(key, this.nuevoProducto[key]);
-      }
-    });
-  
-    // Enviar datos al servidor
-    this.http.post<any>(url, formData).subscribe({
-      next: (response) => {
-        console.log('Producto registrado con éxito:', response);
-        this.productoAgregado.emit(response); // Emitir evento de producto agregado
-        this.cerrar(); // Cerrar el modal
+    // Agregamos opciones específicas para la petición
+    this.http.post(url, formData, {
+      observe: 'response',  // Para observar la respuesta completa
+      responseType: 'json'  // Especificamos que esperamos JSON
+    }).subscribe({
+      next: (response: any) => {
+        console.log('Respuesta completa:', response);
+        if (response.status === 201) { // Created
+          console.log('Producto registrado con éxito');
+          this.productos.push(response.body);
+          this.productoAgregado.emit(response.body);
+          this.resetForm();
+          this.cerrar();
+        }
       },
       error: (err) => {
-        console.error('Error al registrar el producto:', err);
-        if (err.status === 400 && err.error) {
-          console.error('Detalles del error:', err.error);
-          this.mensajeError = err.error.message || 'Error en la solicitud. Verifica los datos.';
+        console.error('Error completo:', err);
+        if (err.status === 201) {
+          console.log('Producto probablemente registrado con éxito');
+          this.resetForm();
+          this.cerrar();
         } else {
-          this.mensajeError = 'Hubo un error al registrar el producto. Intenta nuevamente.';
+          console.error('Error al registrar el producto:', err.message);
         }
       }
     });
   }
-  
+
+  resetForm(): void {
+    this.nuevoProducto = {
+      id: 0,
+      name: '',
+      description: '',
+      price: 0,
+      amount: 0,
+      type: '',
+      image: '',
+      supplierId: 0,
+      categoriesProductsId: 0,
+      codeProduct: '',
+      salePrice: 0,
+      purchasePrice: 0,
+      state: '',
+      composicionIsoprothiolane: '',
+      composicionAditivos: '',
+      descuento: 0,
+      modelo: '',
+      fechaIngreso: '',
+      ubicacion: ''
+    };
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
 
   cerrar(): void {
     this.cerrarModal.emit();
   }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input?.files?.length) {
-      const file = input.files[0];
-      const reader = new FileReader();
-
-      // Actualizar la imagen seleccionada
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-        this.nuevoProducto.image = file; // Asignar el archivo seleccionado al campo image
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }
 }
- 

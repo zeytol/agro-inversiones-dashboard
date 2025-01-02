@@ -22,6 +22,13 @@ export class CategoryProductsService {
       return this.http.get<any[]>(this.apiUrl);
     }
   }
+  eliminarCategoria(id: number): Observable<void> {
+    return this.http.delete<void>(`https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/${id}`);
+  }
+  editarCategoria(id: number, categoria: any): Observable<any> {
+    return this.http.put<any>(`https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/${id}`, categoria);
+  }
+  
 
   setcategoryProducts(categoryProducts: any[]) {
     this.categoryProducts = categoryProducts;

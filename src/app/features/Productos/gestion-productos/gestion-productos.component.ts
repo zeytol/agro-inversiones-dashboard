@@ -33,7 +33,39 @@ export class GestionProductosComponent implements OnInit {
   itemsPerPage = 4;
   currentPage = 1;
   filtro: string = '';
+  
+// Variables para los modales de categorías
+agregarCategoriaModalVisible: boolean = false;
+editarCategoriaModalVisible: boolean = false;
+eliminarCategoriaModalVisible: boolean = false;
+categoriaSeleccionada: any = null;
 
+// Métodos para manejar los modales de categorías
+abrirAgregarCategoriaModal(): void {
+  this.agregarCategoriaModalVisible = true;
+}
+
+cerrarAgregarCategoriaModal(): void {
+  this.agregarCategoriaModalVisible = false;
+}
+
+abrirEditarCategoriaModal(categoria?: any): void {
+  this.categoriaSeleccionada = categoria || null;
+  this.editarCategoriaModalVisible = true;
+}
+
+cerrarEditarCategoriaModal(): void {
+  this.editarCategoriaModalVisible = false;
+}
+
+abrirEliminarCategoriaModal(categoria?: any): void {
+  this.categoriaSeleccionada = categoria || null;
+  this.eliminarCategoriaModalVisible = true;
+}
+
+cerrarEliminarCategoriaModal(): void {
+  this.eliminarCategoriaModalVisible = false;
+}
   constructor(
     private http: HttpClient,
     private router: Router,
