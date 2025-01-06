@@ -1,5 +1,9 @@
+
 import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import { CategoryProductsService } from '../../../services/category-products.service';
+import { SuppliersService } from '../../../services/suppliers.service';
 
 interface Producto {
   name: string;
@@ -9,10 +13,12 @@ interface Producto {
   type: string;
   image: string;
   supplier: {                         
-    id: number;                       
+    id: number; 
+    name: string;                  
   };
   categoryProducts: {                
-    id: number;                       
+    id: number; 
+    name: string;                       
   };
   codeProduct: string;
   salePrice: number;
@@ -35,16 +41,16 @@ export class AgregarModalComponent {
   @Output() cerrarModal: EventEmitter<void> = new EventEmitter();
   @Output() agregarProductoEvent: EventEmitter<any> = new EventEmitter();
   @Output() productoAgregado = new EventEmitter<any>();
-
   nuevoProducto: Producto = {
+    
     name: "",
     description: "",
     price: 0.0,
     amount: 0,
     type: "",
     image: "",
-    supplier: { id: 0 },
-    categoryProducts: { id: 0 },
+    supplier: { id: 0, name: "" },
+    categoryProducts: { id: 0, name: ""},
     codeProduct: "",
     salePrice: 0.0,
     purchasePrice: 0.0,
@@ -58,10 +64,44 @@ export class AgregarModalComponent {
   }
 
   productos: Producto[] = [];
+  categorias: any[] = [];
+  suppliers: any[] = [];
   selectedFile: any = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private categoryProductsService: CategoryProductsService,
+    private suppliersService: SuppliersService
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarCategorias(); 
+    this.cargarSuppliers();
+  }
+
+  cargarCategorias(): void {
+    this.categoryProductsService.getcategoryProducts().subscribe({
+      next: (data) => {
+        this.categorias = data;
+        console.log('Categorías cargadas:', this.categorias);
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+      }
+    });
+  }
+
+  cargarSuppliers(): void {
+    this.suppliersService.getSuppliers().subscribe({
+      next: (data) => {
+        this.suppliers = data;
+        console.log('Proveedores cargados:', this.suppliers);
+      },
+      error: (err) => {
+        console.error('Error al cargar proveedores:', err);
+      },
+    });
+  }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -77,7 +117,7 @@ export class AgregarModalComponent {
   }
 
   agregarProducto(): void {
-    if (!this.nuevoProducto.name || !this.nuevoProducto.description || !this.nuevoProducto.codeProduct || !this.selectedFile) {
+    if (!this.nuevoProducto.name || !this.nuevoProducto.description || !this.selectedFile) {
       console.error('Por favor, completa todos los campos obligatorios.');
       return;
     }
@@ -90,16 +130,29 @@ export class AgregarModalComponent {
     formData.append('image', this.selectedFile);
   
     const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
-  
-   
+    Swal.fire({
+      title: 'Registrando producto...',
+      html: 'Por favor, espera mientras se completa el registro.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.http.post(url, formData, {
       observe: 'response',  
       responseType: 'json'  
     }).subscribe({
       next: (response: any) => {
-        console.log('Respuesta completa:', response);
+        console.log('Respuesta del servidor:', response); 
+      
         if (response.status === 201) {
-          console.log('Producto registrado con éxito');
+          Swal.fire({
+            title: 'Producto registrado',
+            text: 'El producto se ha registrado con éxito.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+          });
           this.productos.push(response.body);
           this.productoAgregado.emit(response.body);
           this.resetForm();
@@ -107,16 +160,25 @@ export class AgregarModalComponent {
         }
       },
       error: (err) => {
-        console.error('Error completo:', err);
-     
+        Swal.close();
         if (err.status === 201) {
-       
-          console.log('Producto probablemente registrado con éxito');
+          Swal.fire({
+            title: 'Producto registrado',
+            text: 'El producto se ha registrado con éxito.',
+            icon: 'info',
+            confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.reload();
+          });
           this.resetForm();
           this.cerrar();
         } else {
-         
-          console.error('Error al registrar el producto:', err.message);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo registrar el producto.',
+            icon: 'error',
+            confirmButtonText: 'Reintentar'
+          });
         }
       }
     });
@@ -131,8 +193,8 @@ export class AgregarModalComponent {
       amount: 0,
       type: '',
       image: '',
-      supplier: { id: 0 },
-    categoryProducts: { id: 0 },
+      supplier: { id: 0, name: ''},
+      categoryProducts: { id: 0, name: ''},
       codeProduct: '',
       salePrice: 0,
       purchasePrice: 0,
