@@ -51,6 +51,7 @@ import { RoleModalComponent } from './components/roles/role-modal/role-modal.com
 import { EditUserComponent } from '../app/components/User/edit-user/edit-user.component';
 import { AddUserComponent } from '../app/components/User/add-user/add-user.component';
 import { DeleteUserComponent } from '../app/components/User/delete-user/delete-user.component';
+import { RegisterComponent } from './core/register/register.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +92,7 @@ import { DeleteUserComponent } from '../app/components/User/delete-user/delete-u
     EditUserComponent,
     AddUserComponent,
     DeleteUserComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,

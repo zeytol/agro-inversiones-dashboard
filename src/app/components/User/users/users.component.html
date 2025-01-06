@@ -17,6 +17,10 @@
         </svg>
         <span>Add New User</span>
       </button>
+      <button (click)="viewRolesPermissions(users)" class="flex items-center space-x-2 bg-green-500 hover:bg-green-600 transition-colors duration-300 px-4 py-2 rounded-lg shadow-md">
+
+        <span>Ver roles</span>
+      </button>
     </div>
 
     <div *ngIf="loading" class="flex justify-center items-center h-64">
@@ -103,5 +107,43 @@
 
   <!-- Roles Modal -->
   <div *ngIf="userRolesPermissions" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+  </div>
+</div>
+
+<div *ngIf="userRolesPermissions" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-1/2 rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="bg-blue-600 text-white px-4 py-3 flex justify-between items-center rounded-t-lg">
+      <h3 class="text-lg font-bold">Roles and Permissions</h3>
+      <button (click)="closeRolesModal()" class="text-white hover:text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4">
+      <h4 class="text-lg font-semibold mb-3">User: {{ userRolesPermissions.username }}</h4>
+      <div class="mb-4">
+        <h5 class="font-semibold">Roles:</h5>
+        <ul class="list-disc ml-5">
+          <li *ngFor="let role of userRolesPermissions.roles">{{ role }}</li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-semibold">Permissions:</h5>
+        <ul class="list-disc ml-5">
+          <li *ngFor="let permission of userRolesPermissions.permissions">{{ permission }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-gray-100 px-4 py-3 flex justify-end rounded-b-lg">
+      <button (click)="closeRolesModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+        Close
+      </button>
+    </div>
   </div>
 </div>

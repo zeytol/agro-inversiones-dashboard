@@ -34,10 +34,11 @@ export class UsersComponent implements OnInit {
       error: (err) => {
         console.error('Error loading users:', err);
         this.loading = false;
+        alert('There was an error loading the users. Please try again later.');
       }
     });
   }
-
+  
   openAddUserModal(): void {
     this.isAddingUser = true;
   }
@@ -69,10 +70,15 @@ export class UsersComponent implements OnInit {
   }
 
   // Roles and Permissions handlers
+  // Método para ver roles y permisos
   viewRolesPermissions(user: any): void {
-    this.userRolesPermissions = user;
+    this.userRolesPermissions = {
+      username: user.username,
+      roles: user.roles || [],
+      permissions: user.permissions || []
+    };
   }
-
+  // Método para cerrar el modal
   closeRolesModal(): void {
     this.userRolesPermissions = null;
   }
