@@ -1,0 +1,49 @@
+<div class="modal">
+
+  <!-- Tabla de Categorías -->
+  <table class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Imagen</th>
+          <th>Acciones</th>
+          <th><button (click)="cerrarFiltroModal()" class="bg-red-600 text-white">X</button></th>
+        </tr>
+      </thead>
+  
+      <tbody>
+        <tr *ngFor="let categoria of categorias">
+          <td>{{ categoria.name }}</td>
+          <td>{{ categoria.description }}</td>
+          <td><img [src]="categoria.image" alt="{{ categoria.name }}" class="img-category"></td>
+          <td class="actions-container">
+            <button (click)="abrirEditarCategoriaModal(categoria)" class="bg-yellow">Editar</button>
+            <button (click)="eliminarCategoria(categoria)" class="bg-red">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <button (click)="abrirAgregarCategoriaModal()" class="add-category-button mt-4">
+      + Agregar Categoría
+    </button>
+  </table>
+  
+  </div>
+  <!-- Modales de Categorías -->
+  <app-agregar-categoria 
+    *ngIf="agregarCategoriaModalVisible" 
+    (cerrarModal)="cerrarAgregarCategoriaModal()" 
+    (categoriaAgregada)="abrirAgregarCategoriaModal()">
+  </app-agregar-categoria>
+  
+  <app-editar-categoria
+    *ngIf="editarCategoriaModalVisible"
+    (cerrarModal)="cerrarEditarCategoriaModal()"
+    [categoriaSeleccionada]="categoriaSeleccionada"
+    (categoriaEditada)="abrirAgregarCategoriaModal()">
+  </app-editar-categoria>
+  
+  

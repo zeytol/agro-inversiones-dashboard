@@ -1,0 +1,28 @@
+<div class="dashboard-layout">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang"></app-siderbang>
+
+    <!-- Contenedor de gráficos -->
+    <div class="dashboard-container" [ngClass]="{ 'expanded': !isSidebarVisible }">
+      <div class="grid-container">
+        <!-- Gráficos -->
+        <div class="chart-container" *ngFor="let chart of charts">
+          <h2 class="chart-title">{{ chart.title }}</h2>
+          <apx-chart
+            [series]="chart.series"
+            [chart]="chart.chart"
+            [xaxis]="chart.xaxis"
+            [labels]="chart.labels"
+            [stroke]="chart.stroke"
+            [plotOptions]="chart.plotOptions">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

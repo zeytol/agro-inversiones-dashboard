@@ -1,0 +1,6 @@
+<header class="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <button (click)="toggleSidebar()" class="text-white focus:outline-none">
+        <i [class.fas]="true" [ngClass]="isSidebarVisible ? 'fa-bars' : 'fa-times'"></i>
+    </button>
+    <h1 class="text-xl">Dashboard</h1>
+</header>

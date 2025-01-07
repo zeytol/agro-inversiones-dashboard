@@ -1,0 +1,63 @@
+/* Style the sidebar */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Cambiado a 100% para ocupar toda la altura del contenedor */
+    width: 16rem; /* Ajusta el ancho según sea necesario */
+    color: white;
+    padding: 20px; /* Agrega relleno para el espaciado interno */
+    background: linear-gradient(180deg, #A8D08D, #066828); /* Fondo del sidebar */
+}
+
+/* Sidebar title styles */
+.sidebar h1 {
+    font-size: 1.5rem; /* Increased font size for the title */
+    margin-bottom: 5px; /* Add margin for spacing */
+}
+
+.sidebar p {
+    font-size: 0.9rem; /* Slightly smaller font size for the subtitle */
+}
+
+/* Sidebar link style */
+/* Sidebar link style */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    padding: 12px 20px;
+    color: white;
+    font-size: 1rem;
+    text-decoration: none;
+    background-color: #d1930e; /* Default blue color for buttons */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+    margin: 8px 0; /* Adjusted margin for better spacing */
+}
+
+/* Hover effect */
+.sidebar-link:hover {
+    background-color: beige; /* Beige color on hover */
+    color: black; /* Change text color for better contrast */
+    transform: translateX(5px); /* Slight movement effect on hover */
+}
+
+/* Active link style */
+.sidebar-link.active {
+    background-color: beige; /* Beige color for active link */
+    color: black; /* Change text color for contrast */
+}
+
+/* Optional: Add a footer to the sidebar */
+.sidebar::after {
+    content: '';
+    flex-grow: 1; /* Pushes the footer to the bottom */
+}
+
+.sidebar-footer {
+    text-align: center;
+    padding: 10px 0;
+    color: #aaa; /* Light gray for footer text */
+    font-size: 0.8rem;
+}
+
