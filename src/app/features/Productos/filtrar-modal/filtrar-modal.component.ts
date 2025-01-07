@@ -18,6 +18,10 @@ export class FiltrarModalComponent implements OnInit {
   editarCategoriaModalVisible: boolean = false;
   categoriaSeleccionada: any = null;
   categorias: any[] = []; // Lista de categorías
+ // Variables para la notificación
+ notificacionVisible: boolean = false;
+ notificacionMensaje: string = '';
+ notificacionTipo: 'success' | 'error' = 'success'; // 'success' o 'error'
 
   constructor(
     private categoryService: CategoryProductsService,
@@ -84,16 +88,20 @@ export class FiltrarModalComponent implements OnInit {
       return;
     }
   
-    
     const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
     
     this.http.delete(url).subscribe({
       next: () => {
         console.log('Categoría eliminada correctamente.');
         this.categorias = this.categorias.filter(c => c.id !== categoriaSeleccionada.id);
+        
+        // Mostrar la notificación de éxito
+        this.mostrarNotificacion('Categoría eliminada correctamente!', 'success');
       },
       error: (err) => {
         console.error('Error al eliminar la categoría:', err);
+        // Mostrar la notificación de error
+        this.mostrarNotificacion('Error al eliminar la categoría.', 'error');
         console.log('Detalles del error:', {
           status: err.status,
           statusText: err.statusText,
@@ -103,5 +111,17 @@ export class FiltrarModalComponent implements OnInit {
       }
     });
   }
-  
+
+  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error'): void {
+    this.notificacionMensaje = mensaje;
+    this.notificacionTipo = tipo;
+    this.notificacionVisible = true;
+    
+    // Ocultar la notificación después de 3 segundos
+    setTimeout(() => {
+      this.notificacionVisible = false;
+    }, 3000);
+  }
 }
+  
+

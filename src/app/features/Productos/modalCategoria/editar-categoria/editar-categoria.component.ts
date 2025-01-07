@@ -14,17 +14,19 @@ export interface Categoria {
   styleUrls: ['./editar-categoria.component.css']
 })
 export class EditarCategoriaComponent {
-  @Input() categoriaSeleccionada!: Categoria;  
-  @Output() cerrarModal: EventEmitter<void> = new EventEmitter();  
-  @Output() categoriaEditada: EventEmitter<Categoria> = new EventEmitter();  
+  @Input() categoriaSeleccionada!: Categoria;
+  @Output() cerrarModal: EventEmitter<void> = new EventEmitter();
+  @Output() categoriaEditada: EventEmitter<Categoria> = new EventEmitter();
 
-  selectedFile: any = null; 
-  imagePreview: string | ArrayBuffer | null = null;  
+  selectedFile: any = null;
+  imagePreview: string | ArrayBuffer | null = null;
+  
+  showNotification: boolean = false;
+  notificationMessage: string = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Verifica si la categoría tiene imagen y se muestra una imagen predeterminada si no tiene imagen
     if (this.categoriaSeleccionada.image && this.categoriaSeleccionada.image !== '') {
       this.imagePreview = this.categoriaSeleccionada.image;
     } else {
@@ -36,7 +38,6 @@ export class EditarCategoriaComponent {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Verifica el tipo de archivo (si es una imagen válida)
       if (file.type === 'image/jpeg' || file.type === 'image/png') {
         this.selectedFile = file;
 
@@ -68,14 +69,22 @@ export class EditarCategoriaComponent {
     // Enviar los datos con multipart/form-data
     this.http.put(url, formData).subscribe({
       next: (response) => {
-        alert('Categoría actualizada con éxito');
+        this.showNotificationMessage('Categoría actualizada con éxito');
         this.categoriaEditada.emit(this.categoriaSeleccionada);
       },
       error: (error) => {
         console.error('Error al actualizar la categoría:', error);
-        alert('Error al actualizar la categoría');
+        this.showNotificationMessage('Error al actualizar la categoría');
       }
     });
+  }
+
+  showNotificationMessage(message: string): void {
+    this.notificationMessage = message;
+    this.showNotification = true;
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 3000); // Oculta la notificación después de 3 segundos
   }
 
   cerrarEditarCategoriaModal(): void {

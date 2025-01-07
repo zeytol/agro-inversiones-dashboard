@@ -150,3 +150,27 @@ button.bg-red:hover {
     font-size: 20px;
   }
 }
+/* Estilo básico para la notificación */
+.notificacion {
+  padding: 10px;
+  margin: 10px 0;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  display: inline-block;
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+/* Notificación de éxito */
+.success {
+  background-color: #28a745;
+}
+
+/* Notificación de error */
+.error {
+  background-color: #dc3545;
+}

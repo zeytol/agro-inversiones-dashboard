@@ -5,7 +5,6 @@ export interface Categoria {
   id: number;
   name: string;
   description: string;
-
   image: string;
 }
 
@@ -29,13 +28,14 @@ export class AgregarCategoriaComponent {
   imagePreview: string | ArrayBuffer | null = null;
   imageError: string | null = null;
 
+  showNotification: boolean = false;
+  notificationMessage: string = '';
+
   constructor(private http: HttpClient) {}
 
-  // Método para seleccionar archivo
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Validar tipo de archivo
       if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
         this.imageError = 'Solo se permiten imágenes JPEG o PNG';
         this.selectedFile = null;
@@ -55,14 +55,11 @@ export class AgregarCategoriaComponent {
     }
   }
 
-  // Método para registrar la categoría
   agregarCategoria(): void {
     if (!this.nuevaCategoria.name || !this.nuevaCategoria.description) {
-      alert('Por favor, completa todos los campos obligatorios.');
+      this.showNotificationMessage('Por favor, completa todos los campos obligatorios.');
       return;
     }
-
-    
 
     const formData = new FormData();
     const categoryData = {
@@ -81,19 +78,26 @@ export class AgregarCategoriaComponent {
 
     this.http.post(url, formData).subscribe({
       next: (response) => {
-        alert('Categoría registrada con éxito.');
+        this.showNotificationMessage('Categoría registrada con éxito.');
         this.categoriaAgregada.emit(response);
         this.resetForm();
         this.cerrar();
       },
       error: (err) => {
         console.error('Error al registrar la categoría:', err);
-        alert('Ocurrió un error al registrar la categoría.');
+        this.showNotificationMessage('Ocurrió un error al registrar la categoría.');
       }
     });
   }
 
-  // Método para resetear el formulario
+  showNotificationMessage(message: string): void {
+    this.notificationMessage = message;
+    this.showNotification = true;
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 3000); // Oculta la notificación después de 3 segundos
+  }
+
   resetForm(): void {
     this.nuevaCategoria = {
       id: 0,
@@ -106,8 +110,8 @@ export class AgregarCategoriaComponent {
     this.imageError = null;
   }
 
-  // Método para cerrar el modal
   cerrar(): void {
     this.cerrarModal.emit();
   }
 }
+  

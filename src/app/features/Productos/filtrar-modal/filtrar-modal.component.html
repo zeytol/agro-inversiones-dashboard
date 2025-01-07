@@ -19,7 +19,14 @@
         <td><img [src]="categoria.image" alt="{{ categoria.name }}" class="img-category"></td>
         <td class="actions-container">
           <button (click)="abrirEditarCategoriaModal(categoria)" class="bg-yellow">Editar</button>
-          <button (click)="eliminarCategoria(categoria)" class="bg-red">Eliminar</button>
+          <!-- Notificación (se muestra u oculta según el estado) -->
+<div *ngIf="notificacionVisible" class="notificacion" [ngClass]="{ 'success': notificacionTipo === 'success', 'error': notificacionTipo === 'error' }">
+  {{ notificacionMensaje }}
+</div>
+
+<!-- Botón de eliminación -->
+<button (click)="eliminarCategoria(categoria)" class="bg-red">Eliminar</button>
+
         </td>
       </tr>
     </tbody>
