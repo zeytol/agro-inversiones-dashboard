@@ -53,7 +53,7 @@ export class EditarCategoriaComponent {
   }
 
   editarCategoria(): void {
-    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/edit/${this.categoriaSeleccionada.id}`;
+    const url = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories/edit/${this.categoriaSeleccionada.id}`;
 
     const formData = new FormData();
     formData.append('CatProduct', new Blob([JSON.stringify({

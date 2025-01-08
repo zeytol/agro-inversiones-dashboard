@@ -80,7 +80,7 @@ export class AgregarCategoriaComponent {
       formData.append('image', this.selectedFile);
     }
   
-    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/register';
+    const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories/register';
   
     Swal.fire({
       title: 'Registrando categoría...',

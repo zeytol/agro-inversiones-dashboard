@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class CategoryProductsService {
   private categoryProducts: any[] = [];
-  private apiUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories';
+  private apiUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories';
 
   constructor(private http: HttpClient) {}
 

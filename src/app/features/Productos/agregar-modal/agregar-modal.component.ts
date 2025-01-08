@@ -129,7 +129,7 @@ export class AgregarModalComponent {
     }));
     formData.append('image', this.selectedFile);
   
-    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
+    const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/register';
     Swal.fire({
       title: 'Registrando producto...',
       html: 'Por favor, espera mientras se completa el registro.',
