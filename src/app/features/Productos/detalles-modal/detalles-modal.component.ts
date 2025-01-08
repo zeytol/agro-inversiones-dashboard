@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import { ProductsService } from '../../../services/products.service';
 
 @Component({
   selector: 'app-detalles-modal',
@@ -8,102 +10,107 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DetallesModalComponent implements OnInit {
   productos: any[] = [];
-  
-  @Input() producto: any = {};  // Producto recibido desde el componente principal
+
+  @Input() producto: any = {};  
   @Output() cerrarModal = new EventEmitter<void>();
-  @Output() actualizarProducto = new EventEmitter<any>(); // Evento para emitir producto actualizado
-  @Input() verDetalleVisible: boolean = true; // Visibilidad del modal
+  @Output() actualizarProducto = new EventEmitter<any>(); 
+  @Input() verDetalleVisible: boolean = true; 
   @Output() eliminarProductoEvento = new EventEmitter<number>();
   eliminarModalAbierto: boolean = false;
   editarModalVisible: boolean = false;
   detallesModalAbierto: boolean = true;
   productoSeleccionado: any = {};
 
-  constructor(private http: HttpClient) {}
+  constructor(private productsService: ProductsService) {}  
 
-  // Llamar a cargar productos cuando el modal se abre
   ngOnInit() {
     this.cargarProductos();
   }
 
-  // Cargar productos desde el archivo JSON
   cargarProductos() {
-    this.getProductos().subscribe(data => {
-      this.productos = data; 
+    this.productsService.getProductos().subscribe(data => {
+      this.productos = data;
     });
   }
 
-  // Obtener los productos del archivo JSON
-  getProductos() {
-    return this.http.get<any[]>('assets/data/data.Productos.json');
-  }
-
-  // Cerrar el modal
-  cerrarDetallesModal() {
-    this.detallesModalAbierto = false;
-    this.cerrarModal.emit();
-  }
-
-  // Método para abrir el modal de edición
   abrirEditarModal(producto: any) {
-    this.productoSeleccionado = { ...producto }; // Clona el producto seleccionado
-    this.editarModalVisible = true; // Abre el modal de edición
+    this.productoSeleccionado = { ...producto }; 
+    this.editarModalVisible = true; 
   }
-  
-  // Método para cerrar el modal de edición
+
   cerrarEditarModal() {
     this.editarModalVisible = false;
   }
 
-  // Método para actualizar el producto
   guardarProductoEditado() {
-    this.actualizarProducto.emit(this.productoSeleccionado); // Emitir el producto actualizado
-    this.cerrarEditarModal(); // Cierra el modal después de actualizar
+    this.actualizarProducto.emit(this.productoSeleccionado); 
+    this.cerrarEditarModal(); 
   }
 
-  // Método para eliminar un producto
-  // Abrir el modal de eliminación
   abrirEliminarModal(producto: any) {
     this.productoSeleccionado = producto;
     this.eliminarModalAbierto = true;
   }
 
-// Método para determinar el estado basado en el stock
-getEstadoPorStock(stock: number): string {
-  return stock >= 1 ? 'disponible' : 'no disponible';
-}
+  getEstadoPorStock(stock: number): string {
+    return stock >= 1 ? 'disponible' : 'no disponible';
+  }
 
-// Método para asignar clases dinámicas según el stock
-getClasePorStock(stock: number): string {
-  return stock >= 1 ? 'bg-green-600' : 'bg-red-600';
-}
+  getClasePorStock(stock: number): string {
+    return stock >= 1 ? 'bg-green-600' : 'bg-red-600';
+  }
 
-  // Cerrar el modal de eliminación
   cerrarEliminarModal() {
     this.eliminarModalAbierto = false;
-    this.productoSeleccionado = {}; // Limpiar el producto seleccionado
+    this.productoSeleccionado = {}; 
   }
 
-  // Eliminar el producto
   eliminarProducto() {
     if (this.productoSeleccionado && this.productoSeleccionado.id) {
-      console.log('Producto eliminado:', this.productoSeleccionado);
-      
-      // Eliminar el producto de la lista de productos
-      this.productos = this.productos.filter(p => p.id !== this.productoSeleccionado.id);
-      
-      // Cerrar el modal después de eliminar
-      this.cerrarEliminarModal();
-      
-      // Mostrar un mensaje de éxito
-      alert('Producto eliminado correctamente.');
-    } else {
-      console.error('No se puede eliminar: Producto no válido');
+      Swal.fire({
+        title: 'Eliminando...',
+        text: 'Por favor, espera mientras se elimina el producto.',
+        allowOutsideClick: false, 
+        showConfirmButton: false, 
+        willOpen: () => {
+          Swal.showLoading(); 
+        }
+      });
+  
+      this.productsService.eliminarProducto(this.productoSeleccionado.id).subscribe({
+        next: (response) => {
+          this.productos = this.productos.filter(p => p.id !== this.productoSeleccionado.id);
+
+          Swal.fire({
+            title: 'Producto Eliminado',
+            text: 'El producto se ha eliminado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+          });
+  
+          this.cargarProductos(); 
+
+          this.cerrarEliminarModal(); 
+
+        },
+        error: (error) => {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el producto.',
+            icon: 'error',
+            confirmButtonText: 'Reintentar'
+          });
+        }
+      });
     }
   }
+
+  cerrarDetallesModal() {
+    this.cerrarModal.emit();  
+  }
+
   onActualizarProducto(productoActualizado: any) {
     console.log('Producto actualizado:', productoActualizado);
-    // Lógica para actualizar el producto en la base de datos o lista
+    
   }
-  
 }

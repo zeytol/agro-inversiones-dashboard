@@ -56,7 +56,6 @@ import { EditarReporteComponent } from './features/reportes/editar-reporte/edita
 import { TipoReporteComponent } from './features/reportes/tipo-reporte/tipo-reporte.component';
 import { ExportarReporteComponent } from './features/reportes/exportar-reporte/exportar-reporte.component';
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
-import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
 
 // Asegúrate de importar FormsModule
@@ -102,7 +101,6 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     TipoReporteComponent,
     ExportarReporteComponent,
     AgregarCategoriaComponent,
-    EliminarCategoriaComponent,
     EditarCategoriaComponent,
   ],
   imports: [

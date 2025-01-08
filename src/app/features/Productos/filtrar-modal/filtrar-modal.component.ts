@@ -124,4 +124,3 @@ export class FiltrarModalComponent implements OnInit {
   }
 }
   
-
