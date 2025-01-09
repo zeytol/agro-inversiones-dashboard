@@ -26,24 +26,7 @@
 }
 
 /* Estilos de la tabla */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
 
-th, td {
-  padding: 12px;
-  text-align: left;
-  font-size: 16px;
-}
-
-th {
-  background-color: #f9f9f9;
-  color: #555;
-  font-weight: 600;
-  border-bottom: 2px solid #e0e0e0;
-}
 
 td img.img-category {
   width: 50px;

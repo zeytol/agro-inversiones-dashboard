@@ -2,35 +2,48 @@
 
   <!-- Tabla de Categorías -->
   <table class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Imagen</th>
-          <th>Acciones</th>
-          <th><button (click)="cerrarFiltroModal()" class="bg-red-600 text-white">X</button></th>
-        </tr>
-      </thead>
-  
-      <tbody>
-        <tr *ngFor="let categoria of categorias">
-          <td>{{ categoria.name }}</td>
-          <td>{{ categoria.description }}</td>
-          <td><img [src]="categoria.image" alt="{{ categoria.name }}" class="img-category"></td>
-          <td class="actions-container">
-            <button (click)="abrirEditarCategoriaModal(categoria)" class="bg-yellow">Editar</button>
-            <button (click)="eliminarCategoria(categoria)" class="bg-red">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  
+    <div class="relative max-h-[400px] overflow-y-auto border border-gray-300">
+      <table class="table-auto w-full">
+        <thead class="bg-gray-200 sticky top-0 z-10">
+          <tr>
+            <th class="py-2 px-4 text-center">Nombre</th>
+            <th class="py-2 px-4 text-center">Descripción</th>
+            <th class="py-2 px-4 text-center">Imagen</th>
+            <th class="py-2 px-4 text-center">Acciones</th>
+            <th class="py-2 px-4 text-right">
+              <button (click)="cerrarFiltroModal()" class="bg-red-600 text-white px-2 py-1 rounded">
+                X
+              </button>
+            </th>
+          </tr>
+        </thead>
+      
+        <tbody>
+          <tr *ngFor="let categoria of categorias" class="border-b">
+            <td class="py-2 px-4 text-center">{{ categoria.name }}</td>
+            <td class="py-2 px-4 text-center">{{ categoria.description }}</td>
+            <td class="py-2 px-4 text-center">
+              <img [src]="categoria.image" alt="{{ categoria.name }}" class="img-category max-h-10 mx-auto">
+            </td>
+            <td class="py-2 px-4 text-center">
+              <div class="flex justify-center space-x-4">
+                <button (click)="abrirEditarCategoriaModal(categoria)" class="bg-yellow-500 text-white px-2 py-1 rounded">
+                  Editar
+                </button>
+                <button (click)="eliminarCategoria(categoria)" class="bg-red-500 text-white px-2 py-1 rounded">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
     <button (click)="abrirAgregarCategoriaModal()" class="add-category-button mt-4">
       + Agregar Categoría
     </button>
   </table>
-  
   </div>
   <!-- Modales de Categorías -->
   <app-agregar-categoria 
