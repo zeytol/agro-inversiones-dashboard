@@ -152,6 +152,8 @@ export class AgregarModalComponent {
             text: 'El producto se ha registrado con éxito.',
             icon: 'success',
             confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.reload();
           });
           this.productos.push(response.body);
           this.productoAgregado.emit(response.body);

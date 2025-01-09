@@ -86,6 +86,8 @@ export class DetallesModalComponent implements OnInit {
             text: 'El producto se ha eliminado correctamente.',
             icon: 'success',
             confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.reload();
           });
   
           this.cargarProductos(); 

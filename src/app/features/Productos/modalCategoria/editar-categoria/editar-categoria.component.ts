@@ -83,6 +83,8 @@ export class EditarCategoriaComponent {
           text: 'La categoría se ha editado con éxito.',
           icon: 'success',
           confirmButtonText: 'Aceptar'
+        }).then(() => {
+          window.location.reload();
         });
         this.categoriaEditada.emit(this.categoriaSeleccionada);
       },
