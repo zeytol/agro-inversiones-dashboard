@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -8,12 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  email: string = '';
-  username: string = '';
-  password: string = '';
-  errorMessage: string = '';
-
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   togglePasswordVisibility(inputId: string, iconId: string): void {
     const input = document.getElementById(inputId) as HTMLInputElement;
@@ -32,28 +28,30 @@ export class RegisterComponent {
     }
   }
 
-  onSubmit(): void {
-    const userData = {
-      email: this.email,
-      username: this.username,
-      password: this.password,
-    };
-  
-    this.http
-      .post('http://localhost:8091/register', userData, {
-        observe: 'response',
-        responseType: 'text',  // Cambiado a 'text' para probar la respuesta como texto
-      })
-      .subscribe({
-        next: (response: HttpResponse<any>) => {
-          console.log('Usuario registrado:', response.body);
-          this.router.navigate(['/login']);
-        },
-        error: (error: HttpErrorResponse) => {
-          console.error('Error en el registro:', error.message);
-          this.errorMessage = 'Error del servidor. Inténtalo más tarde.';
-        },
-      });
+  onSubmit(form: any): void {
+    if (form.valid) {
+      const user = form.value;
+      const headers = { 'Content-Type': 'application/json' };
+
+      this.http.post('http://127.0.0.1:8091/api/users/register', user, { headers, responseType: 'text' })
+        .pipe(
+          catchError((error) => {
+            console.error('Error registering user:', error);
+            return of(null);
+          })
+        )
+        .subscribe(response => {
+          if (response) {
+            try {
+              const jsonResponse = JSON.parse(response);
+              console.log('User registered successfully:', jsonResponse);
+            } catch (e) {
+              console.error('Error parsing JSON response:', e);
+            }
+          } else {
+            console.warn('No response or non-JSON response received');
+          }
+        });
+    }
   }
-  
 }

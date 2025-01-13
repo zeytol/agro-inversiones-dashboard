@@ -1,25 +1,49 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
 
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private loginUrl = 'http://localhost:8091/login';
+  private readonly API_URL = 'http://127.0.0.1:8091/login';
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    
+    const body = new URLSearchParams();
+    body.set('username', credentials.username);
+    body.set('password', credentials.password);
 
-    // Crear los datos del cuerpo de la solicitud
-    const body = JSON.stringify({ username, password });
+    try {
+      const response = await firstValueFrom(
+        this.http.post<LoginResponse>(
+          this.API_URL,
+          body.toString(),
+          {
+            headers,
+            withCredentials: true
+          }
+        )
+      );
 
-    // Realizar la solicitud HTTP POST
-    return this.http.post<any>(this.loginUrl, body, {
-      headers,
-      withCredentials: true, // Esto reemplaza 'credentials: include'
-    });
+      return response;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Login failed: ${error.message}`);
+      }
+      throw new Error('An unexpected error occurred during login');
+    }
   }
 }
