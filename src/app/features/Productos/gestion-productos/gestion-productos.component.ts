@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, OnInit  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProductsService } from '../../../services/products.service';
 import { CategoryProductsService } from '../../../services/category-products.service';
@@ -33,10 +34,11 @@ export class GestionProductosComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private productsService: ProductsService, 
     private categoryProductsService: CategoryProductsService ) {}
-
+  filteredProductos: any[] = []; 
   categorias: any[] = [];
   productos: any[] = [];
   detallesModalAbierto: boolean = false;
+  searchText: string = '';
 // Para Categorías
 selectedCategoria: string | null = null; // Almacena la categoría seleccionada
 productosFiltrados: any[] = []; // Productos filtrados por categoría
@@ -199,12 +201,37 @@ categoriasPaginadas() {
     this.productsService.getProductos().subscribe(
       (data) => {
         this.productos = data;
+        this.productosFiltrados = [...data];
       },
       (error) => {
         console.error('Error loading products', error);
       }
     );
   }
+
+  filterProducts(searchText: string): void {
+    if (!searchText.trim()) {
+      this.productosFiltrados = this.productos;
+      return;
+    }
+  
+    this.productosFiltrados = this.productos.filter(producto =>
+      producto.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+  
+    if (this.productosFiltrados.length === 0) {
+      Swal.fire({
+        title: 'Producto no encontrado',
+        text: 'No se encontraron productos que coincidan con tu búsqueda.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+        timer: 3000,
+        timerProgressBar: true
+      });
+    }
+  }
+  
+  
 
  cargarCategorias() {
     this.categoryProductsService.getcategoryProducts().subscribe({
