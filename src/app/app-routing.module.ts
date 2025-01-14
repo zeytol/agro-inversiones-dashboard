@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';  // Añade esta importación
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { InventarioComponent } from './features/inventario/inventario.component';
+
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { GestionProductosComponent } from './features/Productos/gestion-productos/gestion-productos.component';
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
@@ -29,7 +31,10 @@ const routes: Routes = [
   { path: 'permisos/crear', component: CreatePermissionComponent },
   { path: 'role', component: RolesComponent },
   { path: 'proveedores', component: ProveedoresComponent },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: 'inventario', component: InventarioComponent},
+  { path: 'ventas', component: VentasComponent },  // Ruta para el componente de ventas
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // Redirige a dashboard por defecto
+  { path: '**', redirectTo: '/dashboard' } 
 ];
 
 @NgModule({

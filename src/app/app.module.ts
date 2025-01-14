@@ -12,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { InventarioComponent } from './features/inventario/inventario.component';
+
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -19,9 +21,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
-
-
 import { FormsModule } from '@angular/forms';
 
 import { ClientesComponent } from './components/clientes/clientes.component';
@@ -35,8 +34,6 @@ import { EditarModalComponent } from './features/Productos/editar-modal/editar-m
 import { FiltrarModalComponent } from './features/Productos/filtrar-modal/filtrar-modal.component';
 import { CarritoModalComponent } from './features/Productos/carrito-modal/carrito-modal.component';
 import { DetallesModalComponent } from './features/Productos/detalles-modal/detalles-modal.component';
-
-
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
@@ -72,6 +69,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     HeaderComponent,
     VentasComponent,
     AgregarClienteComponent,
+    InventarioComponent,
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
