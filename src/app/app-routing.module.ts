@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';  // Añade esta importación
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { InventarioComponent } from './components/inventario/inventario.component';
+import { InventarioComponent } from './features/inventario/inventario.component';
 
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { GestionProductosComponent } from './features/Productos/gestion-productos/gestion-productos.component';
