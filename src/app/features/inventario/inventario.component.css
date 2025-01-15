@@ -74,7 +74,7 @@ img {
 }
 .search-category-button {
   background-color: #007bff;
-  color: white;
+  color: rgb(176, 28, 28);
   border: none;
   padding: 10px 20px;
   cursor: pointer;
