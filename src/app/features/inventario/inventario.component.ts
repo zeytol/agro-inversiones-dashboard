@@ -9,6 +9,8 @@ import { saveAs } from 'file-saver';
 
 const apiUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products';
 
+
+
 interface Product {
   id: number;
   name: string;
@@ -59,21 +61,18 @@ export class InventarioComponent implements OnInit {
     this.loadDisplayedProducts();
     this.fetchProducts();
   }
+  //this.filterByCategory();
 
   fetchProducts(): void {
-    const deletedProductIds = this.getDeletedProductIds(); 
+    const deletedProductIds = this.getDeletedProductIds();
     this.http.get<Product[]>(apiUrl).subscribe(
       (data) => {
-        this.allProducts = data; 
-        
-        // Filtrar productos eliminados
-        this.displayedProducts = this.allProducts.filter(
-          (product) => !deletedProductIds.includes(product.id)
-        );
+        this.allProducts = data.filter(product => !deletedProductIds.includes(product.id));
+        this.displayedProducts = [...this.allProducts];
         this.productIdsInTable = new Set(this.displayedProducts.map((product) => product.id));
+        this.saveDisplayedProducts();
         this.filterByCategory();
-        this.saveDisplayedProducts(); 
-        //console.log('Productos visibles después de recargar:', this.displayedProducts); // Verifica el resultado
+
       },
       (error) => {
         console.error('Error:', error);
@@ -81,6 +80,7 @@ export class InventarioComponent implements OnInit {
       }
     );
   }
+  
   
   getDeletedProductIds(): number[] {
     const deletedIds = localStorage.getItem('deletedProductIds');
@@ -183,10 +183,9 @@ extractCategories(): void {
   this.availableCategories = Array.from(categoriesSet); 
 }
 
-// Método para filtrar los productos según la categoría seleccionada.
 filterByCategory(): void {
   if (this.selectedCategory) {
-    console.log('Categoria seleccionada:', this.selectedCategory); 
+    localStorage.setItem('selectedCategory', this.selectedCategory); // Guardar categoría seleccionada
 
     const filteredProducts = this.allProducts.filter(product =>
       product.categoryProducts.some(category => category.name === this.selectedCategory)
@@ -201,22 +200,38 @@ filterByCategory(): void {
     this.productIdsInTable = new Set(this.displayedProducts.map(product => product.id));  // Asegurar que todos los productos estén en la tabla
   }
 }
+clearCategorySelection(): void {
+  this.selectedCategory = '';
+  localStorage.removeItem('selectedCategory'); // Limpiar categoría del localStorage
+  this.filterByCategory(); // Aplicar filtro vacío
+}
 
 
-  // Agregar un producto a la tabla
-  addRowToTable(product: Product): void {
-    // Verifica si el producto ha sido eliminado previamente
-    if (this.productIdsInTable.has(product.id) || this.getDeletedProductIds().includes(product.id)) {
-      Swal.fire('Aviso', 'El producto ya ha sido eliminado o ya está en la tabla.', 'warning');
-      return;
-    }
-  
-    this.displayedProducts.push(product);
-    this.productIdsInTable.add(product.id);
-    this.selectedProducts.push(false);
-    this.saveDisplayedProducts();
-    Swal.fire('Éxito', 'Producto añadido a la tabla.', 'success');
+
+addRowToTable(product: Product): void {
+  const deletedIds = this.getDeletedProductIds();
+
+  // Si el producto fue eliminado, elimina su ID de la lista de eliminados
+  if (deletedIds.includes(product.id)) {
+    const updatedDeletedIds = deletedIds.filter(id => id !== product.id);
+    this.saveDeletedProductIds(updatedDeletedIds);
   }
+
+  // Verifica si el producto ya está en la tabla
+  if (this.productIdsInTable.has(product.id)) {
+    Swal.fire('Aviso', 'El producto ya está en la tabla.', 'info');
+    return;
+  }
+
+  // Agregar el producto a la tabla
+  this.displayedProducts.push(product);
+  this.productIdsInTable.add(product.id);
+  this.selectedProducts.push(false);
+  this.saveDisplayedProducts();
+
+  Swal.fire('Éxito', 'Producto añadido a la tabla.', 'success');
+}
+
   
   
   
@@ -225,9 +240,9 @@ filterByCategory(): void {
     //console.log("Productos guardados en localStorage:", this.displayedProducts);
   }
   saveDeletedProductIds(deletedIds: number[]): void {
+    //const uniqueIds = Array.from(new Set(deletedIds)); // Eliminar duplicados
     localStorage.setItem('deletedProductIds', JSON.stringify(deletedIds));
   }
-  
   loadDisplayedProducts(): void {
     const storedProducts = localStorage.getItem('displayedProducts');
     const deletedProductIds = this.getDeletedProductIds();
@@ -237,8 +252,12 @@ filterByCategory(): void {
         (product: Product) => !deletedProductIds.includes(product.id)
       );
       this.productIdsInTable = new Set(this.displayedProducts.map((product) => product.id));
+    } else {
+      this.displayedProducts = [];
     }
   }
+  
+  
   
   
   
@@ -287,31 +306,24 @@ filterByCategory(): void {
       }
     });
   }
-
   removeSelectedProducts(): void {
     const remainingProducts: Product[] = [];
-    const deletedIds = this.getDeletedProductIds();
-  
+    const deletedIds = this.getDeletedProductIds();  // Obtener productos eliminados
+    
     this.displayedProducts.forEach((product, index) => {
       if (!this.selectedProducts[index]) {
         remainingProducts.push(product); // Mantén productos no seleccionados
       } else {
-        this.productIdsInTable.delete(product.id); // Elimina el producto de la tabla
-        deletedIds.push(product.id); // Agrega el ID eliminado a la lista
+        this.productIdsInTable.delete(product.id); // Eliminar el producto de la tabla
+        deletedIds.push(product.id); // Agregar el ID eliminado a la lista
       }
     });
-  
+    
     this.displayedProducts = remainingProducts;
     this.selectedProducts = this.displayedProducts.map(() => false);
-    this.saveDisplayedProducts(); // Guarda los productos visibles
-    this.saveDeletedProductIds([...new Set(deletedIds)]); // Guarda IDs eliminados
-    console.log('Productos eliminados (IDs):', deletedIds); // Verifica que los IDs se guarden correctamente
+    this.saveDisplayedProducts();  // Guarda los productos visibles
+    this.saveDeletedProductIds([...new Set(deletedIds)]); // Asegúrate de eliminar duplicados
   }
-  
-  
-  
-
-
   
   
   searchProduct(): void {
@@ -319,50 +331,112 @@ filterByCategory(): void {
       Swal.fire('Aviso', 'Por favor, ingrese un código de producto.', 'warning');
       return;
     }
-
+  
     const searchCodeNormalized = this.searchCode.trim().toLowerCase();
   
-    const product = this.allProducts.find(
-      (p) => p.codeProduct && p.codeProduct.toLowerCase() === searchCodeNormalized 
+    // Buscar en allProducts primero
+    let product = this.allProducts.find(
+      (p) => p.codeProduct && p.codeProduct.toLowerCase() === searchCodeNormalized
     );
   
     if (product) {
+      // Si el producto ya está eliminado, lo recuperamos
+      const deletedIds = this.getDeletedProductIds();
+      if (deletedIds.includes(product.id)) {
+        const updatedDeletedIds = deletedIds.filter((id) => id !== product?.id);
+        this.saveDeletedProductIds(updatedDeletedIds);
+      }
+  
+      // Añadir el producto a la tabla si no está ya
       if (!this.productIdsInTable.has(product.id)) {
-        this.addRowToTable(product); 
+        this.addRowToTable(product);
         Swal.fire('Éxito', 'Producto añadido a la tabla.', 'success');
       } else {
         Swal.fire('Aviso', 'El producto ya está en la tabla.', 'info');
       }
     } else {
-      Swal.fire('No encontrado', 'Producto no encontrado.', 'info');
+      // Buscar en la API si no está en allProducts
+      this.http.get<Product[]>(apiUrl).subscribe(
+        (products) => {
+          product = products.find(
+            (p) => p.codeProduct && p.codeProduct.toLowerCase() === searchCodeNormalized
+          );
+  
+          if (product) {
+            // Si el producto está eliminado, recuperarlo
+            const deletedIds = this.getDeletedProductIds();
+            if (deletedIds.includes(product.id)) {
+              const updatedDeletedIds = deletedIds.filter((id) => id !== product?.id);
+              this.saveDeletedProductIds(updatedDeletedIds);
+            }
+  
+            // Añadir a la tabla
+            if (!this.productIdsInTable.has(product.id)) {
+              this.addRowToTable(product);
+              Swal.fire('Éxito', 'Producto añadido a la tabla.', 'success');
+            } else {
+              Swal.fire('Aviso', 'El producto ya está en la tabla.', 'info');
+            }
+          } else {
+            Swal.fire('No encontrado', 'Producto no encontrado en la API.', 'info');
+          }
+        },
+        (error) => {
+          console.error('Error al buscar el producto en la API:', error);
+          Swal.fire('Error', 'No se pudo realizar la búsqueda. Intente nuevamente.', 'error');
+        }
+      );
     }
+  
+    this.searchCode = '';
   }
-
-
   searchProductsByCategory(): void {
     const categorySearchNormalized = this.searchCategory.trim().toLowerCase();
+    
     if (!categorySearchNormalized) {
-      this.displayedProducts = []; 
+      Swal.fire('Aviso', 'Por favor ingrese una categoría para buscar.', 'warning');
       return;
-    }  
-    const filteredProducts = this.allProducts.filter((product) => {
-      const categories = this.getCategoryProducts(product);
-      return categories.some((category) =>
-        category.name.toLowerCase().includes(categorySearchNormalized)
-      );
-    });
-    if (filteredProducts.length > 0) {
-      filteredProducts.forEach((product) => {
-        if (!this.productIdsInTable.has(product.id)) {
-          this.addRowToTable(product);
-        }
-      });
-      Swal.fire('Éxito', `Se añadieron ${filteredProducts.length} producto(s) a la tabla.`, 'success');
-    } else {
-      Swal.fire('No encontrado', 'No se encontró ningún producto en esa categoría.', 'info');
     }
+    
+    // Realizar la consulta a la API para obtener los productos que coinciden con la categoría buscada
+    this.http.get<Product[]>(apiUrl).subscribe(
+      (products) => {
+        // Filtrar productos que contienen la categoría buscada
+        const filteredProducts = products.filter((product) => {
+          const categories = this.getCategoryProducts(product);
+          return categories.some((category) =>
+            category.name.toLowerCase().includes(categorySearchNormalized)
+          );
+        });
+        
+        let addedProductsCount = 0;
+  
+        // Filtrar solo los productos que no están ya en la tabla
+        filteredProducts.forEach((product) => {
+          if (!this.productIdsInTable.has(product.id)) {
+            this.addRowToTable(product);  // Agregar solo los productos nuevos
+            addedProductsCount++; // Incrementar el contador de productos añadidos
+          }
+        });
+  
+        if (addedProductsCount > 0) {
+          Swal.fire('Éxito', `Se añadió ${addedProductsCount} producto(s) a la tabla.`, 'success');
+        } else {
+          Swal.fire('Aviso', 'Todos los productos ya están en la tabla.', 'info');
+        }
+        
+      },
+      (error) => {
+        console.error('Error al buscar productos por categoría:', error);
+        Swal.fire('Error', 'Hubo un problema al buscar productos por categoría.', 'error');
+      }
+    );
+    
+    // Limpiar el campo de búsqueda
+    this.searchCategory = '';
   }
- 
+  
+  
 toggleCategorySearch(): void {
   this.showCategorySearch = !this.showCategorySearch;
 }
