@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,60 +8,53 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  togglePasswordVisibility(inputId: string, iconId: string): void {
-    const input = document.getElementById(inputId) as HTMLInputElement;
-    const icon = document.getElementById(iconId) as HTMLElement;
-
-    if (input && icon) {
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      }
-    }
-  } 
-passwordVisible: any;
-onGoogleSignIn() {
-throw new Error('Method not implemented.');
-}
-  username: string = '';
-  password: string = '';
-  errorMessage: string = '';
+  loginData = {
+    username: '',
+    password: '',
+    rememberMe: false,
+  };
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {}
-  onSubmit(): void {
-    const params = new HttpParams()
-      .set('username', this.username)
-      .set('password', this.password);
-    console.log('Login params:', params.toString());
+
+  onSubmit() {
+    const formData = new URLSearchParams();
+    formData.append('username', this.loginData.username);
+    formData.append('password', this.loginData.password);
 
     this.http
       .post(
-        'http://localhost:8091/login',
-        null,
+        'https://agroinversiones-api-c-cmgxhcgsfrfzbecw.brazilsouth-01.azurewebsites.net/login',
+        formData.toString(),
         {
-          params: params,
-          observe: 'response',
+          headers: new HttpHeaders({
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }),
+          withCredentials: true,
           responseType: 'text',
-          withCredentials: true
         }
       )
       .subscribe({
-        next: (response: HttpResponse<string>) => {
-          if (response.body && response.body.includes('<!DOCTYPE html>')) {
-            this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
-          } else {
+        next: (response: string) => {
+          if (response.includes('Login successful')) {
+            this.successMessage = 'Inicio de sesión exitoso.';
+            this.errorMessage = null;
+
             this.router.navigate(['/dashboard']);
+          } else {
+            this.handleError('Usuario no encontrado o error en los datos');
           }
         },
-        error: (error: HttpErrorResponse) => {
-          console.error('Error en la autenticación:', error.message);
-          this.errorMessage = 'Error del servidor. Inténtalo más tarde.';
+        error: (error) => {
+          console.error('Error en la petición:', error);
+          this.handleError('Error al intentar iniciar sesaión. Por favor, intente de nuevo.');
         },
       });
+  }
+
+  private handleError(message: string) {
+    this.errorMessage = message;
+    this.successMessage = null;
   }
 }

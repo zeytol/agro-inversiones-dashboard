@@ -33,7 +33,7 @@ export class RegisterComponent {
       const user = form.value;
       const headers = { 'Content-Type': 'application/json' };
 
-      this.http.post('http://127.0.0.1:8091/api/users/register', user, { headers, responseType: 'text' })
+      this.http.post('https://agroinversiones-api-c-cmgxhcgsfrfzbecw.brazilsouth-01.azurewebsites.net/api/users/register', user, { headers, responseType: 'text' })
         .pipe(
           catchError((error) => {
             console.error('Error registering user:', error);
@@ -46,12 +46,13 @@ export class RegisterComponent {
               const jsonResponse = JSON.parse(response);
               console.log('User registered successfully:', jsonResponse);
             } catch (e) {
-              console.error('Error parsing JSON response:', e);
+              console.error('Error parsing JSON response:', e, 'Response:', response);
             }
           } else {
             console.warn('No response or non-JSON response received');
           }
         });
+        
     }
   }
 }
