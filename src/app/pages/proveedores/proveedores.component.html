@@ -37,7 +37,7 @@
               (ngModelChange)="onFilterChange()"
             >
               <option value="all">Seleccionar categoría</option>
-              <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+              <option *ngFor="let category of categories" [value]="category">{{ category.name }}</option>
             </select>
           </div>
           <div>
@@ -116,28 +116,110 @@
       </table>
 
   <!-- Modal Agregar -->
-  <div *ngIf="showAddModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
-      <h2 class="text-xl font-bold mb-4">Agregar Proveedor</h2>
-      <form (submit)="addProveedor()">
-        <input type="text" placeholder="RUC" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.ruc" name="ruc" required />
-        <input type="text" placeholder="Nombre del Proveedor" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.name" name="nombre" required />
-        <input type="email" placeholder="Email" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.contact" name="email" required />
-        <input type="text" placeholder="Teléfono" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.phone" name="telefono" required />
-        <input type="text" placeholder="Dirección Fiscal" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.addres" name="direccion" required />
-        <input type="text" placeholder="Categoría" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.categorySuppliers.name" name="categoria" required />
-        <input type="date" class="w-full border rounded p-2 mb-2" [(ngModel)]="newProveedor.registration_date" name="fechaRegistro" required />
-        <select class="w-full border rounded p-2 mb-4" [(ngModel)]="newProveedor.state" name="estado" required>
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
+<div *ngIf="showAddModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <h2 class="text-xl font-bold mb-4">Agregar Proveedor</h2>
+    <form (submit)="addProveedor()">
+      
+      <!-- RUC -->
+      <div class="mb-4">
+        <input type="text" 
+               placeholder="RUC" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="newProveedor.ruc" 
+               name="ruc" 
+               required 
+               maxlength="11" 
+               pattern="^\d{11}$" />
+        <small *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" class="text-red-500 text-sm">Debe ser exactamente 11 dígitos.</small>
+      </div>
+      
+      <!-- Nombre del Proveedor -->
+      <input type="text" 
+             placeholder="Nombre del Proveedor" 
+             class="w-full border rounded p-2 mb-2" 
+             [(ngModel)]="newProveedor.name" 
+             name="nombre" 
+             required 
+             maxlength="50" />
+      
+      <!-- Email -->
+      <div class="mb-4">
+        <input type="email" 
+               placeholder="Email" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="newProveedor.contact" 
+               name="email" 
+               required 
+               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
+        <small *ngIf="newProveedor.contact && !newProveedor.contact.includes('@')" class="text-red-500 text-sm">El email debe contener el símbolo "arroba".</small>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="mb-4">
+        <input type="text" 
+               placeholder="Teléfono" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="newProveedor.phone" 
+               name="telefono" 
+               required 
+               maxlength="9" 
+               pattern="^\d{9}$" />
+        <small *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" class="text-red-500 text-sm">Debe ser exactamente 9 dígitos.</small>
+      </div>
+      
+      <!-- Dirección Fiscal -->
+      <input type="text" 
+             placeholder="Dirección Fiscal" 
+             class="w-full border rounded p-2 mb-2" 
+             [(ngModel)]="newProveedor.addres" 
+             name="direccion" 
+             required 
+             maxlength="30" />
+
+      <!-- Categoría -->
+      <div class="mb-4">
+        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Categorías</label>
+        <select
+          id="category"
+          [(ngModel)]="newProveedor.categorySuppliers.id"
+          name="category"
+          required
+          class="w-full border rounded p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">Seleccione una categoría</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
         </select>
-        <div class="flex justify-end space-x-2">
-          <button type="button" class="bg-red-500 text-white px-4 py-2 rounded" (click)="closeModal()">Cancelar</button>
-          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Guardar</button>
-        </div>
-      </form>
-    </div>
+      </div>
+
+      <!-- Fecha de Registro -->
+      <input type="date" 
+             class="w-full border rounded p-2 mb-2" 
+             [(ngModel)]="newProveedor.registration_date" 
+             name="fechaRegistro" 
+             required />
+
+      <!-- Estado -->
+      <select class="w-full border rounded p-2 mb-4" 
+              [(ngModel)]="newProveedor.state" 
+              name="estado" 
+              required>
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+
+      <div class="flex justify-end space-x-2">
+        <button type="button" 
+                class="bg-red-500 text-white px-4 py-2 rounded" 
+                (click)="closeModal()">Cancelar</button>
+        <button type="submit" 
+                class="bg-blue-500 text-white px-4 py-2 rounded">Guardar</button>
+      </div>
+    </form>
   </div>
+</div>
 
   <!-- Modal Editar -->
   <div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -149,7 +231,17 @@
         <input type="email" placeholder="Email" class="w-full border rounded p-2 mb-2" [(ngModel)]="selectedProveedor.contact" name="email" required />
         <input type="text" placeholder="Teléfono" class="w-full border rounded p-2 mb-2" [(ngModel)]="selectedProveedor.phone" name="telefono" required />
         <input type="text" placeholder="Dirección Fiscal" class="w-full border rounded p-2 mb-2" [(ngModel)]="selectedProveedor.addres" name="direccion" required />
-        <input type="text" placeholder="Categoría" class="w-full border rounded p-2 mb-2" [(ngModel)]="selectedProveedor.categorySuppliers.name" name="categoria" required />
+        <select
+        class="w-full border rounded p-2 mb-4"
+        [(ngModel)]="selectedProveedor.categorySuppliers.id"
+        name="categoria"
+        required
+      >
+        <option value="" disabled selected>Seleccione una categoría</option>
+        <option *ngFor="let category of categories" [value]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
         <input type="date" class="w-full border rounded p-2 mb-2" [(ngModel)]="selectedProveedor.registration_date" name="fechaRegistro" required />
         <select class="w-full border rounded p-2 mb-4" [(ngModel)]="selectedProveedor.state" name="estado" required>
           <option value="Activo">Activo</option>

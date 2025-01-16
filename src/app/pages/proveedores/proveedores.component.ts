@@ -14,7 +14,7 @@ export class ProveedoresComponent implements OnInit {
   isActive: boolean = false;
   isInactive: boolean = false;
 
-  categories: string[] = ['Fungicidas', 'Pesticidas', 'Repelentes'];
+  categories: any[] = [];
   proveedores: any[] = [];
   filteredProveedores: any[] = [];
 
@@ -24,7 +24,7 @@ export class ProveedoresComponent implements OnInit {
     contact: '',
     phone: '',
     addres: '',
-    categorySuppliers: { id: 0, name: ""},
+    categorySuppliers: { id: 0, name: '' },
     registration_date: '',
     state: 'Activo',
     selected: false
@@ -37,11 +37,13 @@ export class ProveedoresComponent implements OnInit {
   showEditModal: boolean = false;
   showDeleteModal: boolean = false;
   showViewModal: boolean = false;
+  showIncompleteFieldsModal: boolean = false;
 
   constructor(private suppliersService: SuppliersService) {}
 
   ngOnInit(): void {
     this.loadProveedores();
+    this.loadCategories();
     this.applyFilters();
   }
 
@@ -51,19 +53,27 @@ export class ProveedoresComponent implements OnInit {
         console.log('Proveedores recibidos:', data);
         this.proveedores = data;
   
-        // Extraer categorías únicas de los proveedores
+        // Extraer categorías únicas de los proveedores (como string, no como objetos)
         this.categories = Array.from(
-          new Set(
-            this.proveedores.map(
-              (proveedor) => proveedor.categorySuppliers?.name
-            )
-          )
+          new Set(this.proveedores.map((proveedor) => proveedor.categorySuppliers))
         ).filter((category) => category !== undefined);
   
         this.applyFilters();
       },
       (error) => {
         console.error('Error al cargar proveedores:', error);
+      }
+    );
+  }
+
+  loadCategories(): void {
+    this.suppliersService.getCategories().subscribe(
+      (data) => {
+        console.log('Categorías recibidas:', data);
+        this.categories = data;
+      },
+      (error) => {
+        console.error('Error al cargar las categorías:', error);
       }
     );
   }
@@ -98,14 +108,19 @@ export class ProveedoresComponent implements OnInit {
   }
 
   addProveedor(): void {
-    const newProveedor = { ...this.newProveedor, fechaRegistro: new Date().toISOString() };
+    const newProveedor = {
+      ...this.newProveedor,
+      registration_date: new Date().toISOString(),
+      categorySuppliers: { id: this.newProveedor.categorySuppliers.id }
+    };
+  
     this.suppliersService.addSupplier(newProveedor).subscribe(
       (response) => {
         console.log('Proveedor agregado con éxito:', response);
         this.proveedores.push(response);
         this.filteredProveedores.push(response);
         this.resetNewProveedor();
-        this.closeModal(); // Cerrar modal después de agregar
+        this.closeModal();
       },
       (error) => {
         console.error('Error al agregar proveedor:', error);
@@ -120,7 +135,7 @@ export class ProveedoresComponent implements OnInit {
       contact: '',
       phone: '',
       addres: '',
-      categorySuppliers: { id: 0, name: ""},
+      categorySuppliers: { id: 0, name: '' },
       registration_date: '',
       state: 'Activo',
       selected: false
@@ -130,6 +145,7 @@ export class ProveedoresComponent implements OnInit {
   // Métodos para abrir y cerrar modales
   openAddModal(): void {
     this.showAddModal = true;
+    this.loadCategories();
   }
 
   openEditModal(): void {

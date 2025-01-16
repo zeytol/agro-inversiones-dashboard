@@ -10,6 +10,7 @@ import { catchError } from 'rxjs/operators';
 export class SuppliersService {
   private suppliers: any[] = []; 
   private apiUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/suppliers';
+  private categoriesUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/CatSuppliers'; 
 
   constructor(private http: HttpClient) {}
 
@@ -26,6 +27,10 @@ export class SuppliersService {
     }
   }
 
+  getCategories(): Observable<any[]> {
+    return this.http.get<any[]>(this.categoriesUrl);
+  }
+
   setSuppliers(suppliers: any[]): void {
     this.suppliers = suppliers;
   }
@@ -35,10 +40,10 @@ export class SuppliersService {
     return this.http.post<any>(apiUrladd, supplier).pipe(
       catchError((error) => {
         console.error('Error al agregar proveedor:', error);
-        throw error; 
+        throw error; // Lanza el error para que el componente lo maneje
       })
     );
-  }
+}
 
   editSupplier(id: number, supplier: any): Observable<any> {
     const apiUrlEdit = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/suppliers/edit/${id}`;
