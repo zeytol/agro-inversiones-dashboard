@@ -9,8 +9,6 @@ import { saveAs } from 'file-saver';
 
 const apiUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products';
 
-
-
 interface Product {
   id: number;
   name: string;
@@ -88,7 +86,7 @@ export class InventarioComponent implements OnInit {
   }
   exportDocuments(): void {
     const formattedData = this.displayedProducts.map((product, index) => ({
-      ID: index + 1,
+      N: index + 1,
       Nombre: product.name || 'N/A',
       Descripción: product.description || 'N/A',
       Cantidad: product.amount || 0,
@@ -118,7 +116,7 @@ export class InventarioComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'landscape', // Horizontal
       unit: 'mm',
-      format: 'a4'
+      format: 'a4',
     });
   
     // Título
@@ -128,7 +126,7 @@ export class InventarioComponent implements OnInit {
     (doc as any).autoTable({
       head: [
         [
-          'ID',
+          'N°',
           'Nombre',
           'Descripción',
           'Cantidad',
@@ -140,8 +138,8 @@ export class InventarioComponent implements OnInit {
           'Precio de Compra',
           'Descuento',
           'Fecha de Ingreso',
-          'Ubicación'
-        ]
+          'Ubicación',
+        ],
       ],
       body: this.displayedProducts.map((product, index) => [
         index + 1,
@@ -149,23 +147,43 @@ export class InventarioComponent implements OnInit {
         product.description || 'N/A',
         product.amount || 0,
         product.type || 'N/A',
-        this.getSupplier(product).map(sup => sup.name).join(', ') || 'N/A',
-        this.getCategoryProducts(product).map(cat => cat.name).join(', ') || 'N/A',
+        this.getSupplier(product).map((sup) => sup.name).join(', ') || 'N/A',
+        this.getCategoryProducts(product).map((cat) => cat.name).join(', ') || 'N/A',
         product.codeProduct || 'N/A',
         product.salePrice ? product.salePrice.toFixed(2) : '0.00',
         product.purchasePrice ? product.purchasePrice.toFixed(2) : '0.00',
         product.descuento || '0%',
         product.fechaIngreso || 'N/A',
-        product.ubicacion || 'N/A'
+        product.ubicacion || 'N/A',
       ]),
       startY: 20,
       theme: 'grid',
       headStyles: { fillColor: [100, 149, 237] }, // Color azul para encabezados
-      styles: { fontSize: 8 } // Ajustar tamaño de fuente
+      styles: { fontSize: 8 }, // Ajustar tamaño de fuente
     });
   
-    // Descargar el PDF
-    doc.save('reporte_inventario.pdf');
+    // Convertir el PDF a un objeto Blob para la vista previa
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+  
+    // Abrir una nueva ventana o pestaña para la vista previa
+    const previewWindow = window.open();
+    if (previewWindow) {
+      previewWindow.document.write(`
+        <html>
+          <head>
+            <title>Vista previa del PDF</title>
+          </head>
+          <body style="margin: 0; display: flex; flex-direction: column; align-items: center;">
+            <embed src="${pdfUrl}" width="100%" height="90%" type="application/pdf" />
+            <button onclick="window.close()" style="margin-top: 10px; padding: 10px 20px; font-size: 16px;">Cerrar</button>
+          </body>
+        </html>
+      `);
+      previewWindow.document.close();
+    } else {
+      console.error('No se pudo abrir la ventana de vista previa.');
+    }
   }
   
 
