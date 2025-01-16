@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -19,11 +20,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { SiderbangComponent } from './shared/siderbang/siderbang.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
-
-
 import { FormsModule } from '@angular/forms';
-
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { ConfirmDeleteModalComponent } from './modals/confirm-delete-modal/confirm-delete-modal.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -36,8 +33,6 @@ import { FiltrarModalComponent } from './features/Productos/filtrar-modal/filtra
 import { CarritoModalComponent } from './features/Productos/carrito-modal/carrito-modal.component';
 import { DetallesModalComponent } from './features/Productos/detalles-modal/detalles-modal.component';
 
-
-
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
 import { RolesListComponent } from './components/roles/roles-list/roles-list.component';
@@ -48,7 +43,7 @@ import { SuccessModalComponent } from './components/roles/success-modal/success-
 import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component';
 import { RolesComponent } from './components/roles/roles/roles.component';
-import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; // Asegúrate de importar FormsModule
+import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component'; 
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { ReportesComponent } from './features/reportes/reportes.component';
 import { AgregarReporteComponent } from './features/reportes/agregar-reporte/agregar-reporte.component';
@@ -58,8 +53,6 @@ import { ExportarReporteComponent } from './features/reportes/exportar-reporte/e
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
-
-// Asegúrate de importar FormsModule
 
 
 @NgModule({
