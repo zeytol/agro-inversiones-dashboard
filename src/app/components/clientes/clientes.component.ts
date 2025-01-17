@@ -25,17 +25,7 @@ interface Cliente {
 export class ClientesComponent {
   isSidebarVisible = true;
   clientes: Cliente[] = [
-    {
-      nombre: 'Miguel',
-      tipoCliente: 'Particular', 
-      tipoDocumento: 'DNI', 
-      dniRuc: '71458957',
-      direccion: 'Av. Panama 332',
-      telefono: '987654321',
-      correo: 'usuario1@gmail.com',
-      estado: 'Disponible',
-      fotoUrl: 'ruta/a/foto1.jpg'
-    },
+   
     {
       nombre: 'Laura',
       tipoCliente: 'Empresa', 

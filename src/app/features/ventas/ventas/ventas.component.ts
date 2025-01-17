@@ -1,93 +1,134 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { CarritoService } from '../../../shared/carrito.service';
+import { ClienteService } from '../../../shared/cliente.service';
 
 @Component({
   selector: 'app-ventas',
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
-export class VentasComponent {
+export class VentasComponent implements OnInit {
   isSidebarVisible = true;
-  dni: string = '';
   mostrarAgregarCliente = false;
-  mostrarConfirmacionDni = false;  
+  mostrarConfirmacionDni = false;
+  clienteNoEncontrado = false; 
+  clienteEncontrado = false;    
+  cliente: any = {};            
+  numeroDocumento: string = '';
+  carrito: any[] = [];
 
-  dniModal: string = '';
-  nombre: string = '';
-  apellido: string = '';
-  direccion: string = '';
-  telefono: string = '';
-  correo: string = '';
-  frecuencia: string = '';
-  selectedImage: File | null = null;
+  productos: any[] = [];
 
+
+
+  totalCarrito: number = 0;
+
+  @Output() finalizarCompraEvento = new EventEmitter<any[]>();
+
+  constructor(private router: Router,private carritoService: CarritoService,private clienteService : ClienteService) {}
+
+  ngOnInit(): void {
+    this.productos = this.carritoService.getProductos();  
+
+  };
+  
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
     setTimeout(() => this.updateChartsSize(), 300);
   }
 
   private updateChartsSize() {
+    // Implementación de ajuste de gráficos si es necesario
   }
 
-  buscarCliente() {
-    const clienteEncontrado = this.verificarClienteExistente(this.dni);
+  subtotal(): number {
+    return this.productos.reduce((acc, producto) => acc + producto.salePrice * producto.cantidad, 0);
+  }
 
-    if (!clienteEncontrado) {
+  igv(): number {
+    return this.subtotal() * 0.18;  // Cálculo del IGV (18%).
+  }
+
+  total(): number {
+    return this.subtotal() + this.igv();
+  }
+
+  eliminarProducto(producto: any) {
+    const index = this.productos.indexOf(producto);
+    if (index > -1) {
+      this.productos.splice(index, 1); // Eliminar producto.
       Swal.fire({
-        icon: 'error',
-        title: 'Cliente no encontrado!',
-        text: 'El cliente no existe. ¿Desea agregar un nuevo cliente?',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, agregar',
-        cancelButtonText: 'No, cancelar',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.abrirAgregarCliente();
-        }
+        icon: 'success',
+        title: 'Producto eliminado',
+        text: `${producto.name} ha sido eliminado del carrito.`,
+        confirmButtonText: 'OK'
       });
     }
   }
 
-  private verificarClienteExistente(dni: string): boolean {
-    return false; 
-  }
-
-  abrirAgregarCliente() {
-    this.mostrarAgregarCliente = true;
-  }
-
-  cerrarAgregarCliente() {
-    this.mostrarAgregarCliente = false;
-    this.resetForm(); 
-  }
-
-  agregarCliente() {
-    if (!this.dniModal || !this.nombre || !this.apellido) {
-      this.mostrarError("Todos los campos son obligatorios. Por favor, complete toda la información del cliente.");
+  finalizarCompra() {
+    if (this.productos.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Carrito vacío',
+        text: 'No hay productos en el carrito para finalizar la compra.',
+        confirmButtonText: 'OK'
+      });
       return;
     }
 
-    if (this.selectedImage) {
-      const formData = new FormData();
-      formData.append('image', this.selectedImage, this.selectedImage.name);
-      console.log(`Imagen subida: ${this.selectedImage.name}`);
-    }
-
-    console.log(`Cliente agregado: ${this.nombre}, DNI: ${this.dniModal}`);
-    this.cerrarAgregarCliente();
+    const totalAPagar = this.total().toFixed(2); 
 
     Swal.fire({
       icon: 'success',
-      title: 'Registro guardado',
-      text: 'El cliente ha sido guardado correctamente',
+      title: 'Compra realizada',
+      text: `Total a pagar: S/. ${totalAPagar}`,
       confirmButtonText: 'OK'
-    }).then(() => {
-      this.mostrarConfirmacionDni = true; 
     });
+
+    this.carrito = []; 
+    this.totalCarrito = 0;
   }
 
+   buscarCliente() {
+  // Llamada al servicio para obtener todos los clientes
+  this.clienteService.getTodosClientes().subscribe({
+    next: (clientes) => {
+      // Buscar el cliente que coincida con el numeroDocumento
+      const clienteEncontrado = clientes.find(cliente => cliente.numeroDocumento === this.numeroDocumento);
+
+      if (clienteEncontrado) {
+        this.cliente = clienteEncontrado;
+        this.clienteEncontrado = true;
+        this.clienteNoEncontrado = false;
+      } else {
+        this.clienteEncontrado = false;
+        this.clienteNoEncontrado = true;
+        Swal.fire({
+          icon: 'error',
+          title: 'Cliente no encontrado',
+          text: 'El cliente no existe. Verifique el DNI ingresado.',
+          confirmButtonText: 'OK',
+        });
+      }
+    },
+    error: () => {
+      this.clienteEncontrado = false;
+      this.clienteNoEncontrado = true;
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al obtener los clientes. Intente nuevamente.',
+        confirmButtonText: 'OK',
+      });
+    }
+  });
+}
+validarSoloNumeros() {
+  this.numeroDocumento = this.numeroDocumento.replace(/[^0-9]/g, '');  // Reemplaza todo lo que no sea número
+}
   mostrarError(mensaje: string) {
     Swal.fire({
       icon: 'error',
@@ -99,29 +140,7 @@ export class VentasComponent {
   }
 
   confirmarDniCliente() {
-    console.log(`DNI confirmado: ${this.dni}`);
-    this.mostrarConfirmacionDni = false; 
-  }
-
-  cancelar() {
-    this.cerrarAgregarCliente(); 
-  }
-
-  private resetForm() {
-    this.dniModal = '';
-    this.nombre = '';
-    this.apellido = '';
-    this.direccion = '';
-    this.telefono = '';
-    this.correo = '';
-    this.frecuencia = '';
-    this.selectedImage = null;
-  }
-
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedImage = file;
-    }
+    console.log(`DNI confirmado: ${this.numeroDocumento}`);
+    this.mostrarConfirmacionDni = false;
   }
 }

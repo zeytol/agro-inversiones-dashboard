@@ -278,15 +278,22 @@ cerrarEliminarCategoriaModal(): void {
     console.log('Aplicando filtros:', this.precioMinimo, this.precioMaximo, this.proveedoresSeleccionados);
   }
 
-  agregarACarrito(producto: any) {
-    const itemEnCarrito = this.carrito.find(item => item.nombre === producto.nombre);
-    if (itemEnCarrito) {
-      itemEnCarrito.cantidad++;
-    } else {
-      this.carrito.push({ ...producto, cantidad: 1 });
-    }
-    this.calcularTotal();
+  // Método para agregar productos al carrito
+agregarACarrito(producto: any) {
+  const productoEnCarrito = this.carrito.find(prod => prod.id === producto.id);
+
+  if (!producto.salePrice) {
+    console.warn(`El producto "${producto.name}" no tiene un precio válido.`);
+    return;
   }
+
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad++;
+  } else {
+    this.carrito.push({ ...producto, cantidad: 1 });
+  }
+}
+
   abrirDetallesModal(producto: any) {
     this.productoSeleccionado = producto;
     this.detallesModalAbierto = true;

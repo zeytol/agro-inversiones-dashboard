@@ -1,99 +1,85 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { CarritoService } from '../../../shared/carrito.service';
+
 @Component({
   selector: 'app-carrito-modal',
   templateUrl: './carrito-modal.component.html',
   styleUrls: ['./carrito-modal.component.css']
 })
-export class CarritoModalComponent {
-  @Input() carrito: any[] = []; // Recibe el carrito desde el componente padre
-  @Input() totalCarrito: number = 0; // Recibe el total del carrito desde el componente padre
-  @Output() cerrarCarritoModal = new EventEmitter<void>(); // Emite evento para cerrar el modal
-  carritoVisible: boolean = true// Método para cerrar el carrito
-  constructor(private router: Router) {}
+export class CarritoModalComponent {  
+  @Input() carrito: any[] = []; // Lista de productos en el carrito
+  @Input() totalCarrito: number = 0; // Total calculado del carrito
+  @Output() cerrarCarritoModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  @Output() carritoActualizado = new EventEmitter<any[]>(); // Evento para actualizar el carrito en el componente padre
+
+  carritoVisible: boolean = true;
+
+  constructor(private router: Router, private cdr: ChangeDetectorRef,    private carritoService: CarritoService
+  ) {}
+
+  // Cerrar el modal del carrito
   cerrarCarrito() {
-    this.cerrarCarritoModal.emit(); // Emite el evento para cerrar el carrito
-  }
-  aceptarCarrito() {
-    this.router.navigate(['/ventas']); // Redirige a la ruta '/ventas'
-    console.log("Carrito cerrado y redirigido a /ventas");
+    this.cerrarCarritoModal.emit();
   }
 
-  // Método para eliminar un producto del carrito
-  eliminarProducto(producto: any) {
-    // Elimina el producto utilizando el name del producto
-    this.carrito = this.carrito.filter(item => item.name !== producto.name);
-    this.actualizarTotal(); // Actualiza el total después de eliminar
-    console.log(`Producto con name "${producto.name}" eliminado`);
+  // Incrementar cantidad de un producto
+  incrementarCantidad(producto: any) {
+    producto.cantidad++;
+    this.actualizarTotal();
   }
 
-  // Método para actualizar el total
-calcularTotal() {
-  this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.urchasePrice.replace('$', '')), 0);
-}
-
-
-
-  // Método para agregar productos al carrito
-  agregarACarrito(producto: any) {
-    const itemEnCarrito = this.carrito.find(item => item.name === producto.name);
-
-    if (itemEnCarrito) {
-      itemEnCarrito.cantidad++; // Aumenta la cantidad si el producto ya está en el carrito
+  // Decrementar cantidad de un producto
+  decrementarCantidad(producto: any) {
+    if (producto.cantidad > 1) {
+      producto.cantidad--;
+      this.actualizarTotal();
     } else {
-      this.carrito.push({ ...producto, cantidad: 1 }); // Si no está, lo agrega con cantidad 1
-    }
-
-    this.actualizarTotal(); // Actualiza el total después de agregar
-    console.log(`${producto.name} ha sido agregado al carrito.`);
-  }
-
-  // Método para incrementar la cantidad de un producto en el carrito
-  incrementarCantidad(item: any) {
-    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.name === item.name);
-    
-    if (itemEnCarrito) {
-      itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
-      this.actualizarTotal(); // Actualiza el total después de incrementar
-      console.log(`Cantidad de ${item.name} incrementada a ${itemEnCarrito.cantidad}.`);
+      this.eliminarProducto(producto);
     }
   }
 
-  // Método para decrementar la cantidad de un producto en el carrito
-  decrementarCantidad(item: any) {
-    if (item.cantidad > 1) {
-      item.cantidad--;
-      this.actualizarTotal(); // Actualiza el total después de decrementar
+  // Eliminar producto del carrito
+  eliminarProducto(producto: any) {
+    const index = this.carrito.indexOf(producto);
+    if (index > -1) {
+      this.carrito.splice(index, 1); 
+      this.actualizarTotal();
+      this.carritoActualizado.emit(this.carrito); // Notificar cambios al componente padre
     }
   }
 
-  // Método para actualizar el total del carrito
-  actualizarTotal() {
-    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
-  }
-
-  // Método para calcular el subtotal del carrito
+  // Calcular subtotal
   subtotal(): number {
-    return this.carrito.reduce((acc, item) => {
-      const precioSinSimbolo = parseFloat(item.precio.replace('$', '')); // Elimina el símbolo de moneda
-      return acc + (precioSinSimbolo * item.cantidad);
+    return this.carrito.reduce((acc, producto) => {
+      const precio = parseFloat(producto.salePrice || '0'); // Asegurar que el precio es un número
+      return acc + precio * producto.cantidad;
     }, 0);
   }
 
+  // Actualizar total del carrito
+  actualizarTotal() {
+    this.totalCarrito = this.subtotal();
+    this.carritoActualizado.emit(this.carrito); // Notificar cambios al total
+  }
 
-
-  finalizarCompra() {
+  realizarCompra() {
     if (this.carrito.length === 0) {
-      alert('El carrito está vacío. No se puede finalizar la compra.');
+      alert('El carrito está vacío.');
       return;
     }
 
-    // Aquí puedes implementar la lógica para finalizar la compra
-    console.log('Finalizando compra con los siguientes artículos:', this.carrito);
-    // Limpia el carrito después de finalizar la compra
-    this.router.navigate(['/ventas']);
+    alert(`Compra realizada con éxito. Total: S/. ${this.totalCarrito.toFixed(2)}`);
+
+    // Guardar los productos seleccionados en el servicio
+    this.carritoService.setProductos(this.carrito);
+
+    // Reiniciar el carrito
     this.carrito = [];
     this.totalCarrito = 0;
-    
+    this.carritoActualizado.emit(this.carrito);
+
+    // Navegar a la página de ventas
+    this.router.navigate(['/ventas']);
   }
 }
