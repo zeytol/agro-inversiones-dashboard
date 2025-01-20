@@ -13,7 +13,7 @@ export class ProveedoresComponent implements OnInit {
   selectedCategory: string = 'all';
   isActive: boolean = false;
   isInactive: boolean = false;
-
+  p: number = 1;
   categories: any[] = [];
   proveedores: any[] = [];
   filteredProveedores: any[] = [];
@@ -59,10 +59,17 @@ export class ProveedoresComponent implements OnInit {
         console.log('Proveedores recibidos:', data);
         this.proveedores = data;
   
-        // Extraer categorías únicas de los proveedores (como string, no como objetos)
+        // Obtener categorías únicas usando un Map
         this.categories = Array.from(
-          new Set(this.proveedores.map((proveedor) => proveedor.categorySuppliers))
-        ).filter((category) => category !== undefined);
+          new Map(
+            this.proveedores
+              .filter((proveedor) => proveedor.categorySuppliers) // Filtrar proveedores válidos
+              .map((proveedor) => [
+                proveedor.categorySuppliers.id,
+                proveedor.categorySuppliers,
+              ]) // Crear pares [id, objeto categoría]
+          ).values() // Obtener solo los valores únicos
+        );
   
         this.applyFilters();
       },
@@ -93,7 +100,9 @@ export class ProveedoresComponent implements OnInit {
       : true;
 
       // Filtro por categoría
-      const matchesCategory = this.selectedCategory === 'all' || proveedor.categorySuppliers?.name === this.selectedCategory;
+      const matchesCategory =
+      this.selectedCategory === 'all' ||
+      (proveedor.categorySuppliers && proveedor.categorySuppliers.name === this.selectedCategory);
 
       // Filtro por estado
       const isActiveMatch = this.isActive ? proveedor.state === 'Activo' : true;
@@ -101,6 +110,7 @@ export class ProveedoresComponent implements OnInit {
 
       return matchesSearchTerm && matchesCategory && isActiveMatch && isInactiveMatch;
     });
+    this.p = 1; 
   }
 
   onFilterChange(): void {
@@ -240,27 +250,28 @@ export class ProveedoresComponent implements OnInit {
   // Método para editar proveedor
 editProveedor(): void {
   if (this.selectedProveedor) {
-    const proveedorEditado = { ...this.selectedProveedor }; 
+    const proveedorEditado = { ...this.selectedProveedor };
+    
+    if (proveedorEditado.registration_date) {
+      proveedorEditado.registration_date = new Date(proveedorEditado.registration_date).getTime();
+    }
+
     const proveedorId = this.selectedProveedor.id; 
 
     this.suppliersService.editSupplier(proveedorId, proveedorEditado).subscribe(
       (response) => {
         console.log('Proveedor editado con éxito:', response);
 
-        // Actualizar los datos de los proveedores en el array local
         const index = this.proveedores.findIndex(prov => prov.id === proveedorId);
         if (index !== -1) {
           this.proveedores[index] = response;
           this.filteredProveedores[index] = response;
         }
 
-        // Mostrar el modal de éxito
         this.showModalEditarExito = true;
 
-        // Cerrar el modal de edición
         this.closeModal();
 
-        // Cerrar el modal de éxito después de 3 segundos y refrescar la página
         setTimeout(() => {
           this.showModalEditarExito = false; // Cerrar el modal de éxito
           window.location.reload(); // Recargar la página
@@ -269,13 +280,10 @@ editProveedor(): void {
       (error) => {
         console.error('Error al editar proveedor:', error);
 
-        // Mostrar el modal de error
         this.showModalEditarError = true;
 
-        // Cerrar el modal de edición
         this.closeModal();
 
-        // Cerrar el modal de error después de 3 segundos y refrescar la página
         setTimeout(() => {
           this.showModalEditarError = false; // Cerrar el modal de error
           window.location.reload(); // Recargar la página
@@ -284,6 +292,18 @@ editProveedor(): void {
     );
   }
 }
+
+  // Método para formatear la fecha en el formato 'YYYY-MM-DD'
+  get formattedRegistrationDate(): string {
+    const date = new Date(this.selectedProveedor.registration_date);
+    return date.toISOString().split('T')[0]; // Obtiene el formato 'YYYY-MM-DD'
+  }
+
+  // Método para actualizar la fecha cuando se edita
+  set formattedRegistrationDate(value: string) {
+    // Convierte la fecha seleccionada en el input 'YYYY-MM-DD' al formato de milisegundos
+    this.selectedProveedor.registration_date = new Date(value).getTime();
+  }
 
   openModalEditarExito() {
     this.showModalEditarExito = true;

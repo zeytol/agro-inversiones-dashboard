@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -106,6 +107,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     MatInputModule,
     MatSelectModule,
     HttpClientModule, 
+    NgxPaginationModule,
     ReactiveFormsModule,
     NgApexchartsModule,
   ],
