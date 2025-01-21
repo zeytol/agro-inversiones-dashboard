@@ -44,6 +44,10 @@ export class ProveedoresComponent implements OnInit {
   showModalEditarError: boolean = false;
   showModalEliminarExito: boolean = false;
   showModalEliminarError: boolean = false;
+  showInProgressModal: boolean = false;
+  showInProgressModalEditar: boolean = false;
+  showInProgressModalEliminar: boolean = false;
+
 
   constructor(private suppliersService: SuppliersService) {}
 
@@ -129,11 +133,13 @@ export class ProveedoresComponent implements OnInit {
   }
 
   addProveedor(): void {
-    // Verificar si los campos están completos y correctos
     if (!this.validateFields()) {
       this.showIncompleteFieldsModal = true; // Muestra el modal de advertencia
       return;
     }
+  
+    // Mostrar el modal "En proceso"
+    this.showInProgressModal = true;
   
     const newProveedor = {
       ...this.newProveedor,
@@ -141,17 +147,16 @@ export class ProveedoresComponent implements OnInit {
       categorySuppliers: { id: this.newProveedor.categorySuppliers.id }
     };
   
-    // Llamar al servicio para agregar el proveedor
     this.suppliersService.addSupplier(newProveedor).subscribe(
       (response) => {
         console.log('Proveedor agregado con éxito:', response);
         if (response) {
-          // Agrega el proveedor a la lista original y filtrada
           this.proveedores.push(response);
           this.filteredProveedores = [...this.proveedores]; // Actualiza la lista filtrada
           this.resetNewProveedor();
           this.closeModal();
-          this.showSuccessModal = true;  // Mostrar el modal de éxito
+          this.showInProgressModal = false; // Ocultar el modal "En proceso"
+          this.showSuccessModal = true; // Mostrar el modal de éxito
           
           // Cerrar el modal de éxito después de 3 segundos y refrescar la página
           setTimeout(() => {
@@ -162,8 +167,9 @@ export class ProveedoresComponent implements OnInit {
       },
       (error) => {
         console.error('Error al agregar proveedor:', error);
+        this.showInProgressModal = false; // Ocultar el modal "En proceso"
         this.showErrorModal = true;  // Mostrar el modal de error
-        
+  
         // Cerrar el modal de error después de 3 segundos y refrescar la página
         setTimeout(() => {
           this.showErrorModal = false; // Cerrar el modal de error
@@ -172,7 +178,6 @@ export class ProveedoresComponent implements OnInit {
       }
     );
   }
-  
   
   closeIncompleteFieldsModal(): void {
     this.showIncompleteFieldsModal = false;
@@ -248,50 +253,60 @@ export class ProveedoresComponent implements OnInit {
   }
 
   // Método para editar proveedor
-editProveedor(): void {
-  if (this.selectedProveedor) {
-    const proveedorEditado = { ...this.selectedProveedor };
-    
-    if (proveedorEditado.registration_date) {
-      proveedorEditado.registration_date = new Date(proveedorEditado.registration_date).getTime();
-    }
+  editProveedor(): void {
+    if (this.selectedProveedor) {
+      const proveedorEditado = { ...this.selectedProveedor };
 
-    const proveedorId = this.selectedProveedor.id; 
-
-    this.suppliersService.editSupplier(proveedorId, proveedorEditado).subscribe(
-      (response) => {
-        console.log('Proveedor editado con éxito:', response);
-
-        const index = this.proveedores.findIndex(prov => prov.id === proveedorId);
-        if (index !== -1) {
-          this.proveedores[index] = response;
-          this.filteredProveedores[index] = response;
-        }
-
-        this.showModalEditarExito = true;
-
-        this.closeModal();
-
-        setTimeout(() => {
-          this.showModalEditarExito = false; // Cerrar el modal de éxito
-          window.location.reload(); // Recargar la página
-        }, 3000); // 3000 ms = 3 segundos
-      },
-      (error) => {
-        console.error('Error al editar proveedor:', error);
-
-        this.showModalEditarError = true;
-
-        this.closeModal();
-
-        setTimeout(() => {
-          this.showModalEditarError = false; // Cerrar el modal de error
-          window.location.reload(); // Recargar la página
-        }, 3000); // 3000 ms = 3 segundos
+      if (proveedorEditado.registration_date) {
+        proveedorEditado.registration_date = new Date(proveedorEditado.registration_date).getTime();
       }
-    );
+
+      const proveedorId = this.selectedProveedor.id;
+
+      // Mostrar el modal "En proceso"
+      this.showInProgressModalEditar = true;
+
+      this.suppliersService.editSupplier(proveedorId, proveedorEditado).subscribe(
+        (response) => {
+          console.log('Proveedor editado con éxito:', response);
+
+          // Actualizar la lista de proveedores
+          const index = this.proveedores.findIndex(prov => prov.id === proveedorId);
+          if (index !== -1) {
+            this.proveedores[index] = response;
+            this.filteredProveedores[index] = response;
+          }
+
+          // Ocultar el modal "En proceso" y mostrar el de éxito
+          this.showInProgressModal = false;
+          this.showModalEditarExito = true;
+
+          this.closeModal();
+
+          // Cerrar el modal de éxito después de 3 segundos y refrescar la página
+          setTimeout(() => {
+            this.showModalEditarExito = false;
+            window.location.reload(); // Recargar la página
+          }, 3000);
+        },
+        (error) => {
+          console.error('Error al editar proveedor:', error);
+
+          // Ocultar el modal "En proceso" y mostrar el de error
+          this.showInProgressModal = false;
+          this.showModalEditarError = true;
+
+          this.closeModal();
+
+          // Cerrar el modal de error después de 3 segundos y refrescar la página
+          setTimeout(() => {
+            this.showModalEditarError = false;
+            window.location.reload(); // Recargar la página
+          }, 3000);
+        }
+      );
+    }
   }
-}
 
   // Método para formatear la fecha en el formato 'YYYY-MM-DD'
   get formattedRegistrationDate(): string {
@@ -325,20 +340,26 @@ editProveedor(): void {
   deleteProveedor(): void {
     if (this.selectedProveedor && this.selectedProveedor.id) {
       const proveedorId = this.selectedProveedor.id;
-  
+
+      // Mostrar el modal "En proceso"
+      this.showInProgressModalEliminar = true;
+
       this.suppliersService.deleteSupplier(proveedorId).subscribe(
         (response) => {
           console.log('Proveedor eliminado con éxito:', response);
-  
+
           // Elimina el proveedor de las listas locales
           this.proveedores = this.proveedores.filter(prov => prov.id !== proveedorId);
           this.filteredProveedores = this.filteredProveedores.filter(prov => prov.id !== proveedorId);
-  
-          this.closeModal(); // Cierra el modal de eliminación
-  
+
+          // Ocultar el modal "En proceso"
+          this.showInProgressModalEliminar = false;
+
           // Mostrar el modal de éxito
           this.showModalEliminarExito = true;
-  
+
+          this.closeModal(); // Cierra el modal de eliminación
+
           // Cerrar el modal de éxito después de 3 segundos y refrescar la página
           setTimeout(() => {
             this.showModalEliminarExito = false; // Cerrar el modal de éxito
@@ -347,10 +368,13 @@ editProveedor(): void {
         },
         (error) => {
           console.error('Error al eliminar proveedor:', error);
-  
+
+          // Ocultar el modal "En proceso"
+          this.showInProgressModalEliminar = false;
+
           // Mostrar el modal de error
           this.showModalEliminarError = true;
-  
+
           // Cerrar el modal de error después de 3 segundos y refrescar la página
           setTimeout(() => {
             this.showModalEliminarError = false; // Cerrar el modal de error
