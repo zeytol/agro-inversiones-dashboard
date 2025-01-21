@@ -260,6 +260,14 @@
     </div>
   </div>
 
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-blue-500">Guardando...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se guarda el proveedor.</p>
+    </div>
+  </div>
+
   <!-- Modal Error -->
   <div *ngIf="showErrorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
@@ -383,6 +391,14 @@
     </div>
   </div>
 
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModalEditar" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-blue-500">Guardando Cambios...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se guardan los cambios del proveedor.</p>
+    </div>
+  </div>
+
   <!-- Modal Error Editar -->
   <div *ngIf="showModalEditarError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
@@ -412,6 +428,14 @@
       <p class="text-center mb-4">La eliminación se completó con éxito.</p>
       <div class="flex justify-center">
       </div>
+    </div>
+  </div>
+
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModalEliminar" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">Eliminando Proveedor...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se elimina el proveedor seleccionado.</p>
     </div>
   </div>
 
