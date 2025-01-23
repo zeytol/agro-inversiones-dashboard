@@ -129,12 +129,29 @@ export class ProveedoresComponent implements OnInit {
 
   validateFields(): boolean {
     const { ruc, name, contact, phone, addres, categorySuppliers } = this.newProveedor;
-    return !!(ruc && name && contact && phone && addres && categorySuppliers.id); // Verifica que todos los campos estén llenos
+  
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|pe|net|org)$/;
+    return !!(
+      ruc && /^\d{11}$/.test(ruc) && // RUC debe ser numérico y de 11 dígitos
+      name &&
+      contact && this.isEmailValid(contact) &&  // Validar email con expresión regular
+      phone && /^\d{9}$/.test(phone) && // Teléfono debe ser numérico y de 9 dígitos
+      addres &&
+      categorySuppliers.id
+    );
+  }
+
+  isEmailValid(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|pe|net|org)$/;
+    return emailRegex.test(email);
   }
 
   addProveedor(): void {
     if (!this.validateFields()) {
       this.showIncompleteFieldsModal = true; // Muestra el modal de advertencia
+  
+      // Cerrar automáticamente el modal de campos incompletos después de 3 segundos
+      this.closeIncompleteFieldsModal();
       return;
     }
   
@@ -157,7 +174,7 @@ export class ProveedoresComponent implements OnInit {
           this.closeModal();
           this.showInProgressModal = false; // Ocultar el modal "En proceso"
           this.showSuccessModal = true; // Mostrar el modal de éxito
-          
+  
           // Cerrar el modal de éxito después de 3 segundos y refrescar la página
           setTimeout(() => {
             this.showSuccessModal = false; // Cerrar el modal de éxito
@@ -180,7 +197,16 @@ export class ProveedoresComponent implements OnInit {
   }
   
   closeIncompleteFieldsModal(): void {
-    this.showIncompleteFieldsModal = false;
+    setTimeout(() => {
+      this.showIncompleteFieldsModal = false;
+    }, 3000); // Cerrar después de 3 segundos
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault(); // Previene la entrada si no es un número
+    }
   }
 
   // Método de validación del formulario
@@ -255,54 +281,44 @@ export class ProveedoresComponent implements OnInit {
   // Método para editar proveedor
   editProveedor(): void {
     if (this.selectedProveedor) {
-      const proveedorEditado = { ...this.selectedProveedor };
-
-      if (proveedorEditado.registration_date) {
-        proveedorEditado.registration_date = new Date(proveedorEditado.registration_date).getTime();
+      // Validaciones manuales
+      if (!this.isEmailValid(this.selectedProveedor.contact)) {
+        console.error('Correo electrónico no válido.');
+        return;
+      }
+      if (this.selectedProveedor.ruc.length !== 11 || !/^\d{11}$/.test(this.selectedProveedor.ruc)) {
+        console.error('RUC no válido.');
+        return;
+      }
+      if (this.selectedProveedor.phone.length !== 9 || !/^\d{9}$/.test(this.selectedProveedor.phone)) {
+        console.error('Teléfono no válido.');
+        return;
       }
 
+      // Lógica para editar proveedor
+      const proveedorEditado = { ...this.selectedProveedor };
+      if (proveedorEditado.registration_date) {
+        proveedorEditado.registration_date = new Date(proveedorEditado.registration_date).toISOString();
+      }
       const proveedorId = this.selectedProveedor.id;
 
-      // Mostrar el modal "En proceso"
       this.showInProgressModalEditar = true;
 
       this.suppliersService.editSupplier(proveedorId, proveedorEditado).subscribe(
         (response) => {
           console.log('Proveedor editado con éxito:', response);
-
-          // Actualizar la lista de proveedores
           const index = this.proveedores.findIndex(prov => prov.id === proveedorId);
           if (index !== -1) {
             this.proveedores[index] = response;
-            this.filteredProveedores[index] = response;
           }
-
-          // Ocultar el modal "En proceso" y mostrar el de éxito
-          this.showInProgressModal = false;
+          this.showInProgressModalEditar = false;
           this.showModalEditarExito = true;
-
           this.closeModal();
-
-          // Cerrar el modal de éxito después de 3 segundos y refrescar la página
-          setTimeout(() => {
-            this.showModalEditarExito = false;
-            window.location.reload(); // Recargar la página
-          }, 3000);
         },
         (error) => {
           console.error('Error al editar proveedor:', error);
-
-          // Ocultar el modal "En proceso" y mostrar el de error
-          this.showInProgressModal = false;
+          this.showInProgressModalEditar = false;
           this.showModalEditarError = true;
-
-          this.closeModal();
-
-          // Cerrar el modal de error después de 3 segundos y refrescar la página
-          setTimeout(() => {
-            this.showModalEditarError = false;
-            window.location.reload(); // Recargar la página
-          }, 3000);
         }
       );
     }

@@ -136,70 +136,91 @@
         
         <!-- RUC -->
         <div class="mb-4">
-          <input type="text" 
-                placeholder="RUC" 
-                class="w-full border rounded p-2" 
-                [(ngModel)]="newProveedor.ruc" 
-                name="ruc" 
-                required 
-                maxlength="11" 
-                pattern="^\d{11}$" />
-          <small *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" class="text-red-500 text-sm">Debe ser exactamente 11 dígitos.</small>
+          <input 
+            type="text" 
+            placeholder="RUC" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.ruc" 
+            name="ruc" 
+            required 
+            maxlength="11" 
+            pattern="^\d{11}$"
+            (keypress)="allowOnlyNumbers($event)" />
+          <small 
+            *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" 
+            class="text-red-500 text-sm">
+            Debe ser exactamente 11 dígitos.
+          </small>
         </div>
-        
+
         <!-- Nombre del Proveedor -->
-        <input type="text" 
-              placeholder="Nombre del Proveedor" 
-              class="w-full border rounded p-2 mb-2" 
-              [(ngModel)]="newProveedor.name" 
-              name="nombre" 
-              required 
-              maxlength="50" />
-        
+        <div class="mb-4">
+          <input type="text"
+                placeholder="Nombre del Proveedor"
+                class="w-full border rounded p-2"
+                [ngClass]="{'border-red-500': !newProveedor.name}"
+                [(ngModel)]="newProveedor.name"
+                name="nombre"
+                required
+                maxlength="50" />
+        </div>
+
         <!-- Email -->
         <div class="mb-4">
-          <input type="email" 
-                placeholder="Email" 
-                class="w-full border rounded p-2" 
-                [(ngModel)]="newProveedor.contact" 
-                name="email" 
-                required 
-                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
-          <small *ngIf="newProveedor.contact && !newProveedor.contact.includes('@')" class="text-red-500 text-sm">El email debe contener el símbolo "arroba".</small>
+          <input 
+            type="email" 
+            placeholder="Email" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.contact" 
+            name="email" 
+            required />
+          <small 
+            *ngIf="newProveedor.contact && !isEmailValid(newProveedor.contact)" 
+            class="text-red-500 text-sm">
+            El correo debe ser válido y terminar en .com, .pe, .net, etc.
+          </small>
         </div>
 
         <!-- Teléfono -->
         <div class="mb-4">
-          <input type="text" 
-                placeholder="Teléfono" 
-                class="w-full border rounded p-2" 
-                [(ngModel)]="newProveedor.phone" 
-                name="telefono" 
-                required 
-                maxlength="9" 
-                pattern="^\d{9}$" />
-          <small *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" class="text-red-500 text-sm">Debe ser exactamente 9 dígitos.</small>
+          <input 
+            type="text" 
+            placeholder="Teléfono" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.phone" 
+            name="telefono" 
+            required 
+            maxlength="9" 
+            pattern="^\d{9}$"
+            (keypress)="allowOnlyNumbers($event)" />
+          <small 
+            *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" 
+            class="text-red-500 text-sm">
+            Debe ser exactamente 9 dígitos.
+          </small>
         </div>
-        
+
         <!-- Dirección Fiscal -->
-        <input type="text" 
-              placeholder="Dirección Fiscal" 
-              class="w-full border rounded p-2 mb-2" 
-              [(ngModel)]="newProveedor.addres" 
-              name="direccion" 
-              required 
-              maxlength="30" />
+        <div class="mb-4">
+          <input type="text"
+                placeholder="Dirección Fiscal"
+                class="w-full border rounded p-2"
+                [ngClass]="{'border-red-500': !newProveedor.addres}"
+                [(ngModel)]="newProveedor.addres"
+                name="direccion"
+                required
+                maxlength="30" />
+        </div>
 
         <!-- Categoría -->
         <div class="mb-4">
           <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Categorías</label>
-          <select
-            id="category"
-            [(ngModel)]="newProveedor.categorySuppliers.id"
-            name="category"
-            required
-            class="w-full border rounded p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
+          <select id="category"
+                  [(ngModel)]="newProveedor.categorySuppliers.id"
+                  name="category"
+                  class="w-full border rounded p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  [ngClass]="{'border-red-500': !newProveedor.categorySuppliers.id}"
+                  required>
             <option value="">Seleccione una categoría</option>
             <option *ngFor="let category of categories" [value]="category.id">
               {{ category.name }}
@@ -240,12 +261,6 @@
       <h2 class="text-xl font-bold mb-4 text-center text-red-500">Campos Incompletos</h2>
       <p class="text-center mb-4">Por favor, completa todos los campos requeridos antes de continuar.</p>
       <div class="flex justify-center">
-        <button 
-          (click)="closeIncompleteFieldsModal()"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Cerrar
-        </button>
       </div>
     </div>
   </div>
@@ -292,8 +307,13 @@
                name="ruc" 
                required 
                maxlength="11" 
-               pattern="^\d{11}$" />
-        <small *ngIf="selectedProveedor.ruc && selectedProveedor.ruc.length !== 11" class="text-red-500 text-sm">Debe ser exactamente 11 dígitos.</small>
+               pattern="^\d{11}$"
+              (keypress)="allowOnlyNumbers($event)" />
+            <small 
+              *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" 
+              class="text-red-500 text-sm">
+              Debe ser exactamente 11 dígitos.
+            </small>
       </div>
 
       <!-- Nombre del Proveedor -->
@@ -312,9 +332,12 @@
                class="w-full border rounded p-2" 
                [(ngModel)]="selectedProveedor.contact" 
                name="email" 
-               required 
-               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
-        <small *ngIf="selectedProveedor.contact && !selectedProveedor.contact.includes('@')" class="text-red-500 text-sm">El email debe contener el símbolo "arroba".</small>
+               required />
+              <small 
+                *ngIf="newProveedor.contact && !isEmailValid(newProveedor.contact)" 
+                class="text-red-500 text-sm">
+                El correo debe ser válido y terminar en .com, .pe, .net, etc.
+              </small>
       </div>
 
       <!-- Teléfono -->
@@ -326,8 +349,13 @@
                name="telefono" 
                required 
                maxlength="9" 
-               pattern="^\d{9}$" />
-        <small *ngIf="selectedProveedor.phone && selectedProveedor.phone.length !== 9" class="text-red-500 text-sm">Debe ser exactamente 9 dígitos.</small>
+               pattern="^\d{9}$"
+              (keypress)="allowOnlyNumbers($event)" />
+            <small 
+              *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" 
+              class="text-red-500 text-sm">
+              Debe ser exactamente 9 dígitos.
+            </small>
       </div>
 
       <!-- Dirección Fiscal -->
