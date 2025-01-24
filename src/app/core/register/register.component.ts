@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../environment';
 
 @Component({
   selector: 'app-register',
@@ -9,50 +8,72 @@ import { of } from 'rxjs';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  constructor(private http: HttpClient) {}
+  user = {
+    username: '',
+    email: '',
+    password: '',
+  };
+  confirmPassword = '';
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
+  apiEndpoint = environment.apiEndpoint;
 
-  togglePasswordVisibility(inputId: string, iconId: string): void {
-    const input = document.getElementById(inputId) as HTMLInputElement;
+  constructor(private http: HttpClient) {}
+  togglePasswordVisibility(fieldId: string, iconId: string) {
+    const field = document.getElementById(fieldId) as HTMLInputElement;
     const icon = document.getElementById(iconId) as HTMLElement;
 
-    if (input && icon) {
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      }
+    if (field.type === 'password') {
+      field.type = 'text';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    } else {
+      field.type = 'password';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
     }
   }
+  get passwordsDontMatch(): boolean {
+    return this.user.password !== this.confirmPassword;
+  }
 
-  onSubmit(form: any): void {
-    if (form.valid) {
-      const user = form.value;
-      const headers = { 'Content-Type': 'application/json' };
+  onRegister() {
+    this.errorMessage = '';
+    this.successMessage = '';
+  
+    if (this.passwordsDontMatch) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
+      return;
+    }
+  
+    this.http.post(this.apiEndpoint, this.user, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      responseType: 'text',
+      withCredentials: true,
 
-      this.http.post('https://agroinversiones-api-c-cmgxhcgsfrfzbecw.brazilsouth-01.azurewebsites.net/api/users/register', user, { headers, responseType: 'text' })
-        .pipe(
-          catchError((error) => {
-            console.error('Error registering user:', error);
-            return of(null);
-          })
-        )
-        .subscribe(response => {
-          if (response) {
-            try {
-              const jsonResponse = JSON.parse(response);
-              console.log('User registered successfully:', jsonResponse);
-            } catch (e) {
-              console.error('Error parsing JSON response:', e, 'Response:', response);
-            }
+    })   .subscribe({
+        next: (response: string) => {
+          if (response.includes('Usuario registrado exitosamente')) {
+            this.successMessage = 'Inicio de sesión exitoso.';
+            this.errorMessage = null;
+
+       
           } else {
-            console.warn('No response or non-JSON response received');
+            this.handleError('Usuario no encontrado o error en los datos');
           }
-        });
-        
-    }
+        },
+        error: (error) => {
+          console.error('Error en la petición:', error);
+          this.handleError('Error al intentar iniciar sesaión. Por favor, intente de nuevo.');
+        },
+      });
+  
   }
+  private handleError(message: string) {
+    this.errorMessage = message;
+    this.successMessage = null;
+  }
+  
 }

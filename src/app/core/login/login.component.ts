@@ -25,7 +25,7 @@ export class LoginComponent {
 
     this.http
       .post(
-        'https://agroinversiones-api-c-cmgxhcgsfrfzbecw.brazilsouth-01.azurewebsites.net/login',
+        'https://agro-inversiones-oauth-cca2drebeabyhufq.canadacentral-01.azurewebsites.net/login',
         formData.toString(),
         {
           headers: new HttpHeaders({
