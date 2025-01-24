@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'; 
 import { ClienteService } from '../../services/cliente.service';
-import { ConfirmDeleteModalComponent } from '../../modals/confirm-delete-modal/confirm-delete-modal.component'; 
-import { AgregarUsuarioComponent } from '../../modals/agregar-usuario/agregar-usuario.component';
-import { EditarClienteComponent } from '../../modals/editar-cliente/editar-cliente.component'; 
-import { ClienteDetalleComponent } from '../../modals/cliente-detalle/cliente-detalle.component';
+import { ConfirmDeleteModalComponent } from '../../features/clientes/confirm-delete-modal/confirm-delete-modal.component'; 
+import { AgregarUsuarioComponent } from '../../features/clientes/agregar-usuario/agregar-usuario.component';
+import { EditarClienteComponent } from '../../features/clientes/editar-cliente/editar-cliente.component'; 
+import { ClienteDetalleComponent } from '../../features/clientes/cliente-detalle/cliente-detalle.component';
 import { Cliente } from '../../models/client.model';
  
 @Component({

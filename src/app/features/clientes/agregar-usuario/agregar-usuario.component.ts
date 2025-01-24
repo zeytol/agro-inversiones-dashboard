@@ -1,7 +1,7 @@
 import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ClienteService } from '../../services/cliente.service';
-import { Cliente } from '../../models/client.model';
+import { ClienteService } from '../../../services/cliente.service';
+import { Cliente } from '../../../models/client.model';
 
 @Component({
   selector: 'app-agregar-usuario',
@@ -201,7 +201,8 @@ export class AgregarUsuarioComponent {
       event.preventDefault();
     }
   }
-
+  
+  // Método para validar el texto pegado en el campo de teléfono
   private esValidoTelefono(textoPegado: string | undefined): boolean {
     return textoPegado ? /^\d{9}$/.test(textoPegado) : false;
   }

@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Cliente } from '../../models/client.model';
+import { Cliente } from '../../../models/client.model';
 
 @Component({
   selector: 'app-cliente-detalle',

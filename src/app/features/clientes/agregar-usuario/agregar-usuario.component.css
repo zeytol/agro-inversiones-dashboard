@@ -24,6 +24,10 @@ h2 {
   width: 100%;
 }
 
+mat-error {
+  color: black !important;
+}
+
 .image-upload {
   display: flex;
   justify-content: center;
@@ -35,7 +39,7 @@ h2 {
   margin-bottom: 20px;
   cursor: pointer;
   position: relative;
-  overflow: hidden; /* Asegura que la imagen se ajuste dentro del contenedor */
+  overflow: hidden;
 }
 
 #file-input {
