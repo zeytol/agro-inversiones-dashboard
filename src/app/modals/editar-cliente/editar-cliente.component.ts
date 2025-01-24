@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, Inject } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -10,16 +10,15 @@ export class EditarClienteComponent {
   @ViewChild('successModal') successModal!: TemplateRef<any>;
   @ViewChild('errorModal') errorModal!: TemplateRef<any>;
 
-  // Variables de cliente
-  nombre: string;
+  @Output() clienteEdited = new EventEmitter<void>();
+
+  razonSocial: string;
   tipoCliente: string;
   tipoDocumento: string;
   numeroDocumento: string;
   direccion: string;
   telefono: string;
   correo: string;
-  estado: string;
-  imagePreview: string | null = null; // Variable para la previsualización de la imagen
   dialogRef!: MatDialogRef<any>;
 
   constructor(
@@ -27,59 +26,56 @@ export class EditarClienteComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private parentDialogRef: MatDialogRef<any>
   ) {
-    // Inicializa los valores con los datos recibidos
-    this.nombre = data.nombre;
+    this.razonSocial = data.razonSocial;
     this.tipoCliente = data.tipoCliente;
     this.tipoDocumento = data.tipoDocumento;
-    this.numeroDocumento = data.dniRuc;
+    this.numeroDocumento = data.numeroDocumento;
     this.direccion = data.direccion;
     this.telefono = data.telefono;
     this.correo = data.correo;
-    this.estado = data.estado;
-    this.imagePreview = data.fotoUrl;
   }
 
   onCancel(): void {
     this.parentDialogRef.close();
   }
-
+  
+   
   onEdit(): void {
-    if (
-      this.nombre &&
-      this.tipoCliente &&
-      this.tipoDocumento &&
-      this.numeroDocumento &&
-      this.direccion &&
-      this.telefono &&
-      this.correo &&
-      this.estado
-    ) {
-      // Todos los campos están llenos, muestra el modal de éxito
-      this.dialogRef = this.dialog.open(this.successModal, {
-        width: '400px',
-        height: 'auto'
-      });
-      this.dialogRef.afterClosed().subscribe(() => {
-        this.parentDialogRef.close({
-          nombre: this.nombre,
-          tipoCliente: this.tipoCliente,
-          tipoDocumento: this.tipoDocumento,
-          dniRuc: this.numeroDocumento,
-          direccion: this.direccion,
-          telefono: this.telefono,
-          correo: this.correo,
-          estado: this.estado,
-          fotoUrl: this.imagePreview
-        });
-      });
-    } else {
-      // Faltan campos, muestra el modal de error
-      this.dialogRef = this.dialog.open(this.errorModal, {
-        width: '400px',
-        height: 'auto'
-      });
-    }
+  if (
+    this.razonSocial &&
+    this.tipoCliente &&
+    this.tipoDocumento &&
+    this.numeroDocumento &&
+    this.direccion &&
+    this.telefono &&
+    this.correo
+  ) {
+    const updatedCliente = {
+      id: this.data.id,
+      razonSocial: this.razonSocial,
+      tipoCliente: this.tipoCliente,
+      tipoDocumento: this.tipoDocumento,
+      numeroDocumento: this.numeroDocumento,
+      direccion: this.direccion,
+      telefono: this.telefono,
+      correo: this.correo
+    };
+    this.dialogRef = this.dialog.open(this.successModal, {
+      width: '400px',
+      height: 'auto'
+    });
+
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.clienteEdited.emit();
+      this.parentDialogRef.close(updatedCliente);
+    });
+  } else {
+    this.dialogRef = this.dialog.open(this.errorModal, {
+      width: '400px',
+      height: 'auto'
+    });
   }
+}
 
   closeSuccessModal(): void {
     this.dialogRef.close();
@@ -93,11 +89,102 @@ export class EditarClienteComponent {
     this.dialogRef.close();
   }
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files[0]) {
-      const file = fileInput.files[0];
-      this.imagePreview = URL.createObjectURL(file); // Genera la previsualización
+  // Validación de campo numero documento
+
+  onKeyPress(event: KeyboardEvent): void {
+    if (this.tipoDocumento === 'RUC' || this.tipoDocumento === 'DNI' || this.tipoDocumento === 'Carné de Extranjería') {
+      const pattern = /^[0-9]*$/;
+      if (!pattern.test(event.key)) {
+        event.preventDefault();
+      }
     }
+    else if (this.tipoDocumento === 'Pasaporte') {
+      const pattern = /^[A-Za-z0-9]*$/;
+      if (!pattern.test(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  getDocumentoPattern(): string {
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return '^[0-9]{11}$';  
+      case 'DNI':
+        return '^[0-9]{8}$';  
+      case 'Carné de Extranjería':
+        return '^[0-9]{9}$';  
+      case 'Pasaporte':
+        return '^[A-Za-z0-9]+$'; 
+      default:
+        return '';  
+    }
+  }
+
+  getDocumentoMaxLength(): number {
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return 11; 
+      case 'DNI':
+        return 8; 
+      case 'Carné de Extranjería':
+      case 'Pasaporte':
+        return 9;  
+      default:
+        return 0; 
+    }
+  }
+  
+ 
+  limpiarNumeroDocumento(): void {
+     this.numeroDocumento = '';
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    const textoPegado = event.clipboardData?.getData('text');
+    const isValid = this.esValidoPegado(textoPegado);
+  
+    if (!isValid) {
+      event.preventDefault();
+    }
+  }
+  
+  private esValidoPegado(textoPegado: string | undefined): boolean {
+    if (!textoPegado) {
+      return false;
+    }
+  
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return /^[0-9]{11}$/.test(textoPegado);  
+      case 'DNI':
+        return /^[0-9]{8}$/.test(textoPegado);
+      case 'Carné de Extranjería':
+        return /^[0-9]{9}$/.test(textoPegado);
+      case 'Pasaporte':
+        return /^[A-Za-z0-9]+$/.test(textoPegado);
+      default:
+        return false;
+    }
+  }
+
+  // Validación del campo teléfono
+
+  onTelefonoKeyPress(event: KeyboardEvent): void {
+    const pattern = /^[0-9]$/;
+    if (!pattern.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+  
+  onTelefonoPaste(event: ClipboardEvent): void {
+    const textoPegado = event.clipboardData?.getData('text');
+    if (!this.esValidoTelefono(textoPegado)) {
+      event.preventDefault();
+    }
+  }
+
+  private esValidoTelefono(textoPegado: string | undefined): boolean {
+    return textoPegado ? /^\d{9}$/.test(textoPegado) : false;
   }
 }

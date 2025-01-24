@@ -17,9 +17,12 @@ export class ConfirmDeleteModalComponent {
 
   onConfirm(): void {
     this.isDeleted = true; 
-  }
+   }
 
   onClose(): void {
     this.dialogRef.close(true); 
   }
 }
+
+ 
+ 

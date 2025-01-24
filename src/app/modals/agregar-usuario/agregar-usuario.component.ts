@@ -1,5 +1,7 @@
-import { Component, ViewChild, TemplateRef, Inject } from '@angular/core';
+import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ClienteService } from '../../services/cliente.service';
+import { Cliente } from '../../models/client.model';
 
 @Component({
   selector: 'app-agregar-usuario',
@@ -10,49 +12,87 @@ export class AgregarUsuarioComponent {
   @ViewChild('successModal') successModal!: TemplateRef<any>;
   @ViewChild('errorModal') errorModal!: TemplateRef<any>;
 
-  nombre: string = '';
+  @Output() clienteAdded = new EventEmitter<void>();
+
+  razonSocial: string = '';
   tipoCliente: string = '';
   tipoDocumento: string = '';
   numeroDocumento: string = '';
   direccion: string = '';
   telefono: string = '';
   correo: string = '';
-  estado: string = '';
-  imagePreview: string | null = null; // Variable para la previsualización de la imagen
   dialogRef!: MatDialogRef<any>;
 
-  constructor(public dialog: MatDialog, @Inject(MatDialogRef) private parentDialogRef: MatDialogRef<any>) {}
+  constructor(
+    public dialog: MatDialog,
+    @Inject(MatDialogRef) private parentDialogRef: MatDialogRef<any>,
+    private clienteService: ClienteService
+  ) {}
 
   onCancel(): void {
-    this.parentDialogRef.close(); // Cierra el modal principal al cancelar
+    this.parentDialogRef.close();
   }
 
-  onAdd(): void {
-    if (
-      this.nombre &&
-      this.tipoCliente &&
-      this.tipoDocumento &&
-      this.numeroDocumento &&
-      this.direccion &&
-      this.telefono &&
-      this.correo &&
-      this.estado
-    ) {
-      // Todos los campos están llenos, mostrar modal de éxito
-      this.dialogRef = this.dialog.open(this.successModal, {
-        width: '400px',
-        height: 'auto'
-      });
-      this.dialogRef.afterClosed().subscribe(() => {
-        this.parentDialogRef.close(); // Cierra el modal principal después de mostrar el mensaje de éxito
-      });
-    } else {
-      // Faltan campos, mostrar modal de error
-      this.dialogRef = this.dialog.open(this.errorModal, {
-        width: '400px',
-        height: 'auto'
-      });
+  async onAdd(): Promise<void> {
+    try {
+      if (this.isFormValid()) {
+        const cliente: Cliente = this.createCliente();
+        const response = await this.clienteService.guardarCliente(cliente).toPromise();
+        this.showSuccessModal(response);
+      } else {
+        this.showErrorModal();
+      }
+    } catch (error) {
+      console.error('Error al agregar cliente:', error);
+      this.showErrorModal();
     }
+  }
+
+  private isFormValid(): boolean {
+    return (
+      this.razonSocial !== '' &&
+      this.tipoCliente !== '' &&
+      this.tipoDocumento !== '' &&
+      this.numeroDocumento !== '' &&
+      this.direccion !== '' &&
+      this.telefono !== '' &&
+      this.correo !== ''
+    );
+  }
+
+  // Método para crear objeto cliente
+  private createCliente(): Cliente {
+    return {
+      id: 0,
+      razonSocial: this.razonSocial,
+      tipoCliente: this.tipoCliente,
+      tipoDocumento: this.tipoDocumento,
+      numeroDocumento: this.numeroDocumento,
+      direccion: this.direccion,
+      telefono: this.telefono,
+      correo: this.correo
+    };
+  }
+
+  // Método modal de éxito
+  private showSuccessModal(response: any): void {
+    console.log(response); 
+    this.dialogRef = this.dialog.open(this.successModal, {
+      width: '400px',
+      height: 'auto'
+    });
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.clienteAdded.emit();
+      this.parentDialogRef.close();
+    });
+  }
+
+  // Método modal de error
+  private showErrorModal(): void {
+    this.dialogRef = this.dialog.open(this.errorModal, {
+      width: '400px',
+      height: 'auto'
+    });
   }
 
   closeSuccessModal(): void {
@@ -67,11 +107,102 @@ export class AgregarUsuarioComponent {
     this.dialogRef.close();
   }
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files[0]) {
-      const file = fileInput.files[0];
-      this.imagePreview = URL.createObjectURL(file); // Genera la URL para previsualización
+  // Validación de campo numero documento
+
+  onKeyPress(event: KeyboardEvent): void {
+    if (this.tipoDocumento === 'RUC' || this.tipoDocumento === 'DNI' || this.tipoDocumento === 'Carné de Extranjería') {
+      const pattern = /^[0-9]*$/;
+      if (!pattern.test(event.key)) {
+        event.preventDefault();
+      }
     }
+    else if (this.tipoDocumento === 'Pasaporte') {
+      const pattern = /^[A-Za-z0-9]*$/;
+      if (!pattern.test(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  getDocumentoPattern(): string {
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return '^[0-9]{11}$';  
+      case 'DNI':
+        return '^[0-9]{8}$';  
+      case 'Carné de Extranjería':
+        return '^[0-9]{9}$';  
+      case 'Pasaporte':
+        return '^[A-Za-z0-9]+$'; 
+      default:
+        return '';  
+    }
+  }
+
+  getDocumentoMaxLength(): number {
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return 11; 
+      case 'DNI':
+        return 8; 
+      case 'Carné de Extranjería':
+      case 'Pasaporte':
+        return 9;  
+      default:
+        return 0; 
+    }
+  }
+  
+ 
+  limpiarNumeroDocumento(): void {
+     this.numeroDocumento = '';
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    const textoPegado = event.clipboardData?.getData('text');
+    const isValid = this.esValidoPegado(textoPegado);
+  
+    if (!isValid) {
+      event.preventDefault();
+    }
+  }
+  
+  private esValidoPegado(textoPegado: string | undefined): boolean {
+    if (!textoPegado) {
+      return false;
+    }
+  
+    switch (this.tipoDocumento) {
+      case 'RUC':
+        return /^[0-9]{11}$/.test(textoPegado);  
+      case 'DNI':
+        return /^[0-9]{8}$/.test(textoPegado);
+      case 'Carné de Extranjería':
+        return /^[0-9]{9}$/.test(textoPegado);
+      case 'Pasaporte':
+        return /^[A-Za-z0-9]+$/.test(textoPegado);
+      default:
+        return false;
+    }
+  }
+
+  // Validación del campo teléfono
+
+  onTelefonoKeyPress(event: KeyboardEvent): void {
+    const pattern = /^[0-9]$/;
+    if (!pattern.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+  
+  onTelefonoPaste(event: ClipboardEvent): void {
+    const textoPegado = event.clipboardData?.getData('text');
+    if (!this.esValidoTelefono(textoPegado)) {
+      event.preventDefault();
+    }
+  }
+
+  private esValidoTelefono(textoPegado: string | undefined): boolean {
+    return textoPegado ? /^\d{9}$/.test(textoPegado) : false;
   }
 }

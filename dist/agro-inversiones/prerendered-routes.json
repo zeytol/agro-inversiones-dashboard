@@ -2,6 +2,7 @@
   "routes": [
     "/clientes",
     "/dashboard",
+    "/inventario",
     "/permisos/crear",
     "/productos",
     "/proveedores",

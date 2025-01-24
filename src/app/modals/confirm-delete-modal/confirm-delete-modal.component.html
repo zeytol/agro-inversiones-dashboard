@@ -1,6 +1,5 @@
 <div class="modal-content">
     <div *ngIf="!isDeleted; else deletedTemplate">
-        <!-- Ícono de advertencia -->
         <div class="icon">
             <i class="material-icons" style="font-size: 48px; color: #FFC107;">warning</i>
         </div>
@@ -15,17 +14,15 @@
             </button>
         </div>
     </div>
-
-    <!-- Plantilla de confirmación de eliminación -->
+ 
     <ng-template #deletedTemplate>
-        <!-- Ícono de confirmación -->
         <div class="icon">
             <i class="material-icons" style="font-size: 48px; color: #4CAF50;">check_circle</i>
         </div>
         <h2>¡Eliminado!</h2>
         <p>El cliente se ha eliminado correctamente.</p>
         <div class="modal-actions" style="justify-content: center;">
-            <button mat-button (click)="dialogRef.close()" style="color: white; background-color: #2196F3;">
+            <button mat-button (click)="onClose()" style="color: white; background-color: #2196F3;">
                 Ok
             </button>
         </div>

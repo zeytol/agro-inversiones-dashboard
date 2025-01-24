@@ -1,70 +1,99 @@
 <div class="modal-content">
   <h2>Agregar Cliente</h2>
 
-  <!-- Área de carga de imagen -->
-  <div class="image-upload">
-    <label for="file-input">
-      <!-- Solo se muestra el ícono si no hay imagen cargada -->
-      <i *ngIf="!imagePreview" class="material-icons upload-icon">cloud_upload</i>
-      <!-- Imagen de previsualización (se muestra solo si imagePreview tiene valor) -->
-      <img *ngIf="imagePreview" [src]="imagePreview" alt="Imagen seleccionada" class="preview-image" />
-    </label>
-    <input id="file-input" type="file" (change)="onFileSelected($event)" />
-  </div>
-
-  <!-- Formulario de datos del cliente -->
+  
   <form #userForm="ngForm" class="form-content">
-    <mat-form-field appearance="fill" class="input-field">
-      <mat-label>Nombre / Razón Social</mat-label>
-      <input matInput name="nombre" required [(ngModel)]="nombre">
-    </mat-form-field>
 
+    <mat-form-field appearance="fill" class="input-field">
+      <mat-label>Razón Social</mat-label>
+      <input matInput name="razonSocial" required minlength="3" [(ngModel)]="razonSocial" #razonSocialField="ngModel" [disabled]="userForm.submitted && (razonSocialField.invalid ?? false)">
+      <mat-error *ngIf="razonSocialField.invalid && razonSocialField.touched">
+        La razón social es requerida y debe tener al menos 3 caracteres.
+      </mat-error>
+    </mat-form-field>
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Tipo de Cliente</mat-label>
-      <mat-select name="tipoCliente" required [(ngModel)]="tipoCliente">
+      <mat-select name="tipoCliente" required [(ngModel)]="tipoCliente" #tipoClienteField="ngModel" [disabled]="userForm.submitted && (tipoClienteField.invalid ?? false)">
         <mat-option value="Persona Natural">Persona Natural</mat-option>
         <mat-option value="Empresa">Empresa</mat-option>
       </mat-select>
+      <mat-error *ngIf="tipoClienteField.invalid && tipoClienteField.touched">
+        El tipo de cliente es requerido.
+      </mat-error>
     </mat-form-field>
-
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Tipo Documento</mat-label>
-      <mat-select name="tipoDocumento" required [(ngModel)]="tipoDocumento">
-        <mat-option value="DNI">DNI</mat-option>
-        <mat-option value="RUC">RUC</mat-option>
+      <mat-select name="tipoDocumento" required [(ngModel)]="tipoDocumento" #tipoDocumentoField="ngModel"
+        (ngModelChange)="limpiarNumeroDocumento()" [disabled]="userForm.submitted && (tipoDocumentoField.invalid ?? false)">
+        <mat-option *ngIf="tipoCliente === 'Empresa'" value="RUC">RUC</mat-option>
+        <mat-option *ngIf="tipoCliente === 'Persona Natural'" value="DNI">DNI</mat-option>
+        <mat-option *ngIf="tipoCliente === 'Persona Natural'" value="Carné de Extranjería">Carné de Extranjería</mat-option>
+        <mat-option *ngIf="tipoCliente === 'Persona Natural'" value="Pasaporte">Pasaporte</mat-option>
       </mat-select>
+      <mat-error *ngIf="tipoDocumentoField.invalid && tipoDocumentoField.touched">
+        El tipo de documento es requerido.
+      </mat-error>
     </mat-form-field>
-
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Nro. Documento</mat-label>
-      <input matInput name="numeroDocumento" required [(ngModel)]="numeroDocumento">
+      <input matInput name="numeroDocumento" required [(ngModel)]="numeroDocumento" 
+        #numeroDocumentoField="ngModel" [disabled]="userForm.submitted && (numeroDocumentoField.invalid ?? false)"
+        [pattern]="getDocumentoPattern()" 
+        [maxlength]="getDocumentoMaxLength()"
+        (keypress)="onKeyPress($event)"
+        (paste)="onPaste($event)">
+      <mat-error *ngIf="numeroDocumentoField.invalid && numeroDocumentoField.touched">
+        <ng-container *ngIf="tipoDocumento === 'RUC'">
+          El RUC debe tener 11 dígitos.
+        </ng-container>
+        <ng-container *ngIf="tipoDocumento === 'DNI'">
+          El DNI debe tener 8 dígitos.
+        </ng-container>
+        <ng-container *ngIf="tipoDocumento === 'Carné de Extranjería'">
+          El Carné de Extranjería debe ser válido (alfanumérico).
+        </ng-container>
+        <ng-container *ngIf="tipoDocumento === 'Pasaporte'">
+          El Pasaporte debe ser válido (alfanumérico).
+        </ng-container>
+      </mat-error>
     </mat-form-field>
-
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Dirección</mat-label>
-      <input matInput name="direccion" required [(ngModel)]="direccion">
+      <input matInput name="direccion" required [(ngModel)]="direccion" #direccionField="ngModel" [disabled]="userForm.submitted && (direccionField.invalid ?? false)">
+      <mat-error *ngIf="direccionField.invalid && direccionField.touched">
+        La dirección es requerida.
+      </mat-error>
     </mat-form-field>
-
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Teléfono</mat-label>
-      <input matInput type="tel" name="telefono" required [(ngModel)]="telefono">
+      <input matInput type="tel" name="telefono" required [(ngModel)]="telefono" #telefonoField="ngModel" [disabled]="userForm.submitted && (telefonoField.invalid ?? false)"
+        pattern="^\d{9}$" maxlength="9" 
+        (keypress)="onTelefonoKeyPress($event)" 
+        (paste)="onTelefonoPaste($event)">
+      <mat-error *ngIf="telefonoField.invalid && telefonoField.touched">
+        El teléfono es requerido y debe tener 9 dígitos.
+      </mat-error>
     </mat-form-field>
-
+    
     <mat-form-field appearance="fill" class="input-field">
       <mat-label>Correo</mat-label>
-      <input matInput type="email" name="correo" required [(ngModel)]="correo">
+      <input matInput type="email" name="correo" required [(ngModel)]="correo" #correoField="ngModel" email [disabled]="userForm.submitted && (correoField.invalid ?? false)">
+      <mat-error *ngIf="correoField.invalid && correoField.touched">
+        El correo electrónico es requerido y debe ser válido.
+      </mat-error>
     </mat-form-field>
-
-    <mat-form-field appearance="fill" class="input-field">
-      <mat-label>Estado</mat-label>
-      <input matInput name="estado" required [(ngModel)]="estado">
-    </mat-form-field>
+  
   </form>
-
+  
   <!-- Botón para agregar el cliente -->
   <div class="modal-actions">
     <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>
-    <button mat-raised-button (click)="onAdd()" class="confirm-button">Agregar Cliente</button>
+    <button mat-raised-button (click)="onAdd()" class="confirm-button" [disabled]="userForm.invalid">Agregar Cliente</button>
   </div>
 
   <!-- Modales de éxito y error -->

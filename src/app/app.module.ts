@@ -55,6 +55,7 @@ import { ExportarReporteComponent } from './features/reportes/exportar-reporte/e
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
+import { ClienteDetalleComponent } from './modals/cliente-detalle/cliente-detalle.component';
 
 // Asegúrate de importar FormsModule
 
@@ -97,6 +98,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     AgregarCategoriaComponent,
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
+    ClienteDetalleComponent,
   ],
   imports: [
     BrowserModule,
