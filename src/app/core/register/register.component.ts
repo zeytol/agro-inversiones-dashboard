@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../environment';
 
 @Component({
@@ -18,7 +19,8 @@ export class RegisterComponent {
   successMessage: string | null = null;
   apiEndpoint = environment.apiEndpoint;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
+
   togglePasswordVisibility(fieldId: string, iconId: string) {
     const field = document.getElementById(fieldId) as HTMLInputElement;
     const icon = document.getElementById(iconId) as HTMLElement;
@@ -33,47 +35,52 @@ export class RegisterComponent {
       icon.classList.add('fa-eye-slash');
     }
   }
+
   get passwordsDontMatch(): boolean {
     return this.user.password !== this.confirmPassword;
   }
 
-  onRegister() {
-    this.errorMessage = '';
-    this.successMessage = '';
-  
-    if (this.passwordsDontMatch) {
-      this.errorMessage = 'Las contraseñas no coinciden.';
-      return;
-    }
-  
-    this.http.post(this.apiEndpoint, this.user, {
+ onRegister() {
+  this.errorMessage = '';
+  this.successMessage = '';
+
+  if (this.passwordsDontMatch) {
+    this.errorMessage = 'Las contraseñas no coinciden.';
+    return;
+  }
+
+  this.http
+    .post(this.apiEndpoint, this.user, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
       responseType: 'text',
       withCredentials: true,
+    })
+    .subscribe({
+      next: (response: string) => {
+        if (response.includes('Usuario registrado exitosamente')) {
+          this.successMessage = 'Registro exitoso.';
+          this.errorMessage = null;
 
-    })   .subscribe({
-        next: (response: string) => {
-          if (response.includes('Usuario registrado exitosamente')) {
-            this.successMessage = 'Inicio de sesión exitoso.';
-            this.errorMessage = null;
+          window.alert('Registro exitoso. Serás redirigido al dashboard.');
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.handleError('Usuario no encontrado o error en los datos');
+        }
+      },
+      error: (error) => {
+        console.error('Error en la petición:', error);
+        this.handleError(
+          'Error al intentar registrarte. Por favor, intenta de nuevo.'
+        );
+      },
+    });
+}
 
-       
-          } else {
-            this.handleError('Usuario no encontrado o error en los datos');
-          }
-        },
-        error: (error) => {
-          console.error('Error en la petición:', error);
-          this.handleError('Error al intentar iniciar sesaión. Por favor, intente de nuevo.');
-        },
-      });
-  
-  }
+
   private handleError(message: string) {
     this.errorMessage = message;
     this.successMessage = null;
   }
-  
 }
