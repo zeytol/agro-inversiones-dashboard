@@ -1,5 +1,7 @@
 import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2'; 
 
 @Component({
   selector: 'app-editar-cliente',
@@ -24,7 +26,8 @@ export class EditarClienteComponent {
   constructor(
     public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private parentDialogRef: MatDialogRef<any>
+    private parentDialogRef: MatDialogRef<any>,
+    private http: HttpClient
   ) {
     this.razonSocial = data.razonSocial;
     this.tipoCliente = data.tipoCliente;
@@ -41,41 +44,65 @@ export class EditarClienteComponent {
   
    
   onEdit(): void {
-  if (
-    this.razonSocial &&
-    this.tipoCliente &&
-    this.tipoDocumento &&
-    this.numeroDocumento &&
-    this.direccion &&
-    this.telefono &&
-    this.correo
-  ) {
-    const updatedCliente = {
-      id: this.data.id,
-      razonSocial: this.razonSocial,
-      tipoCliente: this.tipoCliente,
-      tipoDocumento: this.tipoDocumento,
-      numeroDocumento: this.numeroDocumento,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      correo: this.correo
-    };
-    this.dialogRef = this.dialog.open(this.successModal, {
-      width: '400px',
-      height: 'auto'
-    });
+    if (
+      this.razonSocial &&
+      this.tipoCliente &&
+      this.tipoDocumento &&
+      this.numeroDocumento &&
+      this.direccion &&
+      this.telefono &&
+      this.correo
+    ) {
+      const updatedCliente = {
+        id: this.data.id,
+        razonSocial: this.razonSocial,
+        tipoCliente: this.tipoCliente,
+        tipoDocumento: this.tipoDocumento,
+        numeroDocumento: this.numeroDocumento,
+        direccion: this.direccion,
+        telefono: this.telefono,
+        correo: this.correo,
+      };
 
-    this.dialogRef.afterClosed().subscribe(() => {
-      this.clienteEdited.emit();
-      this.parentDialogRef.close(updatedCliente);
-    });
-  } else {
-    this.dialogRef = this.dialog.open(this.errorModal, {
-      width: '400px',
-      height: 'auto'
-    });
+      Swal.fire({
+        title: 'Editando cliente...',
+        html: 'Por favor, espera mientras se guarda la información.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      this.http.put(`https://agro-apiclientes-fzczhygvd2f4e4ag.brazilsouth-01.azurewebsites.net/api/clientes/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
+        (response: string) => {
+          Swal.fire({
+            title: 'Cliente editado',
+            text: response,
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+          }).then(() => {
+            this.clienteEdited.emit();
+            this.parentDialogRef.close(updatedCliente);
+          });
+        },
+        (error) => {
+          Swal.fire({
+            title: 'Error',
+            text: `No se pudo editar el cliente. Detalles: ${error.message || 'Error desconocido'}`,
+            icon: 'error',
+            confirmButtonText: 'Reintentar',
+          });
+        }
+      );
+    } else {
+      Swal.fire({
+        title: 'Campos incompletos',
+        text: 'Por favor, completa todos los campos obligatorios.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });
+    }
   }
-}
 
   closeSuccessModal(): void {
     this.dialogRef.close();

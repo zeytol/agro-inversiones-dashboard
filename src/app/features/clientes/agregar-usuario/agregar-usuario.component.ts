@@ -2,6 +2,7 @@ import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from 
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClienteService } from '../../../services/cliente.service';
 import { Cliente } from '../../../models/client.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-agregar-usuario',
@@ -34,17 +35,47 @@ export class AgregarUsuarioComponent {
   }
 
   async onAdd(): Promise<void> {
-    try {
-      if (this.isFormValid()) {
-        const cliente: Cliente = this.createCliente();
-        const response = await this.clienteService.guardarCliente(cliente).toPromise();
-        this.showSuccessModal(response);
-      } else {
-        this.showErrorModal();
+    if (!this.isFormValid()) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, completa todos los campos obligatorios.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    const cliente: Cliente = this.createCliente();
+
+    Swal.fire({
+      title: 'Agregando cliente...',
+      html: 'Por favor, espera mientras se registra el cliente.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
+    });
+
+    try {
+      const response = await this.clienteService.guardarCliente(cliente).toPromise();
+      
+      Swal.fire({
+        title: 'Cliente registrado',
+        text: 'El cliente se ha registrado con éxito.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        this.clienteAdded.emit();
+        this.parentDialogRef.close();
+      });
     } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo registrar el cliente. Intenta nuevamente.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+      });
       console.error('Error al agregar cliente:', error);
-      this.showErrorModal();
     }
   }
 

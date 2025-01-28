@@ -6,6 +6,8 @@ import { AgregarUsuarioComponent } from '../../features/clientes/agregar-usuario
 import { EditarClienteComponent } from '../../features/clientes/editar-cliente/editar-cliente.component'; 
 import { ClienteDetalleComponent } from '../../features/clientes/cliente-detalle/cliente-detalle.component';
 import { Cliente } from '../../models/client.model';
+import Swal from 'sweetalert2';
+
  
 @Component({
   selector: 'app-clientes',
@@ -22,7 +24,7 @@ export class ClientesComponent {
   filtroTipo: string = '';
 
   currentPage: number = 1;
-  pageSize: number = 6; // Número de clientes por página
+  pageSize: number = 10; // Número de clientes por página
    
 
   constructor(
@@ -62,27 +64,46 @@ export class ClientesComponent {
   }
 
   openConfirmDeleteModal(clienteId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDeleteModalComponent);
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás recuperar este cliente después de eliminarlo.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'No, cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
         this.deleteCliente(clienteId);
+      } else {
+        Swal.fire('Cancelado', 'El cliente no ha sido eliminado', 'info');
       }
     });
   }
 
-   deleteCliente(clienteId: number): void {
+  deleteCliente(clienteId: number): void {
+    Swal.fire({
+      title: 'Eliminando...',
+      text: 'Por favor, espera mientras se elimina el cliente.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.clienteService.eliminarCliente(clienteId).subscribe(
       (response) => {
         this.clientes = this.clientes.filter(cliente => cliente.id !== clienteId);
-        
+        this.clientesFiltrados = this.clientesFiltrados.filter(cliente => cliente.id !== clienteId);
+        Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente', 'success');
       },
       (error) => {
+        Swal.fire('Error', 'No se pudo eliminar el cliente', 'error');
         console.error('Error al eliminar cliente:', error);
       }
     );
   }
-
    
   onClienteAdded(): void {
     this.listarClientes();  
