@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';  // Añade esta importación
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { LoginComponent } from '../app/core/login/login.component'
+import { RegisterComponent } from './core/register/register.component';
+
 import { InventarioComponent } from './features/inventario/inventario.component';
 
 import { ClientesComponent } from './components/clientes/clientes.component';
@@ -15,14 +18,26 @@ import { CreatePermissionComponent } from './components/roles/create-permission/
 import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
 import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component';
 import { RolesComponent } from './components/roles/roles/roles.component';
+import { UsersComponent } from '../app/components/User/users/users.component';
+import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
+import { DocumentosComponent } from './features/documentos/documentos/documentos.component';
+
+
 import { ReportesComponent } from './features/reportes/reportes.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'user', component: UsersComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+
+  { path: 'ventas', component: VentasComponent },
+  { path: 'roles', component: RoleModalComponent },
   { path: 'ventas', component: VentasComponent }, 
   { path: 'clientes', component: ClientesComponent },
   { path: 'productos', component: GestionProductosComponent },
+  { path: 'documento', component: DocumentosComponent },
   { path: 'reportes', component: ReportesComponent },
   { path: 'roles', component: RolesListComponent },
   { path: 'roles/ajustes', component: AssignPermissionsComponent },
@@ -33,8 +48,10 @@ const routes: Routes = [
   { path: 'proveedores', component: ProveedoresComponent },
   { path: 'inventario', component: InventarioComponent},
   { path: 'ventas', component: VentasComponent },  // Ruta para el componente de ventas
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // Redirige a dashboard por defecto
-  { path: '**', redirectTo: '/dashboard' } 
+  //{ path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirige a dashboard por defecto
+  //{ path: '**', redirectTo: '/dashboard' } ,// Manejo de rutas no encontradas
+
+
 ];
 
 @NgModule({
