@@ -12,6 +12,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import {NgxPaginationModule} from 'ngx-pagination';
+import { InventarioComponent } from './features/inventario/inventario.component';
+
+// Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -35,6 +39,8 @@ import { EditarDocComponent } from './features/documentos/modals/editar-doc/edit
 import { AgregarDocComponent } from './features/documentos/modals/agregar-doc/agregar-doc.component';
 import { EnviarDocComponent } from './features/documentos/modals/enviar-doc/enviar-doc.component';
 import { EliminarDocComponent } from './features/documentos/modals/eliminar-doc/eliminar-doc.component';
+
+ // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
 import { RolesListComponent } from './components/roles/roles-list/roles-list.component';
 import { RoleDetailComponent } from './components/roles/role-detail/role-detail.component';
@@ -52,6 +58,15 @@ import { EditUserComponent } from '../app/components/User/edit-user/edit-user.co
 import { AddUserComponent } from '../app/components/User/add-user/add-user.component';
 import { DeleteUserComponent } from '../app/components/User/delete-user/delete-user.component';
 import { RegisterComponent } from './core/register/register.component';
+import { ReportesComponent } from './features/reportes/reportes.component';
+import { AgregarReporteComponent } from './features/reportes/agregar-reporte/agregar-reporte.component';
+import { EditarReporteComponent } from './features/reportes/editar-reporte/editar-reporte.component';
+import { TipoReporteComponent } from './features/reportes/tipo-reporte/tipo-reporte.component';
+import { ExportarReporteComponent } from './features/reportes/exportar-reporte/exportar-reporte.component';
+import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
+import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
+import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
+
 
 @NgModule({
   declarations: [
@@ -62,6 +77,7 @@ import { RegisterComponent } from './core/register/register.component';
     HeaderComponent,
     VentasComponent,
     AgregarClienteComponent,
+    InventarioComponent,
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
@@ -93,6 +109,14 @@ import { RegisterComponent } from './core/register/register.component';
     AddUserComponent,
     DeleteUserComponent,
     RegisterComponent,
+    ReportesComponent,
+    AgregarReporteComponent,
+    EditarReporteComponent,
+    TipoReporteComponent,
+    ExportarReporteComponent,
+    AgregarCategoriaComponent,
+    EliminarCategoriaComponent,
+    EditarCategoriaComponent,
   ],
   imports: [
     BrowserModule,
@@ -108,6 +132,10 @@ import { RegisterComponent } from './core/register/register.component';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    HttpClientModule, 
+    NgxPaginationModule,
+    ReactiveFormsModule,
+    NgApexchartsModule,
   ],
   providers: [
     provideClientHydration(),

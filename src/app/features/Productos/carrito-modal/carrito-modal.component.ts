@@ -21,22 +21,22 @@ export class CarritoModalComponent {
 
   // Método para eliminar un producto del carrito
   eliminarProducto(producto: any) {
-    // Elimina el producto utilizando el nombre del producto
-    this.carrito = this.carrito.filter(item => item.nombre !== producto.nombre);
+    // Elimina el producto utilizando el name del producto
+    this.carrito = this.carrito.filter(item => item.name !== producto.name);
     this.actualizarTotal(); // Actualiza el total después de eliminar
-    console.log(`Producto con nombre "${producto.nombre}" eliminado`);
+    console.log(`Producto con name "${producto.name}" eliminado`);
   }
 
   // Método para actualizar el total
 calcularTotal() {
-  this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
+  this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.urchasePrice.replace('$', '')), 0);
 }
 
 
 
   // Método para agregar productos al carrito
   agregarACarrito(producto: any) {
-    const itemEnCarrito = this.carrito.find(item => item.nombre === producto.nombre);
+    const itemEnCarrito = this.carrito.find(item => item.name === producto.name);
 
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Aumenta la cantidad si el producto ya está en el carrito
@@ -45,17 +45,17 @@ calcularTotal() {
     }
 
     this.actualizarTotal(); // Actualiza el total después de agregar
-    console.log(`${producto.nombre} ha sido agregado al carrito.`);
+    console.log(`${producto.name} ha sido agregado al carrito.`);
   }
 
   // Método para incrementar la cantidad de un producto en el carrito
   incrementarCantidad(item: any) {
-    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.nombre === item.nombre);
+    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.name === item.name);
     
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
       this.actualizarTotal(); // Actualiza el total después de incrementar
-      console.log(`Cantidad de ${item.nombre} incrementada a ${itemEnCarrito.cantidad}.`);
+      console.log(`Cantidad de ${item.name} incrementada a ${itemEnCarrito.cantidad}.`);
     }
   }
 

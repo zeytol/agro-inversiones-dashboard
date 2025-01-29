@@ -1,52 +1,82 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+
+import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 import { CategoryProductsService } from '../../../services/category-products.service';
+import { SuppliersService } from '../../../services/suppliers.service';
+
+interface Producto {
+  name: string;
+  description: string;
+  price: number;
+  amount: number;
+  type: string;
+  image: string;
+  supplier: {                         
+    id: number; 
+    name: string;                  
+  };
+  categoryProducts: {                
+    id: number; 
+    name: string;                       
+  };
+  codeProduct: string;
+  salePrice: number;
+  purchasePrice: number;
+  state: string;
+  composicionIsoprothiolane: string;
+  composicionAditivos: string;
+  descuento: number;
+  modelo: string;
+  fechaIngreso: string;
+  ubicacion: string;
+}
 
 @Component({
   selector: 'app-agregar-modal',
   templateUrl: './agregar-modal.component.html',
   styleUrls: ['./agregar-modal.component.css']
 })
-export class AgregarModalComponent implements OnInit {
-  @Output() cerrarModal = new EventEmitter<void>();
+export class AgregarModalComponent {
+  @Output() cerrarModal: EventEmitter<void> = new EventEmitter();
+  @Output() agregarProductoEvent: EventEmitter<any> = new EventEmitter();
   @Output() productoAgregado = new EventEmitter<any>();
-
-  imagePreview: string | undefined;
-  mensajeError: string | null = null;
-
-  nuevoProducto: any = {
-    id: 0,
-    name: '',
-    description: '',
-    price: 0,
+  nuevoProducto: Producto = {
+    
+    name: "",
+    description: "",
+    price: 0.0,
     amount: 0,
-    type: '',
-    image: '',
-    supplierId: 0,
-    categoriesProductsId: 0,
-    codeProduct: '',
-    salePrice: 0,
-    purchasePrice: 0,
-    state: 'Activo',
+    type: "",
+    image: "",
+    supplier: { id: 0, name: "" },
+    categoryProducts: { id: 0, name: ""},
+    codeProduct: "",
+    salePrice: 0.0,
+    purchasePrice: 0.0,
+    state: "",
+    composicionIsoprothiolane: "",
+    composicionAditivos: "",
     descuento: 0,
-    fechaIngreso: new Date().toISOString().split('T')[0],
-    ubicacion: ''
-  };
+    modelo: "",
+    fechaIngreso: "",
+    ubicacion: ""
+  }
 
+  productos: Producto[] = [];
   categorias: any[] = [];
-  proveedores: any[] = [
-    { id: 1, name: 'Proveedor A' },
-    { id: 2, name: 'Proveedor B' },
-    { id: 3, name: 'Proveedor C' }
-  ];
+  suppliers: any[] = [];
+  selectedFile: any = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(
-    private http: HttpClient,
-    private categoryProductsService: CategoryProductsService
+  constructor(private http: HttpClient,
+    private categoryProductsService: CategoryProductsService,
+    private suppliersService: SuppliersService
   ) {}
 
   ngOnInit(): void {
-    this.cargarCategorias();
+    this.cargarCategorias(); 
+    this.cargarSuppliers();
   }
 
   cargarCategorias(): void {
@@ -61,87 +91,128 @@ export class AgregarModalComponent implements OnInit {
     });
   }
 
-  agregarProducto(): void {
-    // Validar que los campos obligatorios estén completos
-    if (
-      !this.nuevoProducto.name ||
-      !this.nuevoProducto.description ||
-      !this.nuevoProducto.codeProduct ||
-      !this.nuevoProducto.supplierId ||
-      !this.nuevoProducto.categoriesProductsId
-    ) {
-      this.mensajeError = 'Por favor, completa todos los campos obligatorios.';
-      console.error(this.mensajeError);
-      return;
-    }
-  
-    // Validar precios y cantidades
-    if (this.nuevoProducto.salePrice <= 0 || this.nuevoProducto.purchasePrice <= 0 || this.nuevoProducto.amount <= 0) {
-      this.mensajeError = 'Los precios y la cantidad deben ser mayores que cero.';
-      console.error(this.mensajeError);
-      return;
-    }
-  
-    // Validar formato de código de producto
-    const regexCodigoProducto = /^[A-Za-z0-9_-]+$/;
-    if (!regexCodigoProducto.test(this.nuevoProducto.codeProduct)) {
-      this.mensajeError = 'El código del producto solo puede contener letras, números, guiones y guiones bajos.';
-      console.error(this.mensajeError);
-      return;
-    }
-  
-    this.mensajeError = null; 
-    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/register';
-  
-    // Crear objeto FormData para manejar el envío de datos
-    const formData = new FormData();
-    Object.keys(this.nuevoProducto).forEach((key) => {
-      console.log(key, this.nuevoProducto[key]); // Verifica los valores que se están enviando
-      if (key === 'image' && this.nuevoProducto[key]) {
-        formData.append(key, this.nuevoProducto[key]);
-      } else {
-        formData.append(key, this.nuevoProducto[key]);
-      }
-    });
-  
-    // Enviar datos al servidor
-    this.http.post<any>(url, formData).subscribe({
-      next: (response) => {
-        console.log('Producto registrado con éxito:', response);
-        this.productoAgregado.emit(response); // Emitir evento de producto agregado
-        this.cerrar(); // Cerrar el modal
+  cargarSuppliers(): void {
+    this.suppliersService.getSuppliers().subscribe({
+      next: (data) => {
+        this.suppliers = data;
+        console.log('Proveedores cargados:', this.suppliers);
       },
       error: (err) => {
-        console.error('Error al registrar el producto:', err);
-        if (err.status === 400 && err.error) {
-          console.error('Detalles del error:', err.error);
-          this.mensajeError = err.error.message || 'Error en la solicitud. Verifica los datos.';
+        console.error('Error al cargar proveedores:', err);
+      },
+    });
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  agregarProducto(): void {
+    if (!this.nuevoProducto.name || !this.nuevoProducto.description || !this.selectedFile) {
+      console.error('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+  
+    const formData = new FormData();
+   
+    formData.append('products', new Blob([JSON.stringify(this.nuevoProducto)], {
+      type: 'application/json'
+    }));
+    formData.append('image', this.selectedFile);
+  
+    const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/register';
+    Swal.fire({
+      title: 'Registrando producto...',
+      html: 'Por favor, espera mientras se completa el registro.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.http.post(url, formData, {
+      observe: 'response',  
+      responseType: 'json'  
+    }).subscribe({
+      next: (response: any) => {
+        console.log('Respuesta del servidor:', response); 
+      
+        if (response.status === 201) {
+          Swal.fire({
+            title: 'Producto registrado',
+            text: 'El producto se ha registrado con éxito.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.reload();
+          });
+          this.productos.push(response.body);
+          this.productoAgregado.emit(response.body);
+          this.resetForm();
+          this.cerrar();
+        }
+      },
+      error: (err) => {
+        Swal.close();
+        if (err.status === 201) {
+          Swal.fire({
+            title: 'Producto registrado',
+            text: 'El producto se ha registrado con éxito.',
+            icon: 'info',
+            confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.reload();
+          });
+          this.resetForm();
+          this.cerrar();
         } else {
-          this.mensajeError = 'Hubo un error al registrar el producto. Intenta nuevamente.';
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo registrar el producto.',
+            icon: 'error',
+            confirmButtonText: 'Reintentar'
+          });
         }
       }
     });
   }
-  
+
+  resetForm(): void {
+    this.nuevoProducto = {
+
+      name: '',
+      description: '',
+      price: 0,
+      amount: 0,
+      type: '',
+      image: '',
+      supplier: { id: 0, name: ''},
+      categoryProducts: { id: 0, name: ''},
+      codeProduct: '',
+      salePrice: 0,
+      purchasePrice: 0,
+      state: '',
+      composicionIsoprothiolane: '',
+      composicionAditivos: '',
+      descuento: 0,
+      modelo: '',
+      fechaIngreso: '',
+      ubicacion: ''
+    };
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
 
   cerrar(): void {
     this.cerrarModal.emit();
   }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input?.files?.length) {
-      const file = input.files[0];
-      const reader = new FileReader();
-
-      // Actualizar la imagen seleccionada
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-        this.nuevoProducto.image = file; // Asignar el archivo seleccionado al campo image
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }
 }
- 
