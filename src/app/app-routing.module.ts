@@ -21,8 +21,6 @@ import { RolesComponent } from './components/roles/roles/roles.component';
 import { UsersComponent } from '../app/components/User/users/users.component';
 import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
 import { DocumentosComponent } from './features/documentos/documentos/documentos.component';
-
-
 import { ReportesComponent } from './features/reportes/reportes.component';
 
 const routes: Routes = [
@@ -47,9 +45,9 @@ const routes: Routes = [
   { path: 'role', component: RolesComponent },
   { path: 'proveedores', component: ProveedoresComponent },
   { path: 'inventario', component: InventarioComponent},
-  { path: 'ventas', component: VentasComponent },  // Ruta para el componente de ventas
-  //{ path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirige a dashboard por defecto
-  //{ path: '**', redirectTo: '/dashboard' } ,// Manejo de rutas no encontradas
+  { path: 'ventas', component: VentasComponent },  
+  { path: '', redirectTo: '/login', pathMatch: 'full' }, 
+  { path: '**', redirectTo: '/dashboard' } ,
 
 
 ];
