@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
+import { ProveedoresComponent } from './features/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {NgxPaginationModule} from 'ngx-pagination';
 import { InventarioComponent } from './features/inventario/inventario.component';
