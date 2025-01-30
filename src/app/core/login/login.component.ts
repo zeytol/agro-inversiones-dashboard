@@ -23,14 +23,11 @@ export class LoginComponent {
     formData.append('username', this.loginData.username);
     formData.append('password', this.loginData.password);
 
-    this.http
-      .post(
+    this.http.post(
         'https://agro-inversiones-oauth-cca2drebeabyhufq.canadacentral-01.azurewebsites.net/login',
         formData.toString(),
         {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/x-www-form-urlencoded',
-          }),
+          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
           withCredentials: true,
           responseType: 'text',
         }
@@ -38,9 +35,9 @@ export class LoginComponent {
       .subscribe({
         next: (response: string) => {
           if (response.includes('Login successful')) {
+            localStorage.setItem('token', 'some-auth-token'); // Simulación de token
             this.successMessage = 'Inicio de sesión exitoso.';
             this.errorMessage = null;
-
             this.router.navigate(['/dashboard']);
           } else {
             this.handleError('Usuario no encontrado o error en los datos');
@@ -48,10 +45,11 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Error en la petición:', error);
-          this.handleError('Error al intentar iniciar sesaión. Por favor, intente de nuevo.');
+          this.handleError('Error al intentar iniciar sesión. Por favor, intente de nuevo.');
         },
       });
   }
+
 
   private handleError(message: string) {
     this.errorMessage = message;

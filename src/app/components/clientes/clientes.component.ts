@@ -1,22 +1,14 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'; 
-import { ConfirmDeleteModalComponent } from '../../modals/confirm-delete-modal/confirm-delete-modal.component'; 
-import { AgregarUsuarioComponent } from '../../modals/agregar-usuario/agregar-usuario.component';
-import { EditarClienteComponent } from '../../modals/editar-cliente/editar-cliente.component'; 
+import { ClienteService } from '../../services/cliente.service';
+import { ConfirmDeleteModalComponent } from '../../features/clientes/confirm-delete-modal/confirm-delete-modal.component'; 
+import { AgregarUsuarioComponent } from '../../features/clientes/agregar-usuario/agregar-usuario.component';
+import { EditarClienteComponent } from '../../features/clientes/editar-cliente/editar-cliente.component'; 
+import { ClienteDetalleComponent } from '../../features/clientes/cliente-detalle/cliente-detalle.component';
+import { Cliente } from '../../models/client.model';
+import Swal from 'sweetalert2';
 
-
-interface Cliente {
-  nombre: string;
-  tipoCliente: string; // Nuevo campo
-  tipoDocumento: string; // Nuevo campo
-  dniRuc: string;
-  direccion: string;
-  telefono: string;
-  correo: string; 
-  estado: string;
-  fotoUrl: string;
-}
-
+ 
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
@@ -24,81 +16,159 @@ interface Cliente {
 })
 export class ClientesComponent {
   isSidebarVisible = true;
-  clientes: Cliente[] = [
-    {
-      nombre: 'Miguel',
-      tipoCliente: 'Particular', 
-      tipoDocumento: 'DNI', 
-      dniRuc: '71458957',
-      direccion: 'Av. Panama 332',
-      telefono: '987654321',
-      correo: 'usuario1@gmail.com',
-      estado: 'Disponible',
-      fotoUrl: 'ruta/a/foto1.jpg'
-    },
-    {
-      nombre: 'Laura',
-      tipoCliente: 'Empresa', 
-      tipoDocumento: 'RUC', 
-      dniRuc: '20456789',
-      direccion: 'Calle Ejemplo 123',
-      telefono: '912345678',
-      correo: 'usuario2@gmail.com',
-      estado: 'No Disponible',
-      fotoUrl: 'ruta/a/foto2.jpg'
-    },
-    // Añadir más clientes según sea necesario
-  ];
+  clientes: Cliente[] = [];
+  clientesFiltrados: Cliente[] = [];
+  
+  filtroNombre: string = '';
+  filtroDocumento: string = '';
+  filtroTipo: string = '';
 
-  constructor(private dialog: MatDialog) {}
+  currentPage: number = 1;
+  pageSize: number = 10; // Número de clientes por página
+   
 
-  // Función para abrir el modal de confirmación
-  openConfirmDeleteModal(clienteNombre: string): void {
-    const dialogRef = this.dialog.open(ConfirmDeleteModalComponent);
+  constructor(
+    private dialog: MatDialog,
+    private clienteService: ClienteService 
+  ) {}
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.deleteCliente(clienteNombre); // Elimina al cliente si se confirma
+  ngOnInit(): void {
+    this.listarClientes();
+  }
+
+   listarClientes(): void {
+    this.clienteService.listarClientes().subscribe(
+      (clientes: Cliente[]) => {
+        this.clientes = clientes;
+        this.clientesFiltrados = [...clientes];
+      },
+      (error) => {
+        console.error('Error al obtener clientes:', error);
+      }
+    );
+  }
+
+  filtrarClientes(): void {
+    this.clientesFiltrados = this.clientes.filter((cliente) => {
+      const coincideNombre =
+        this.filtroNombre.trim() === '' ||
+        cliente.razonSocial.toLowerCase().includes(this.filtroNombre.toLowerCase());
+      const coincideDocumento =
+        this.filtroDocumento.trim() === '' ||
+        cliente.numeroDocumento.includes(this.filtroDocumento);
+      const coincideTipo =
+        this.filtroTipo.trim() === '' || cliente.tipoCliente === this.filtroTipo;
+
+      return coincideNombre && coincideDocumento && coincideTipo;
+    });
+  }
+
+  openConfirmDeleteModal(clienteId: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás recuperar este cliente después de eliminarlo.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'No, cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteCliente(clienteId);
+      } else {
+        Swal.fire('Cancelado', 'El cliente no ha sido eliminado', 'info');
       }
     });
   }
 
-  // Elimina un cliente de la lista
-  deleteCliente(clienteNombre: string): void {
-    this.clientes = this.clientes.filter(cliente => cliente.nombre !== clienteNombre);
+  deleteCliente(clienteId: number): void {
+    Swal.fire({
+      title: 'Eliminando...',
+      text: 'Por favor, espera mientras se elimina el cliente.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.clienteService.eliminarCliente(clienteId).subscribe(
+      (response) => {
+        this.clientes = this.clientes.filter(cliente => cliente.id !== clienteId);
+        this.clientesFiltrados = this.clientesFiltrados.filter(cliente => cliente.id !== clienteId);
+        Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente', 'success');
+      },
+      (error) => {
+        Swal.fire('Error', 'No se pudo eliminar el cliente', 'error');
+        console.error('Error al eliminar cliente:', error);
+      }
+    );
+  }
+   
+  onClienteAdded(): void {
+    this.listarClientes();  
   }
   
-  toggleSidebar() {
-      this.isSidebarVisible = !this.isSidebarVisible;
-    }
+  toggleSidebar(): void {
+    this.isSidebarVisible = !this.isSidebarVisible;
+  }
 
-    openAgregarUsuarioModal(): void {
-      const dialogRef = this.dialog.open(AgregarUsuarioComponent, {
-        width: '400px', // Puedes ajustar el ancho del modal
-      });
+  openAgregarUsuarioModal(): void {
+    const dialogRef = this.dialog.open(AgregarUsuarioComponent, {
+      width: '400px',  
+    });
+
+    dialogRef.componentInstance.clienteAdded.subscribe(() => {
+      this.onClienteAdded(); 
+    });
+  }
+
+  openEditarClienteModal(cliente: Cliente): void {
+    const dialogRef = this.dialog.open(EditarClienteComponent, {
+      width: '400px',
+      data: cliente
+    });
   
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          // Agregar lógica para añadir un nuevo usuario a la lista si es necesario
-          this.clientes.push(result); // Asumiendo que el modal retorna el nuevo cliente
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (result.id) {
+          this.clienteService.actualizarCliente(result.id, result).subscribe(
+            (response) => {
+              this.listarClientes(); 
+            },
+            (error) => {
+              console.error('Error al actualizar cliente:', error);
+            }
+          );
+        } else {
+          console.error('El cliente no tiene un ID válido');
         }
-      });
+      }
+    });
+  }
+
+  openDetalleClienteModal(cliente: Cliente): void {
+    this.dialog.open(ClienteDetalleComponent, {
+      width: '400px',
+      data: cliente 
+    });
+  }
+
+  getClientesPorPagina(): Cliente[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.clientesFiltrados.slice(startIndex, endIndex);
+  }
+
+  cambiarPagina(direccion: 'anterior' | 'siguiente'): void {
+    if (direccion === 'anterior' && this.currentPage > 1) {
+      this.currentPage--;
+    } else if (direccion === 'siguiente' && this.currentPage < this.getTotalPaginas()) {
+      this.currentPage++;
     }
-    
-    openEditarClienteModal(cliente: Cliente): void {
-      const dialogRef = this.dialog.open(EditarClienteComponent, {
-        width: '400px',
-        data: cliente  // Pasamos los datos del cliente seleccionado
-      });
+  }
   
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          // Actualiza el cliente en la lista si fue editado
-          const index = this.clientes.findIndex(c => c.nombre === cliente.nombre);
-          if (index !== -1) {
-            this.clientes[index] = result;
-          }
-        }
-      });
-    }
+  getTotalPaginas(): number {
+    return Math.ceil(this.clientesFiltrados.length / this.pageSize);
+  }
 }

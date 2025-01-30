@@ -39,5 +39,17 @@
   .shadow-lg {
     box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   }
+  ::ng-deep .mat-mdc-paginator {
+    font-size: 18px; /* Aumenta el tamaño del texto */
+    height: 60px; /* Aumenta la altura */
+  }
+  
+  ::ng-deep .mat-mdc-paginator-page-size {
+    font-size: 18px; /* Aumenta el tamaño del selector de páginas */
+  }
+  
+  ::ng-deep .mat-mdc-paginator-range-label {
+    font-size: 18px; /* Aumenta el tamaño del texto de paginación */
+  }
   
   
