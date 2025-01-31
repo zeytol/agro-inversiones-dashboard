@@ -7,12 +7,12 @@ export class AuthService {
   private isAuthenticated = false;
 
   login() {
-    this.isAuthenticated = true; // Puedes guardar un token en localStorage aquí
+    this.isAuthenticated = true; 
   }
 
   logout() {
     this.isAuthenticated = false;
-    localStorage.removeItem('token'); // Limpia el token si usas JWT
+    localStorage.removeItem('token'); 
   }
 
   isLoggedIn(): boolean {
