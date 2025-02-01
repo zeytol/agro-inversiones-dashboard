@@ -108,6 +108,8 @@ export class FiltrarModalComponent implements OnInit {
           text: 'La categoría se ha eliminado correctamente.',
           icon: 'success',
           confirmButtonText: 'Aceptar'
+        }).then(() => {
+          window.location.reload();
         });
   
         // Filtramos la categoría eliminada de la lista

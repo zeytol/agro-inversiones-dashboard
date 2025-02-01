@@ -1,0 +1,153 @@
+<div class="dashboard-layout">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang
+      *ngIf="isSidebarVisible"
+      class="siderbang w-64"
+    ></app-siderbang>
+
+    <div class="container">
+      <h2 class="text-left mb-4 title">Administrar Inventario</h2>
+
+      <!-- inventario.component.html -->
+      <div class="search-and-actions d-flex align-items-center mb-4">
+        <div class="search-container me-3">
+          <input
+            type="text"
+            id="productCode"
+            [(ngModel)]="searchCode"
+            placeholder="Ingrese código de producto"
+          />
+          <button
+            class="btn btn-outline-primary ms-2"
+            (click)="searchProduct()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              style="fill: rgba(0, 0, 0, 1); transform: ; msfilter: "
+            >
+              <path
+                d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Campo de búsqueda para la categoría -->
+        <input
+          type="text"
+          [(ngModel)]="searchCategory"
+          placeholder="Buscar por categoría"
+          class="form-control"
+          id="categorySearch"
+        />
+        <button (click)="searchProductsByCategory()" class="btn btn-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: rgba(0, 0, 0, 1); transform: ; msfilter: "
+          >
+            <path
+              d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"
+            ></path>
+          </svg>
+        </button>
+
+        <div
+          class="action-buttons d-flex justify-content-start gap-2 flex-wrap"
+        >
+          <button
+            (click)="confirmDeleteSelected()"
+            class="btn btn-danger delete-button"
+          >
+            <i class="fas fa-trash-alt"></i>
+          </button>
+          <button class="btn btn-primary" (click)="exportDocuments()">
+            <i class="fas fa-file-export"></i> Exportar Excel
+          </button>
+          <button class="btn btn-secondary" (click)="exportDocumentsPDF()">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <table id="productTable" *ngIf="displayedProducts.length > 0">
+        <thead>
+          <tr>
+            <th class="p-4 border text-center">
+              <input
+                type="checkbox"
+                class="h-4 w-4"
+                (change)="toggleAll($event)"
+              />
+            </th>
+            <th>N°</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Tipo</th>
+            <th>Imagen</th>
+            <th>Proveedor</th>
+            <th>Categoría</th>
+            <th>Código</th>
+            <th>Precio de Venta</th>
+            <th>Precio de Compra</th>
+            <th>Descuento</th>
+            <th>Fecha de Ingreso</th>
+            <th>Ubicación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of displayedProducts; let i = index">
+            <td class="p-4 border text-center">
+              <input
+                type="checkbox"
+                class="h-4 w-4"
+                [(ngModel)]="selectedProducts[i]"
+              />
+            </td>
+            <td>{{ i + 1 }}</td>
+            <td>{{ product.name }}</td>
+            <td>
+              {{ product.description.split(' ').slice(0, 6).join(' ') + (product.description.split(' ').length > 6 ? '...' : '') }}
+            </td>
+            <td>{{ product.amount }}</td>
+            <td>{{ product.type }}</td>
+            <td>
+              <img
+                [src]="product.image"
+                alt="{{ product.name }}"
+                style="width: 100px; height: auto"
+              />
+            </td>
+            <td>
+              <span *ngFor="let sup of getSupplier(product)">{{
+                sup.name
+              }}</span>
+            </td>
+            <td>
+              <span *ngFor="let cat of getCategoryProducts(product)">{{
+                cat.name
+              }}</span>
+            </td>
+            <td>{{ product.codeProduct }}</td>
+            <td>{{ product.salePrice }}</td>
+            <td>{{ product.purchasePrice }}</td>
+            <td>{{ product.descuento || "N/A" }}%</td>
+            <td>{{ product.fechaIngreso || "N/A" }}</td>
+            <td>{{ product.ubicacion || "N/A" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

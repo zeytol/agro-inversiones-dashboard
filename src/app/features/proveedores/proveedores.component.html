@@ -1,0 +1,497 @@
+<div class="dashboard-layout flex flex-col h-screen">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
+
+    <div class="w-full p-8 bg-gray-100 min-h-screen">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-black underline">Gestión de Proveedores</h1>
+        <button (click)="openAddModal()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-300">
+          <fa-icon [icon]="['fas', 'user-plus']" class="h-5 w-5"></fa-icon>
+          <span>Agregar</span>
+        </button>
+      </div>
+
+      <!-- Bloque de filtros y acciones -->
+      <div class="flex justify-between items-center mb-6">
+        <!-- Filtros -->
+        <div class="grid grid-cols-4 gap-4 w-4/5">
+          <div class="flex items-center border rounded-lg p-2 bg-gray-200">
+            <input
+              type="text"
+              placeholder="Buscar por RUC o email"
+              class="bg-gray-200 outline-none w-full"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onFilterChange()"
+            />
+            <fa-icon [icon]="['fas', 'search']" class="text-gray-500 h-5 w-5 ml-2"></fa-icon>
+          </div>
+          <div class="flex items-center border rounded-lg p-2 bg-white">
+            <select
+              class="w-full bg-transparent outline-none"
+              [(ngModel)]="selectedCategory"
+              (ngModelChange)="onFilterChange()"
+            >
+              <option value="all">Seleccionar categoría</option>
+              <option *ngFor="let category of categories" [value]="category.name">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <h2 class="text-center font-semibold mb-2">Filtrar por Estado</h2>
+            <div class="flex items-center justify-around">
+              <label class="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="isActive"
+                  (change)="onFilterChange()"
+                  class="toggle-checkbox"
+                />
+                <span>Activo</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="isInactive"
+                  (change)="onFilterChange()"
+                  class="toggle-checkbox"
+                />
+                <span>Inactivo</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex items-center space-x-4 w-1/5 justify-end">
+          <h2 class="text-lg font-bold text-gray-700">Acciones:</h2>
+          <button class="bg-yellow-400 hover:bg-yellow-500 p-2 rounded flex items-center space-x-2" (click)="openEditModal()" [disabled]="!hasSelectedProveedor()">
+            <fa-icon [icon]="['fas', 'edit']" class="text-white h-5 w-5"></fa-icon>
+            <span>Editar</span>
+          </button>
+          <button class="bg-red-500 hover:bg-red-600 p-2 rounded flex items-center space-x-2" (click)="openDeleteModal()" [disabled]="!hasSelectedProveedor()">
+            <fa-icon [icon]="['fas', 'trash-alt']" class="text-white h-5 w-5"></fa-icon>
+            <span>Eliminar</span>
+          </button>
+          <button class="bg-blue-400 hover:bg-blue-500 p-2 rounded flex items-center space-x-2" (click)="openViewModal()" [disabled]="!hasSelectedProveedor()">
+            <fa-icon [icon]="['fas', 'search']" class="text-white h-5 w-5"></fa-icon>
+            <span>Ver</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de datos -->
+      <table class="w-full table-auto border-collapse bg-white shadow-lg rounded-lg overflow-hidden">
+        <thead>
+          <tr class="bg-black text-white">
+            <th class="p-4 border text-center"><input type="checkbox" class="h-4 w-4" (change)="toggleAll($event)" /></th>
+            <th class="p-4 border text-center">RUC</th>
+            <th class="p-4 border text-center">Nombre del Proveedor</th>
+            <th class="p-4 border text-center">Email</th>
+            <th class="p-4 border text-center">Teléfono</th>
+            <th class="p-4 border text-center">Dirección Fiscal</th>
+            <th class="p-4 border text-center">Categoría</th>
+            <th class="p-4 border text-center">Fecha de Registro</th>
+            <th class="p-4 border text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proveedor of filteredProveedores | paginate: { itemsPerPage: 10, currentPage: p }" class="hover:bg-gray-50">
+            <td class="p-4 border text-center"><input type="checkbox" class="h-4 w-4" [(ngModel)]="proveedor.selected" (change)="selectProveedor(proveedor)" /></td>
+            <td class="p-4 border text-center">{{ proveedor.ruc }}</td>
+            <td class="p-4 border text-center">{{ proveedor.name }}</td>
+            <td class="p-4 border text-center">{{ proveedor.contact }}</td>
+            <td class="p-4 border text-center">{{ proveedor.phone }}</td>
+            <td class="p-4 border text-center">{{ proveedor.addres }}</td>
+            <td class="p-4 border text-center">{{ proveedor.categorySuppliers?.name }}</td>
+            <td class="p-4 border text-center">{{ proveedor.registration_date | date }}</td>
+            <td class="p-4 border text-center">
+              <span [ngClass]="{ 'text-green-600': proveedor.state === 'Activo', 'text-red-600': proveedor.state === 'Inactivo' }">{{ proveedor.state }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="flex justify-center mt-4">
+        <pagination-controls 
+          (pageChange)="p = $event" 
+          previousLabel="← Anterior" 
+          nextLabel="Siguiente →" 
+          class="pagination-controls"
+          [responsive]="true">
+        </pagination-controls>
+      </div>
+
+    <!-- Modal Agregar -->
+  <div *ngIf="showAddModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">Agregar Proveedor</h2>
+      <form (submit)="addProveedor()">
+        
+        <!-- RUC -->
+        <div class="mb-4">
+          <input 
+            type="text" 
+            placeholder="RUC" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.ruc" 
+            name="ruc" 
+            required 
+            maxlength="11" 
+            pattern="^\d{11}$"
+            (keypress)="allowOnlyNumbers($event)" />
+          <small 
+            *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" 
+            class="text-red-500 text-sm">
+            Debe ser exactamente 11 dígitos.
+          </small>
+        </div>
+
+        <!-- Nombre del Proveedor -->
+        <div class="mb-4">
+          <input type="text"
+                placeholder="Nombre del Proveedor"
+                class="w-full border rounded p-2"
+                [ngClass]="{'border-red-500': !newProveedor.name}"
+                [(ngModel)]="newProveedor.name"
+                name="nombre"
+                required
+                maxlength="50" />
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+          <input 
+            type="email" 
+            placeholder="Email" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.contact" 
+            name="email" 
+            required />
+          <small 
+            *ngIf="newProveedor.contact && !isEmailValid(newProveedor.contact)" 
+            class="text-red-500 text-sm">
+            El correo debe ser válido y terminar en .com, .pe, .net, etc.
+          </small>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="mb-4">
+          <input 
+            type="text" 
+            placeholder="Teléfono" 
+            class="w-full border rounded p-2" 
+            [(ngModel)]="newProveedor.phone" 
+            name="telefono" 
+            required 
+            maxlength="9" 
+            pattern="^\d{9}$"
+            (keypress)="allowOnlyNumbers($event)" />
+          <small 
+            *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" 
+            class="text-red-500 text-sm">
+            Debe ser exactamente 9 dígitos.
+          </small>
+        </div>
+
+        <!-- Dirección Fiscal -->
+        <div class="mb-4">
+          <input type="text"
+                placeholder="Dirección Fiscal"
+                class="w-full border rounded p-2"
+                [ngClass]="{'border-red-500': !newProveedor.addres}"
+                [(ngModel)]="newProveedor.addres"
+                name="direccion"
+                required
+                maxlength="30" />
+        </div>
+
+        <!-- Categoría -->
+        <div class="mb-4">
+          <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Categorías</label>
+          <select id="category"
+                  [(ngModel)]="newProveedor.categorySuppliers.id"
+                  name="category"
+                  class="w-full border rounded p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  [ngClass]="{'border-red-500': !newProveedor.categorySuppliers.id}"
+                  required>
+            <option value="">Seleccione una categoría</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Fecha de Registro -->
+        <input type="date" 
+              class="w-full border rounded p-2 mb-2" 
+              [(ngModel)]="newProveedor.registration_date" 
+              name="fechaRegistro" 
+              required />
+
+        <!-- Estado -->
+        <select class="w-full border rounded p-2 mb-4" 
+                [(ngModel)]="newProveedor.state" 
+                name="estado" 
+                required>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <div class="flex justify-end space-x-2">
+          <button type="button" 
+                  class="bg-red-500 text-white px-4 py-2 rounded" 
+                  (click)="closeModal()">Cancelar</button>
+          <button type="submit" 
+                  class="bg-blue-500 text-white px-4 py-2 rounded">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Modal Campos Incompletos -->
+  <div *ngIf="showIncompleteFieldsModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">Campos Incompletos</h2>
+      <p class="text-center mb-4">Por favor, completa todos los campos requeridos antes de continuar.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Éxito -->
+  <div *ngIf="showSuccessModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-green-500">Proveedor Agregado Exitosamente</h2>
+      <p class="text-center mb-4">El proveedor se ha guardado correctamente.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-blue-500">Guardando...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se guarda el proveedor.</p>
+    </div>
+  </div>
+
+  <!-- Modal Error -->
+  <div *ngIf="showErrorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">Error al Agregar Proveedor</h2>
+      <p class="text-center mb-4">Ocurrió un error al intentar agregar el proveedor. Por favor, inténtalo nuevamente.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar -->
+<div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <h2 class="text-xl font-bold mb-4">Editar Proveedor</h2>
+    <form (submit)="editProveedor()">
+      <!-- RUC -->
+      <div class="mb-4">
+        <input type="text" 
+               placeholder="RUC" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="selectedProveedor.ruc" 
+               name="ruc" 
+               required 
+               maxlength="11" 
+               pattern="^\d{11}$"
+              (keypress)="allowOnlyNumbers($event)" />
+            <small 
+              *ngIf="newProveedor.ruc && newProveedor.ruc.length !== 11" 
+              class="text-red-500 text-sm">
+              Debe ser exactamente 11 dígitos.
+            </small>
+      </div>
+
+      <!-- Nombre del Proveedor -->
+      <input type="text" 
+             placeholder="Nombre del Proveedor" 
+             class="w-full border rounded p-2 mb-2" 
+             [(ngModel)]="selectedProveedor.name" 
+             name="nombre" 
+             required 
+             maxlength="50" />
+
+      <!-- Email -->
+      <div class="mb-4">
+        <input type="email" 
+               placeholder="Email" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="selectedProveedor.contact" 
+               name="email" 
+               required />
+              <small 
+                *ngIf="newProveedor.contact && !isEmailValid(newProveedor.contact)" 
+                class="text-red-500 text-sm">
+                El correo debe ser válido y terminar en .com, .pe, .net, etc.
+              </small>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="mb-4">
+        <input type="text" 
+               placeholder="Teléfono" 
+               class="w-full border rounded p-2" 
+               [(ngModel)]="selectedProveedor.phone" 
+               name="telefono" 
+               required 
+               maxlength="9" 
+               pattern="^\d{9}$"
+              (keypress)="allowOnlyNumbers($event)" />
+            <small 
+              *ngIf="newProveedor.phone && newProveedor.phone.length !== 9" 
+              class="text-red-500 text-sm">
+              Debe ser exactamente 9 dígitos.
+            </small>
+      </div>
+
+      <!-- Dirección Fiscal -->
+      <input type="text" 
+             placeholder="Dirección Fiscal" 
+             class="w-full border rounded p-2 mb-2" 
+             [(ngModel)]="selectedProveedor.addres" 
+             name="direccion" 
+             required 
+             maxlength="30" />
+
+      <!-- Categoría -->
+      <div class="mb-4">
+        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Categorías</label>
+        <select id="category" 
+                [(ngModel)]="selectedProveedor.categorySuppliers.id" 
+                name="category" 
+                required 
+                class="w-full border rounded p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <option value="">Seleccione una categoría</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Fecha de Registro -->
+      <input type="date" 
+          class="w-full border rounded p-2 mb-2" 
+          [(ngModel)]="selectedProveedor.registration_date" 
+          name="fechaRegistro" 
+          required />
+
+      <!-- Estado -->
+      <select class="w-full border rounded p-2 mb-4" 
+              [(ngModel)]="selectedProveedor.state" 
+              name="estado" 
+              required>
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+
+      <div class="flex justify-end space-x-2">
+        <button type="button" 
+                class="bg-red-500 text-white px-4 py-2 rounded" 
+                (click)="closeModal()">Cancelar</button>
+        <button type="submit" 
+                class="bg-blue-500 text-white px-4 py-2 rounded">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <!-- Modal Éxito Editar -->
+  <div *ngIf="showModalEditarExito" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-green-500">¡Éxito!</h2>
+      <p class="text-center mb-4">La edición se completó con éxito.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModalEditar" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-blue-500">Guardando Cambios...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se guardan los cambios del proveedor.</p>
+    </div>
+  </div>
+
+  <!-- Modal Error Editar -->
+  <div *ngIf="showModalEditarError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">¡Error!</h2>
+      <p class="text-center mb-4">Hubo un problema al editar los datos. Por favor, intente nuevamente.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Eliminar -->
+  <div *ngIf="showDeleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">¿Seguro que deseas eliminar este registro?</h2>
+      <p class="mb-6">El proveedor será eliminado permanentemente.</p>
+      <div class="flex justify-end space-x-2">
+        <button class="bg-red-500 text-white px-4 py-2 rounded" (click)="deleteProveedor()">Sí, eliminar</button>
+        <button class="bg-gray-300 text-black px-4 py-2 rounded" (click)="closeModal()">No, cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Éxito Eliminar -->
+  <div *ngIf="showModalEliminarExito" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-green-500">¡Éxito!</h2>
+      <p class="text-center mb-4">La eliminación se completó con éxito.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal En Proceso -->
+  <div *ngIf="showInProgressModalEliminar" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">Eliminando Proveedor...</h2>
+      <p class="text-center mb-4">Por favor espera mientras se elimina el proveedor seleccionado.</p>
+    </div>
+  </div>
+
+  <!-- Modal Error Eliminar -->
+  <div *ngIf="showModalEliminarError" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-red-500">¡Error!</h2>
+      <p class="text-center mb-4">No se pudo eliminar el elemento. Inténtelo nuevamente.</p>
+      <div class="flex justify-center">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Mostrar -->
+  <div *ngIf="showViewModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+      <h2 class="text-xl font-bold mb-4">Detalles del Proveedor</h2>
+      <p><strong>RUC:</strong> {{ selectedProveedor?.ruc }}</p>
+      <p><strong>Nombre:</strong> {{ selectedProveedor?.name }}</p>
+      <p><strong>Email:</strong> {{ selectedProveedor?.contact }}</p>
+      <p><strong>Teléfono:</strong> {{ selectedProveedor?.phone }}</p>
+      <p><strong>Dirección Fiscal:</strong> {{ selectedProveedor?.addres }}</p>
+      <p><strong>Categoría:</strong> {{ selectedProveedor?.categorySuppliers.name }}</p>
+      <p><strong>Fecha de Registro:</strong> {{ selectedProveedor?.registration_date | date }}</p>
+      <p><strong>Estado:</strong> {{ selectedProveedor?.state }}</p>
+      <div class="flex justify-end mt-4">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded" (click)="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

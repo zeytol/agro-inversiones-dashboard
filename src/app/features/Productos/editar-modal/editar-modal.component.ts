@@ -134,6 +134,8 @@ export class EditarModalComponent {
                       text: 'El producto se ha editado con éxito.',
                       icon: 'success',
                       confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                      window.location.reload();
                     });
           this.productoEditado.emit(response.body);
           this.cerrarEditarModal();
@@ -150,8 +152,10 @@ export class EditarModalComponent {
                   text: 'El producto se editó, aunque ocurrió un error inesperado.',
                   icon: 'info',
                   confirmButtonText: 'Aceptar'
+                }).then(() => {
+                  window.location.reload();
                 });
-              
+            
               } else {
                 Swal.fire({
                   title: 'Error',
