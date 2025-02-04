@@ -57,6 +57,7 @@ import { TipoReporteComponent } from './features/reportes/tipo-reporte/tipo-repo
 import { ExportarReporteComponent } from './features/reportes/exportar-reporte/exportar-reporte.component';
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 // Asegúrate de importar FormsModule
 
@@ -108,6 +109,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     AppRoutingModule,
     FontAwesomeModule,
     NgApexchartsModule,
+    MatPaginatorModule,
     FormsModule,
     MatIconModule,
     MatDialogModule,

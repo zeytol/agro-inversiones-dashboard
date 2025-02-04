@@ -75,8 +75,7 @@ export class CarritoModalComponent {
     this.carritoService.setProductos(this.carrito);
 
     // Reiniciar el carrito
-    this.carrito = [];
-    this.totalCarrito = 0;
+  
     this.carritoActualizado.emit(this.carrito);
 
     // Navegar a la página de ventas
