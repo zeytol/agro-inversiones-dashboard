@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserService } from '../../../services/user.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class UsersComponent implements OnInit {
   isAddingUser: boolean = false;
   userRolesPermissions: any | null = null;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -72,11 +73,7 @@ export class UsersComponent implements OnInit {
   // Roles and Permissions handlers
   // Método para ver roles y permisos
   viewRolesPermissions(user: any): void {
-    this.userRolesPermissions = {
-      username: user.username,
-      roles: user.roles || [],
-      permissions: user.permissions || []
-    };
+    this.router.navigate(['/roles'], { queryParams: { userId: user.id } }); // Redirección con parámetro
   }
   // Método para cerrar el modal
   closeRolesModal(): void {

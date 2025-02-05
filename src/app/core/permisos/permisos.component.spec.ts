@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RoleDeleteComponent } from './role-delete.component';
+import { PermisosComponent } from './permisos.component';
 
-describe('RoleDeleteComponent', () => {
-  let component: RoleDeleteComponent;
-  let fixture: ComponentFixture<RoleDeleteComponent>;
+describe('PermisosComponent', () => {
+  let component: PermisosComponent;
+  let fixture: ComponentFixture<PermisosComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RoleDeleteComponent]
+      declarations: [PermisosComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RoleDeleteComponent);
+    fixture = TestBed.createComponent(PermisosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

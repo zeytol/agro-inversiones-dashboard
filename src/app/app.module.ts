@@ -42,18 +42,10 @@ import { EliminarDocComponent } from './features/documentos/modals/eliminar-doc/
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
-import { RolesListComponent } from './components/roles/roles-list/roles-list.component';
-import { RoleDetailComponent } from './components/roles/role-detail/role-detail.component';
-import { CreateRoleComponent } from './components/roles/create-role/create-role.component';
-import { CreatePermissionComponent } from './components/roles/create-permission/create-permission.component';
-import { SuccessModalComponent } from './components/roles/success-modal/success-modal.component';
-import { AssignPermissionsComponent } from './components/roles/assign-permissions/assign-permissions.component';
-import { RoleManagerComponent } from './components/roles/role-manager/role-manager.component';
-import { RolesComponent } from './components/roles/roles/roles.component';
-import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.component';
+import { RolesListComponent } from './core/roles/roles-list/roles-list.component';
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { UsersComponent } from '../app/components/User/users/users.component';
-import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
+
 import { EditUserComponent } from '../app/components/User/edit-user/edit-user.component';
 import { AddUserComponent } from '../app/components/User/add-user/add-user.component';
 import { DeleteUserComponent } from '../app/components/User/delete-user/delete-user.component';
@@ -66,6 +58,7 @@ import { ExportarReporteComponent } from './features/reportes/exportar-reporte/e
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
+import { PermisosComponent } from './core/permisos/permisos.component';
 
 
 @NgModule({
@@ -89,14 +82,6 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     CarritoModalComponent,
     DetallesModalComponent,
     RolesListComponent,
-    RoleDetailComponent,
-    CreateRoleComponent,
-    CreatePermissionComponent,
-    SuccessModalComponent,
-    AssignPermissionsComponent,
-    RoleManagerComponent,
-    RolesComponent,
-    RoleDeleteComponent,
     LoginComponent,
     DocumentosComponent,
     EditarDocComponent,
@@ -104,7 +89,6 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     EnviarDocComponent,
     EliminarDocComponent,
     UsersComponent,
-    RoleModalComponent,
     EditUserComponent,
     AddUserComponent,
     DeleteUserComponent,
@@ -117,6 +101,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     AgregarCategoriaComponent,
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
+    PermisosComponent,
   ],
   imports: [
     BrowserModule,
