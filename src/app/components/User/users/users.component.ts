@@ -1,18 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
+import { finalize, catchError } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-users',
-  templateUrl: './users.component.html'
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css'],
 })
 export class UsersComponent implements OnInit {
   isSidebarVisible = true;
-  users: any[] = [];
-  loading: boolean = false;
-  editingUser: any | null = null;
-  userToDelete: any | null = null;
-  isAddingUser: boolean = false;
-  userRolesPermissions: any | null = null;
+  users: User[] = [];
+  loading = false;
+  editingUser: User | null = null;
+  userToDelete: User | null = null;
+  isAddingUser = false;
+
+  readonly UserState = {
+    ACTIVE: 1,
+    INACTIVE: 0,
+  };
 
   constructor(private userService: UserService) {}
 
@@ -20,66 +29,70 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
   loadUsers(): void {
     this.loading = true;
-    this.userService.getUsers().subscribe({
-      next: (data) => {
-        this.users = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error loading users:', err);
-        this.loading = false;
-        alert('There was an error loading the users. Please try again later.');
-      }
-    });
+    this.userService.getUsers().pipe(
+      finalize(() => (this.loading = false)),
+      catchError(err => this.handleError('Error cargando usuarios', err))
+    ).subscribe(users => this.users = users);
   }
-  
+
   openAddUserModal(): void {
     this.isAddingUser = true;
   }
 
-  handleUserAdded(newUser: any): void {
+  handleUserAdded(newUser: User): void {
     this.users.push(newUser);
     this.isAddingUser = false;
   }
 
-  handleEditUser(user: any): void {
+  handleEditUser(user: User): void {
     this.editingUser = { ...user };
   }
 
-  handleUserUpdated(updatedUser: any): void {
-    const index = this.users.findIndex(user => user.id === updatedUser.id);
-    if (index !== -1) {
-      this.users[index] = updatedUser;
-    }
+  handleUserUpdated(updatedUser: User): void {
+    const index = this.users.findIndex(u => u.id === updatedUser.id);
+    if (index !== -1) this.users[index] = updatedUser;
     this.editingUser = null;
   }
 
-  handleDeleteUser(user: any): void {
-    this.userToDelete = user;
+  handleDeleteUser(user: User): void {
+    if (confirm(`Are you sure you want to delete ${user.username}?`)) {
+      this.userService.deleteUser(user.id).subscribe({
+        next: () => {
+          this.users = this.users.filter(u => u.id !== user.id);
+        },
+        error: err => this.handleError('Error eliminando usuario', err)
+      });
+    }
+  }
+  
+  confirmDeleteUser(): void {
+    if (this.userToDelete && this.userToDelete.id) {
+      this.userService.deleteUser(this.userToDelete.id).pipe(
+        catchError(err => this.handleError('Error al eliminar usuario', err))
+      ).subscribe(() => {
+        this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
+        this.userToDelete = null;
+      });
+    }
   }
 
-  handleUserDeleted(deletedUser: any): void {
-    this.users = this.users.filter(user => user.id !== deletedUser.id);
-    this.userToDelete = null;
+  filterUsersByState(state: number): void {
+    this.loading = true;
+    this.userService.getUsers().pipe(
+      finalize(() => (this.loading = false)),
+      catchError(err => this.handleError('Error filtrando usuarios', err))
+    ).subscribe(users => this.users = users.filter(user => user.state === state));
   }
 
-  // Roles and Permissions handlers
-  // Método para ver roles y permisos
-  viewRolesPermissions(user: any): void {
-    this.userRolesPermissions = {
-      username: user.username,
-      roles: user.roles || [],
-      permissions: user.permissions || []
-    };
-  }
-  // Método para cerrar el modal
-  closeRolesModal(): void {
-    this.userRolesPermissions = null;
+  private handleError(message: string, err: HttpErrorResponse) {
+    console.error(message, err);
+    alert(`${message}. Inténtelo de nuevo más tarde.`);
+    return throwError(() => err);
   }
 }

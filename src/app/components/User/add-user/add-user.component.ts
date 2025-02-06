@@ -1,62 +1,45 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html'
 })
 export class AddUserComponent {
-  @Output() userAdded = new EventEmitter<any>();
+  @Output() userAdded = new EventEmitter<User>();
   @Output() cancel = new EventEmitter<void>();
 
-  newUser = {
-    username: '',
-    email: '',
-    phone: '',
-    status: 'Active',
-    photo: '',
-    roles: [],
-    modules: []
-  };
+  userForm: FormGroup;
+  isSubmitting = false;
 
-  constructor(private userService: UserService) {}
-
-  addUser(): void {
-    if (this.validateNewUser()) {
-      this.userService.addUser(this.newUser).subscribe({
-        next: (data) => {
-          this.userAdded.emit(data);
-          this.resetForm();
-        },
-        error: (err) => {
-          console.error('Error adding user:', err);
-        }
-      });
-    }
+  constructor(private fb: FormBuilder, private userService: UserService) {
+    this.userForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      state: [1, Validators.required]
+    });
   }
 
-  validateNewUser(): boolean {
-    if (!this.newUser.username || !this.newUser.email || !this.newUser.phone) {
-      alert('Please complete all fields.');
-      return false;
-    }
-    return true;
+  submitForm(): void {
+    if (this.userForm.invalid) return;
+
+    this.isSubmitting = true;
+    this.userService.addUser(this.userForm.value).subscribe({
+      next: (newUser) => {
+        this.userAdded.emit(newUser);
+        this.cancel.emit(); // Cierra el modal
+      },
+      error: (err) => {
+        console.error('Error al agregar usuario:', err);
+        alert('No se pudo agregar el usuario. Intente de nuevo.');
+      },
+      complete: () => (this.isSubmitting = false)
+    });
   }
 
   cancelAdd(): void {
     this.cancel.emit();
-    this.resetForm();
-  }
-
-  private resetForm(): void {
-    this.newUser = {
-      username: '',
-      email: '',
-      phone: '',
-      status: 'Active',
-      photo: '',
-      roles: [],
-      modules: []
-    };
   }
 }

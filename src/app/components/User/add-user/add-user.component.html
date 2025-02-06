@@ -1,97 +1,44 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-    <div class="relative w-full max-w-md mx-auto my-6">
-      <div class="relative flex flex-col w-full bg-white border-0 rounded-xl shadow-2xl outline-none focus:outline-none">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between p-5 border-b border-solid rounded-t border-blueGray-200 bg-green-50">
-          <h3 class="text-2xl font-semibold text-green-800">Add New User</h3>
-          <button 
-            (click)="cancelAdd()" 
-            class="float-right p-1 ml-auto text-3xl font-semibold leading-none text-red-500 bg-transparent border-0 outline-none opacity-60 hover:opacity-100 focus:outline-none"
-          >
-            ×
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="relative w-full max-w-md mx-auto">
+    <div class="bg-white rounded-xl shadow-2xl p-6">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center border-b pb-4">
+        <h3 class="text-xl font-semibold text-green-800">Add New User</h3>
+        <button (click)="cancelAdd()" class="text-red-500 text-2xl font-semibold">&times;</button>
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="mt-4">
+        
+        <label class="block text-gray-700">Username</label>
+        <input type="text" formControlName="username" class="w-full p-2 border rounded-lg" placeholder="Enter username">
+        <small *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched" class="text-red-500">
+          Username is required (min 3 characters).
+        </small>
+
+        <label class="block text-gray-700 mt-3">Email</label>
+        <input type="email" formControlName="email" class="w-full p-2 border rounded-lg" placeholder="Enter email">
+        <small *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="text-red-500">
+          Valid email is required.
+        </small>
+
+        <label class="block text-gray-700 mt-3">State</label>
+        <select formControlName="state" class="w-full p-2 border rounded-lg">
+          <option [value]="1">Active</option>
+          <option [value]="0">Inactive</option>
+        </select>
+
+        <!-- Botones -->
+        <div class="flex justify-end mt-4 space-x-2">
+          <button type="button" (click)="cancelAdd()" class="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
+          <button type="submit" [disabled]="isSubmitting || userForm.invalid" 
+                  class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+            {{ isSubmitting ? 'Adding...' : 'Add User' }}
           </button>
         </div>
-        
-        <!-- Modal Body -->
-        <form (ngSubmit)="addUser()" class="relative flex-auto p-6">
-          <div class="mb-4">
-            <label for="new-username" class="block mb-2 text-sm font-medium text-gray-700">Username</label>
-            <input 
-              id="new-username" 
-              [(ngModel)]="newUser.username" 
-              name="username" 
-              type="text" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="new-email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
-            <input 
-              id="new-email" 
-              [(ngModel)]="newUser.email" 
-              name="email" 
-              type="email" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="new-phone" class="block mb-2 text-sm font-medium text-gray-700">Phone</label>
-            <input 
-              id="new-phone" 
-              [(ngModel)]="newUser.phone" 
-              name="phone" 
-              type="text" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="new-status" class="block mb-2 text-sm font-medium text-gray-700">Status</label>
-            <select 
-              id="new-status" 
-              [(ngModel)]="newUser.status" 
-              name="status" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              required
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-  
-          <div class="mb-4">
-            <label for="new-photo" class="block mb-2 text-sm font-medium text-gray-700">Photo URL</label>
-            <input 
-              id="new-photo" 
-              [(ngModel)]="newUser.photo" 
-              name="photo" 
-              type="text" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-  
-          <!-- Modal Footer -->
-          <div class="flex items-center justify-end pt-4 border-t border-solid rounded-b border-blueGray-200">
-            <button 
-              type="button" 
-              (click)="cancelAdd()" 
-              class="px-6 py-2 mb-1 mr-4 text-sm font-bold text-red-500 uppercase transition-all duration-150 ease-linear bg-transparent rounded outline-none hover:bg-red-100 focus:outline-none"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              class="px-6 py-2 mb-1 text-sm font-bold text-white uppercase transition-all duration-150 ease-linear bg-green-600 rounded shadow outline-none hover:bg-green-700 hover:shadow-lg focus:outline-none"
-            >
-              Add User
-            </button>
-          </div>
-        </form>
-      </div>
+      </form>
+      
     </div>
   </div>
+</div>
