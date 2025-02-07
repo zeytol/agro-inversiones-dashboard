@@ -1,5 +1,6 @@
-import { Component, Output, EventEmitter, OnInit  } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { PageEvent } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -10,78 +11,91 @@ import { CategoryProductsService } from '../../../services/category-products.ser
 @Component({
   selector: 'app-gestion-productos',
   templateUrl: './gestion-productos.component.html',
-  styleUrls: ['./gestion-productos.component.css']
+  styleUrls: ['./gestion-productos.component.css'],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorIntl() }
+  ],
 })
+
 export class GestionProductosComponent implements OnInit {
-  isSidebarVisible: boolean = true; // Inicializa la propiedad para la barra lateral
-  modalVisible: boolean = false; // Estado del modal para agregar productos
-  filterModalVisible: boolean = false; // Estado del modal para filtros
-  carritoVisible: boolean = false; // Estado del carrito
-  carrito: any[] = []; // Asegúrate de que este sea el tipo correcto
-  totalCarrito: number = 0; // Inicializa el total del carrito
-  precioMinimo: number = 12; // Valor predeterminado
-  precioMaximo: number = 500; // Valor predeterminado
-  successModalVisible: boolean = false; // Para controlar la visibilidad del modal de éxito
-  actualizarModalEditar : boolean = false //Para controlar la visibilidad del modal editar actualizado 
-  proveedoresSeleccionados: string[] = []; // Proveedores seleccionados
-  editarModalVisible: boolean = false; // Estado del modal de edición
-  productoSeleccionado: any = {}; // Producto seleccionado para editar
-  productoVerDetalle : any = {} // producto para ver detalles
-  newProduct: any = {};  
-  constructor( 
+  isSidebarVisible: boolean = true; 
+  modalVisible: boolean = false; 
+  filterModalVisible: boolean = false; 
+  carritoVisible: boolean = false; 
+  carrito: any[] = []; 
+  totalCarrito: number = 0; 
+  precioMinimo: number = 12; 
+  precioMaximo: number = 500; 
+  successModalVisible: boolean = false; 
+  actualizarModalEditar: boolean = false 
+  proveedoresSeleccionados: string[] = []; 
+  editarModalVisible: boolean = false; 
+  productoSeleccionado: any = {}; 
+  productoVerDetalle: any = {} 
+  newProduct: any = {};
+
+  constructor(
     private http: HttpClient,
-    private router: Router, 
+    private router: Router,
     private activatedRoute: ActivatedRoute,
-    private productsService: ProductsService, 
-    private categoryProductsService: CategoryProductsService ) {}
-  filteredProductos: any[] = []; 
+    private productsService: ProductsService,
+    private categoryProductsService: CategoryProductsService,
+    private cdr: ChangeDetectorRef) { }
+
+  filteredProductos: any[] = [];
   categorias: any[] = [];
   productos: any[] = [];
   detallesModalAbierto: boolean = false;
   searchText: string = '';
-// Para Categorías
-selectedCategoria: string | null = null; // Almacena la categoría seleccionada
-productosFiltrados: any[] = []; // Productos filtrados por categoría
-
-// Método para filtrar productos al hacer clic en una categoría
-filtrarPorCategoria(categoria: string) {
-  this.selectedCategoria = categoria;
-  this.productosFiltrados = this.productos.filter(producto => producto.categoryProducts.name === categoria);
-}
+  selectedCategoria: string | null = null;
+  productosFiltrados: any[] = [];
+  productosPorPagina = 16;
+  paginaActual = 0;
+  
 
 
-// Método para mostrar todos los productos al deseleccionar la categoría
-mostrarTodosLosProductos() {
-  this.selectedCategoria = null;
-  this.productosFiltrados = this.productos;
-}
-itemsPerPage = 4;
-currentPage = 1;
-filtro: string = ''; // Campo para almacenar el criterio de filtro
+  // Método para filtrar productos al hacer clic en una categoría
+  filtrarPorCategoria(categoria: string) {
+    this.selectedCategoria = categoria;
+    this.productosFiltrados = this.productos.filter(producto => producto.categoryProducts.name === categoria);
+    this.paginaActual = 0; 
+  }
 
-// Método para obtener las categorías filtradas según el criterio
-getCategoriasFiltradas() {
-  return this.categorias.filter(categoria =>
-    categoria.name.toLowerCase().includes(this.filtro.toLowerCase())
-  );
-}
 
-// Método para calcular las páginas según las categorías filtradas
-getPages(): number[] {
-  return Array(Math.ceil(this.categorias.length / this.itemsPerPage))
-    .fill(0)
-    .map((_, i) => i + 1);
-}
-// Método para cambiar la página actual
-setPage(page: number) {
-  this.currentPage = page;
-}
+  // Método para mostrar todos los productos al deseleccionar la categoría
+  mostrarTodosLosProductos() {
+    this.selectedCategoria = null;
+    this.productosFiltrados = this.productos;
+    this.paginaActual = 0; 
+  }
+  itemsPerPage = 4;
+  currentPage = 1;
+  filtro: string = ''; // Campo para almacenar el criterio de filtro
 
-// Método para obtener las categorías paginadas según las categorías filtradas
-categoriasPaginadas() {
-  const start = (this.currentPage - 1) * this.itemsPerPage;
-  return this.categorias.slice(start, start + this.itemsPerPage);
-}
+  // Método para obtener las categorías filtradas según el criterio
+  getCategoriasFiltradas() {
+    return this.categorias.filter(categoria =>
+      categoria.name.toLowerCase().includes(this.filtro.toLowerCase())
+      
+    );
+  }
+
+  // Método para calcular las páginas según las categorías filtradas
+  getPages(): number[] {
+    return Array(Math.ceil(this.categorias.length / this.itemsPerPage))
+      .fill(0)
+      .map((_, i) => i + 1);
+  }
+  // Método para cambiar la página actual
+  setPage(page: number) {
+    this.currentPage = page;
+  }
+
+  // Método para obtener las categorías paginadas según las categorías filtradas
+  categoriasPaginadas() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.categorias.slice(start, start + this.itemsPerPage);
+  }
 
 
   @Output() cerrarModal = new EventEmitter<void>();
@@ -96,7 +110,7 @@ categoriasPaginadas() {
     this.cerrarModal.emit();
   }
   cerrarModals() {
-    
+
     this.modalVisible = false; // Cierra el modal
   }
 
@@ -108,27 +122,27 @@ categoriasPaginadas() {
   resetForm() {
     this.newProduct = {
       "id": 0,
-    "name": "string",
-    "description": "string",
-    "price": 0,
-    "amount": 0,
-    "type": "string",
-    "image": "string",
-    "supplierId": 0,
-    "categoriesProductsId": 0,
-    "codeProduct": "string",
-    "salePrice": 0,
-    "purchasePrice": 0,
-    "state": "string",
-    "composicionIsoprothiolane": "string",
-    "composicionAditivos": "string",
-    "descuento": 0,
-    "modelo": "string",
-    "fechaIngreso": "string",
-    "ubicacion": "string"
+      "name": "string",
+      "description": "string",
+      "price": 0,
+      "amount": 0,
+      "type": "string",
+      "image": "string",
+      "supplierId": 0,
+      "categoriesProductsId": 0,
+      "codeProduct": "string",
+      "salePrice": 0,
+      "purchasePrice": 0,
+      "state": "string",
+      "composicionIsoprothiolane": "string",
+      "composicionAditivos": "string",
+      "descuento": 0,
+      "modelo": "string",
+      "fechaIngreso": "string",
+      "ubicacion": "string"
     };
   }
-  
+
 
 
   agregarProducto(): void {
@@ -155,7 +169,7 @@ categoriasPaginadas() {
   }
 
 
-  
+
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -164,7 +178,7 @@ categoriasPaginadas() {
       // Almacena la imagen en `nuevoProducto`
       this.newProduct.imagen = file; // Asumiendo que tienes un campo `imagen` en `nuevoProducto`
     }
-    
+
   }
   onFileSelected2(event: any) {
     const file = event.target.files[0];
@@ -172,12 +186,12 @@ categoriasPaginadas() {
       this.productoSeleccionado.imagen = URL.createObjectURL(file);
     }
   }
- 
-  ngOnInit(): void  {
+
+  ngOnInit(): void {
     this.loadProducts();
     this.cargarCategorias();
     this.productosFiltrados = this.productos;
-   
+
     this.productsService.getProductos().subscribe({
       next: (productos) => {
         this.productos = productos;
@@ -195,6 +209,10 @@ categoriasPaginadas() {
           this.loadProducts();
         }
       }
+    });
+    this.productosFiltrados = this.productosFiltrados.sort((a, b) => {
+  
+      return a.id - b.id; 
     });
   }
   loadProducts(): void {
@@ -214,11 +232,11 @@ categoriasPaginadas() {
       this.productosFiltrados = this.productos;
       return;
     }
-  
+
     this.productosFiltrados = this.productos.filter(producto =>
       producto.name.toLowerCase().includes(searchText.toLowerCase())
     );
-  
+
     if (this.productosFiltrados.length === 0) {
       Swal.fire({
         title: 'Producto no encontrado',
@@ -230,10 +248,10 @@ categoriasPaginadas() {
       });
     }
   }
-  
-  
 
- cargarCategorias() {
+
+
+  cargarCategorias() {
     this.categoryProductsService.getcategoryProducts().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
@@ -250,7 +268,7 @@ categoriasPaginadas() {
     return this.http.get('https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories');
   }
 
- 
+
   // Método para alternar la visibilidad de la barra lateral
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
@@ -273,34 +291,34 @@ categoriasPaginadas() {
     this.cerrarFiltroModal(); // Cerrar el modal después de aplicar el filtro
   }
 
-// Método para abrir el modal de edición y asignar el producto seleccionado
-abrirEditarModal(producto: any) {
-  this.productoSeleccionado = { ...producto }; // Clona el producto seleccionado
-  this.editarModalVisible = true; // Abre el modal de edición
-}
+  // Método para abrir el modal de edición y asignar el producto seleccionado
+  abrirEditarModal(producto: any) {
+    this.productoSeleccionado = { ...producto }; // Clona el producto seleccionado
+    this.editarModalVisible = true; // Abre el modal de edición
+  }
 
-// Método para cerrar el modal de edición
-cerrarEditarModal() {
-  this.editarModalVisible = false;
-}
+  // Método para cerrar el modal de edición
+  cerrarEditarModal() {
+    this.editarModalVisible = false;
+  }
 
-// Método para recibir el producto actualizado desde el modal
-actualizarProducto(producto: any) {
-  // Lógica para actualizar el producto
-  console.log('Producto actualizado:', producto);
-  // Aquí puedes llamar a un servicio para actualizar el producto en la base de datos
-  this.productos = this.productos.map(p => p.id === producto.id ? producto : p); // Ejemplo para actualizar el producto en el listado
-  this.mostrarConfirmarModal();
-  this.cerrarEditarModal(); // Cierra el modal de edición
-}
-mostrarConfirmarModal() {
-  this.actualizarModalEditar = true;
-}
+  // Método para recibir el producto actualizado desde el modal
+  actualizarProducto(producto: any) {
+    // Lógica para actualizar el producto
+    console.log('Producto actualizado:', producto);
+    // Aquí puedes llamar a un servicio para actualizar el producto en la base de datos
+    this.productos = this.productos.map(p => p.id === producto.id ? producto : p); // Ejemplo para actualizar el producto en el listado
+    this.mostrarConfirmarModal();
+    this.cerrarEditarModal(); // Cierra el modal de edición
+  }
+  mostrarConfirmarModal() {
+    this.actualizarModalEditar = true;
+  }
 
-// Método para cerrar el modal de confirmación
-cerrarConfirmarModal() {
-  this.actualizarModalEditar = false;
-}
+  // Método para cerrar el modal de confirmación
+  cerrarConfirmarModal() {
+    this.actualizarModalEditar = false;
+  }
 
 
   // Método para realizar el pago
@@ -309,22 +327,22 @@ cerrarConfirmarModal() {
     // Implementa más lógica según sea necesario.
   }
 
- // Método para abrir el carrito
- abrirCarrito() {
-  this.carritoVisible = true;
-  console.log("El carrito ha sido abierto.");
-}
+  // Método para abrir el carrito
+  abrirCarrito() {
+    this.carritoVisible = true;
+    console.log("El carrito ha sido abierto.");
+  }
 
-// Método para cerrar el carrito
-cerrarCarritoModal() {
-  this.carritoVisible = false;
-  console.log("El carrito ha sido cerrado.");
-}
+  // Método para cerrar el carrito
+  cerrarCarritoModal() {
+    this.carritoVisible = false;
+    console.log("El carrito ha sido cerrado.");
+  }
 
-// Método para actualizar el total
-calcularTotal() {
-  this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
-}
+  // Método para actualizar el total
+  calcularTotal() {
+    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
+  }
 
   aplicarFiltros() {
     // Lógica para aplicar los filtros
@@ -351,7 +369,7 @@ calcularTotal() {
   // Método para incrementar la cantidad de un producto en el carrito
   incrementarCantidad(item: any) {
     const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.nombre === item.nombre);
-    
+
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
       this.actualizarTotal(); // Actualiza el total después de incrementar
@@ -394,7 +412,7 @@ calcularTotal() {
     this.router.navigate(['/ventas']);
     this.carrito = [];
     this.totalCarrito = 0;
-    
+
   }
   abrirDetallesModal(producto: any) {
     this.productoSeleccionado = producto;
@@ -406,5 +424,34 @@ calcularTotal() {
     this.productoSeleccionado = null;
   }
 
+  // Calcular el número total de páginas
+  onPageChange(event: PageEvent) {
+    this.paginaActual = event.pageIndex;
+    this.productosPorPagina = event.pageSize;
+  }
 
+  get productosPagina() {
+    const startIndex = this.paginaActual * this.productosPorPagina;
+    const endIndex = startIndex + this.productosPorPagina;
+  
+    return this.productosFiltrados.slice(startIndex, endIndex);
+  }
+}
+
+import { MatPaginatorIntl } from '@angular/material/paginator';
+export function getPaginatorIntl() {
+  const paginatorIntl = new MatPaginatorIntl();
+
+  paginatorIntl.itemsPerPageLabel = 'Elementos por página:';
+
+  paginatorIntl.getRangeLabel = (page: number, pageSize: number, length: number): string => {
+    if (length === 0 || pageSize === 0) {
+      return `0 de ${length}`;
+    }
+    const startIndex = page * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, length);
+    return `${startIndex + 1} – ${endIndex} de ${length}`;
+  };
+
+  return paginatorIntl;
 }

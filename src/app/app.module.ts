@@ -10,9 +10,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
+import { ProveedoresComponent } from './features/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import {NgxPaginationModule} from 'ngx-pagination';
+import {NgxPaginationModule, } from 'ngx-pagination';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { InventarioComponent } from './features/inventario/inventario.component';
 
 // Importaciones de Font Awesome
@@ -24,10 +25,10 @@ import { HeaderComponent } from './shared/header/header.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { LoginComponent } from './core/login/login.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
-import { ConfirmDeleteModalComponent } from './modals/confirm-delete-modal/confirm-delete-modal.component';
+import { ConfirmDeleteModalComponent } from './features/clientes/confirm-delete-modal/confirm-delete-modal.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { AgregarUsuarioComponent } from './modals/agregar-usuario/agregar-usuario.component';
-import { EditarClienteComponent } from './modals/editar-cliente/editar-cliente.component';
+import { AgregarUsuarioComponent } from './features/clientes/agregar-usuario/agregar-usuario.component';
+import { EditarClienteComponent } from './features/clientes/editar-cliente/editar-cliente.component'; 
 import { GestionProductosComponent } from './features/Productos/gestion-productos/gestion-productos.component';
 import { AgregarModalComponent } from './features/Productos/agregar-modal/agregar-modal.component';
 import { EditarModalComponent } from './features/Productos/editar-modal/editar-modal.component';
@@ -66,7 +67,7 @@ import { ExportarReporteComponent } from './features/reportes/exportar-reporte/e
 import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/agregar-categoria/agregar-categoria.component';
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
-
+import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cliente-detalle.component';
 
 @NgModule({
   declarations: [
@@ -117,6 +118,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     AgregarCategoriaComponent,
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
+    ClienteDetalleComponent,
   ],
   imports: [
     BrowserModule,
@@ -134,6 +136,7 @@ import { EditarCategoriaComponent } from './features/Productos/modalCategoria/ed
     MatSelectModule,
     HttpClientModule, 
     NgxPaginationModule,
+    MatPaginatorModule,
     ReactiveFormsModule,
     NgApexchartsModule,
   ],

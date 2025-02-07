@@ -13,6 +13,7 @@ export class RegisterComponent {
     username: '',
     email: '',
     password: '',
+    enabled: 1,
   };
   confirmPassword = '';
   errorMessage: string | null = null;

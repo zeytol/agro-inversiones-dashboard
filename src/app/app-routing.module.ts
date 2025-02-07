@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';  // Añade esta importación
-import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';  
+import { AuthGuard } from './auth.guard';
+import { ProveedoresComponent} from './features/proveedores/proveedores.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from '../app/core/login/login.component'
 import { RegisterComponent } from './core/register/register.component';
-
 import { InventarioComponent } from './features/inventario/inventario.component';
-
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { GestionProductosComponent } from './features/Productos/gestion-productos/gestion-productos.component';
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
@@ -27,11 +26,10 @@ import { ReportesComponent } from './features/reportes/reportes.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'user', component: UsersComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
   { path: 'ventas', component: VentasComponent },
   { path: 'roles', component: RoleModalComponent },
   { path: 'ventas', component: VentasComponent }, 
@@ -47,11 +45,9 @@ const routes: Routes = [
   { path: 'role', component: RolesComponent },
   { path: 'proveedores', component: ProveedoresComponent },
   { path: 'inventario', component: InventarioComponent},
-  { path: 'ventas', component: VentasComponent },  // Ruta para el componente de ventas
-  //{ path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirige a dashboard por defecto
-  //{ path: '**', redirectTo: '/dashboard' } ,// Manejo de rutas no encontradas
-
-
+  { path: 'ventas', component: VentasComponent },  
+  { path: '', redirectTo: '/login', pathMatch: 'full' }, 
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({

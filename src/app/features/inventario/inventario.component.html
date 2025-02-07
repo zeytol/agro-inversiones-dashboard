@@ -117,7 +117,9 @@
             </td>
             <td>{{ i + 1 }}</td>
             <td>{{ product.name }}</td>
-            <td>{{ product.description }}</td>
+            <td>
+              {{ product.description.split(' ').slice(0, 6).join(' ') + (product.description.split(' ').length > 6 ? '...' : '') }}
+            </td>
             <td>{{ product.amount }}</td>
             <td>{{ product.type }}</td>
             <td>
