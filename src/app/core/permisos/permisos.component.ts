@@ -16,11 +16,15 @@ export class PermisosComponent implements OnInit {
   selectedPermissions: number[] = [];
   isCreateModalOpen = false;
 
-  constructor(private rolesService: RolesService) {}
+  constructor(private rolesService: RolesService, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchPermissions();
     this.fetchRoles();
+  }
+
+  goToRoles() {
+    this.router.navigate(['/roles']);
   }
 
   // Obtener lista de permisos

@@ -52,7 +52,6 @@
                   </span>
                 </div>
               </td>
-              
               <td class="px-6 py-4 flex space-x-2">
                 <button (click)="openDetailRoleModal(role)" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">👁 Ver</button>
                 <button (click)="openEditRoleModal(role)" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600">
@@ -92,27 +91,27 @@
   </div>
 </div>
 
-<!-- Modal de carga -->
-<div *ngIf="isLoadingModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-    <h3 class="text-xl font-semibold mb-4">Cargando...</h3>
-    <div class="spinner"></div> <!-- Puedes agregar un spinner aquí -->
+<!-- Modal de Carga para Crear Rol -->
+<div *ngIf="isCreatingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
+    <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-green-600 rounded-full"></div>
+    <p class="text-gray-700">Creando rol...</p>
   </div>
 </div>
 
-<!-- Modal de éxito -->
-<div *ngIf="isSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-    <h3 class="text-xl font-semibold mb-4 text-green-500">¡Éxito!</h3>
-    <p>El rol ha sido creado exitosamente.</p>
+<!-- Modal de Éxito para Crear Rol -->
+<div *ngIf="isCreateSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-green-600">✔ Rol Creado</h3>
+    <p class="text-gray-700">El rol se ha creado correctamente.</p>
   </div>
 </div>
 
-<!-- Modal de error -->
-<div *ngIf="isErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-    <h3 class="text-xl font-semibold mb-4 text-red-500">Error</h3>
-    <p>Hubo un error al crear el rol. Por favor, intenta nuevamente.</p>
+<!-- Modal de Error para Crear Rol -->
+<div *ngIf="isCreateErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-red-600">❌ Error al crear</h3>
+    <p class="text-gray-700">No se pudo crear el rol. Intenta nuevamente.</p>
   </div>
 </div>
 
@@ -170,6 +169,30 @@
   </div>
 </div>
 
+<!-- Modal de Carga para Eliminación -->
+<div *ngIf="isDeletingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
+    <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-red-600 rounded-full"></div>
+    <p class="text-gray-700">Eliminando rol...</p>
+  </div>
+</div>
+
+<!-- Modal de Éxito para Eliminación -->
+<div *ngIf="isDeleteSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-green-600">✔ Rol Eliminado</h3>
+    <p class="text-gray-700">El rol se ha eliminado correctamente.</p>
+  </div>
+</div>
+
+<!-- Modal de Error para Eliminación -->
+<div *ngIf="isDeleteErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-red-600">❌ Error al eliminar</h3>
+    <p class="text-gray-700">No se pudo eliminar el rol. Intenta nuevamente.</p>
+  </div>
+</div>
+
 <!-- Modal para editar rol -->
 <div *ngIf="isEditRoleModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -182,14 +205,14 @@
     <input [(ngModel)]="editedRole.description" class="w-full p-2 border rounded mb-4" placeholder="Ej. Administrador con acceso completo"/>
 
     <label class="block mb-2">Permisos</label>
-    <div class="mb-4">
-      <div *ngFor="let permission of availablePermissions">
-        <input type="checkbox" [(ngModel)]="editedRole.permissions" [value]="permission.id" />
-        <label class="ml-2">{{ permission.permission_name }}</label>
-      </div>
+    <div *ngFor="let permission of availablePermissions">
+      <input type="checkbox"
+             [ngModel]="isPermissionSelected(permission.id)"
+             (ngModelChange)="onPermissionChange(permission.id, $event)" />
+      <label class="ml-2">{{ permission.permission_name }}</label>
     </div>
 
-    <div class="flex justify-end space-x-2">
+    <div class="flex justify-end space-x-2 mt-4">
       <button (click)="closeEditRoleModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
         ❌ Cancelar
       </button>
@@ -197,5 +220,29 @@
         ✅ Actualizar
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Modal de Carga para Editar Rol -->
+<div *ngIf="isEditingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
+    <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-blue-600 rounded-full"></div>
+    <p class="text-gray-700">Actualizando rol...</p>
+  </div>
+</div>
+
+<!-- Modal de Éxito para Editar Rol -->
+<div *ngIf="isEditSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-blue-600">✔ Rol Actualizado</h3>
+    <p class="text-gray-700">El rol se ha actualizado correctamente.</p>
+  </div>
+</div>
+
+<!-- Modal de Error para Editar Rol -->
+<div *ngIf="isEditErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-lg font-semibold text-red-600">❌ Error al actualizar</h3>
+    <p class="text-gray-700">No se pudo actualizar el rol. Intenta nuevamente.</p>
   </div>
 </div>

@@ -81,21 +81,21 @@ export class RolesService {
 
   // Registrar un nuevo permiso
   createPermission(permissionData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/permissions/nuevo`, permissionData);
+    return this.http.post(`${this.baseUrl}/permissions/nuevo`, permissionData, { withCredentials: true });
   }
 
   // Editar un permiso
   updatePermission(id: number, permissionData: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/permissions/editar/${id}`, permissionData);
+    return this.http.put(`${this.baseUrl}/permissions/editar/${id}`, permissionData, { withCredentials: true });
   }
 
   // Eliminar un permiso
   deletePermission(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/permissions/eliminar/${id}`);
+    return this.http.delete(`${this.baseUrl}/permissions/eliminar/${id}`, { withCredentials: true });
   }
 
   // Asignar permisos a un rol
   assignPermissionsToRole(rolId: number, permissions: number[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${rolId}/permissions`, { permissions });
+    return this.http.post(`${this.baseUrl}/${rolId}/permissions`, { permissions }, { withCredentials: true });
   }
 }

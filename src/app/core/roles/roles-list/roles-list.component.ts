@@ -10,13 +10,19 @@ export class RolesListComponent implements OnInit {
   isSidebarVisible = true;
   roles: any[] = [];
   isCreateRoleModalOpen = false;
-  isLoadingModalOpen = false;
-  isSuccessModalOpen = false;
-  isErrorModalOpen = false;
+  isCreateSuccessModalOpen = false;
+  isCreateErrorModalOpen = false;
+  isCreatingRole = false;
   isDetailRoleModalOpen = false;
   isDeleteRoleModalOpen = false;
   selectedRole: any = null;
   isEditRoleModalOpen = false;
+  isEditingRole = false;
+  isEditSuccessModalOpen = false;
+  isEditErrorModalOpen = false;
+  isDeletingRole = false;
+  isDeleteSuccessModalOpen = false;
+  isDeleteErrorModalOpen = false;
   editedRole: any = { id: null, role_name: '', description: '', permissions: [] };
   availablePermissions: any[] = [];
   newRole = { roleName: '', description: '' };
@@ -35,7 +41,13 @@ export class RolesListComponent implements OnInit {
           id: role.id,
           role_name: role.roleName,
           description: role.description,
-          permissions: role.permissions || []
+          // Mapeamos cada permiso para cambiar "permissionName" por "permission_name"
+          permissions: (role.permissions || []).map((perm: any) => ({
+            id: perm.id,
+            permission_name: perm.permissionName,
+            description: perm.description,
+            module: perm.module
+          }))
         }));
       },
       (error) => {
@@ -47,7 +59,10 @@ export class RolesListComponent implements OnInit {
   fetchPermissions() {
     this.rolesService.getPermissions().subscribe(
       (data) => {
-        this.availablePermissions = data;
+        this.availablePermissions = data.map((perm: any) => ({
+          ...perm,
+          permission_name: perm.permissionName  // transforma a permission_name
+        }));
         console.log('Permisos disponibles:', this.availablePermissions); 
       },
       (error) => {
@@ -81,35 +96,36 @@ export class RolesListComponent implements OnInit {
       alert('Por favor, completa todos los campos.');
       return;
     }
-
-    this.isLoadingModalOpen = true; // Mostrar modal de carga
-
+  
+    this.isCreatingRole = true; // Mostrar modal de carga
+  
     this.rolesService.createRole(this.newRole).subscribe(
       (response) => {
         console.log('Rol creado:', response);
-        this.isLoadingModalOpen = false;
-        this.isSuccessModalOpen = true;
-    
+        this.isCreatingRole = false;
+        this.isCreateSuccessModalOpen = true;
+  
         setTimeout(() => {
-          this.isSuccessModalOpen = false;
+          this.isCreateSuccessModalOpen = false;
+          // Recargar la página o actualizar la lista
           window.location.reload();
         }, 3000);
       },
       (error) => {
         if (error.status === 201) { // Si es 201, no es error
           console.log('Rol creado correctamente.');
-          this.isSuccessModalOpen = true;
+          this.isCreateSuccessModalOpen = true;
           setTimeout(() => {
-            this.isSuccessModalOpen = false;
+            this.isCreateSuccessModalOpen = false;
             window.location.reload();
           }, 3000);
         } else {
           console.error('Error al crear rol:', error);
-          this.isLoadingModalOpen = false;
-          this.isErrorModalOpen = true;
-    
+          this.isCreatingRole = false;
+          this.isCreateErrorModalOpen = true;
+  
           setTimeout(() => {
-            this.isErrorModalOpen = false;
+            this.isCreateErrorModalOpen = false;
             window.location.reload();
           }, 3000);
         }
@@ -143,77 +159,118 @@ export class RolesListComponent implements OnInit {
 
   // Eliminar rol
   deleteRole(id: number) {
-    this.isLoadingModalOpen = true; // Mostrar modal de carga
+    this.isDeletingRole = true; // Mostrar modal de carga
+    this.isDeleteRoleModalOpen = false; // Cerrar el modal de confirmación
 
     this.rolesService.deleteRole(id).subscribe(
       () => {
         console.log('Rol eliminado correctamente.');
-        this.isLoadingModalOpen = false;
-        this.isSuccessModalOpen = true;
-        
+        this.isDeletingRole = false;
+        this.isDeleteSuccessModalOpen = true;
+
         setTimeout(() => {
-          this.isSuccessModalOpen = false;
+          this.isDeleteSuccessModalOpen = false;
           // Eliminar el rol de la lista sin recargar la página
           this.roles = this.roles.filter(role => role.id !== id);
-        }, 3000);
+        }, 3000); // Cerrar el modal de éxito después de 3 segundos
       },
       (error) => {
         console.error('Error al eliminar rol:', error);
-        this.isLoadingModalOpen = false;
-        this.isErrorModalOpen = true;
+        this.isDeletingRole = false;
+        this.isDeleteErrorModalOpen = true;
 
         setTimeout(() => {
-          this.isErrorModalOpen = false;
-        }, 3000);
+          this.isDeleteErrorModalOpen = false;
+        }, 3000); // Cerrar el modal de error después de 3 segundos
       }
     );
   }
 
-  // Abrir modal de edición
+  togglePermission(permissionId: number) {
+    if (this.editedRole.permissions.includes(permissionId)) {
+      // Si ya existe, lo removemos.
+      this.editedRole.permissions = this.editedRole.permissions.filter((id: number) => id !== permissionId);
+    } else {
+      // Si no existe, lo agregamos.
+      this.editedRole.permissions.push(permissionId);
+    }
+  }
+
+  // Abrir modal de edición con el rol seleccionado
   openEditRoleModal(role: any) {
-    this.editedRole = { ...role }; // Cargar los datos del rol en el formulario de edición
+    this.editedRole = {
+      ...role,
+      permissions: (role.permissions || []).map((perm: any) => perm.id)
+    };
     this.isEditRoleModalOpen = true;
   }
 
+  // Cerrar modal de edición
   closeEditRoleModal() {
     this.isEditRoleModalOpen = false;
     this.editedRole = { id: null, role_name: '', description: '', permissions: [] };
   }
 
-  // Método para actualizar el rol
+  // Actualizar el rol
   updateRole() {
-    // Verifica si los campos tienen el formato correcto
-    console.log('Datos a enviar al API:', this.editedRole);
+    if (!this.editedRole.role_name || !this.editedRole.description) {
+      alert('Por favor, completa todos los campos.');
+      return;
+    }
   
-    this.isLoadingModalOpen = true;
+    this.isEditingRole = true; // Mostrar modal de carga
   
-    this.rolesService.updateRole(this.editedRole.id, this.editedRole).subscribe(
+    const roleData = {
+      id: this.editedRole.id,
+      roleName: this.editedRole.role_name,
+      description: this.editedRole.description,
+      permissions: this.editedRole.permissions.map((id: number) => ({ id })), // Formato correcto
+    };
+  
+    this.rolesService.updateRole(this.editedRole.id, roleData).subscribe(
       (response) => {
-        console.log('Rol actualizado:', response);
-        this.isLoadingModalOpen = false;
-        this.isSuccessModalOpen = true;
-  
-        const updatedRoleIndex = this.roles.findIndex(role => role.id === this.editedRole.id);
-        if (updatedRoleIndex !== -1) {
-          this.roles[updatedRoleIndex] = this.editedRole;
-        }
+        console.log('Rol actualizado con éxito:', response);
+        this.isEditingRole = false;
+        this.isEditSuccessModalOpen = true;
   
         setTimeout(() => {
-          this.isSuccessModalOpen = false;
-          this.closeEditRoleModal();
-        }, 3000);
+          this.isEditSuccessModalOpen = false;
+          // Recargar la página después de la actualización
+          window.location.reload();
+        }, 3000); // 3 segundos para cerrar el modal y refrescar la página
       },
       (error) => {
         console.error('Error al actualizar rol:', error);
-        this.isLoadingModalOpen = false;
-        this.isErrorModalOpen = true;
+        this.isEditingRole = false;
+        this.isEditErrorModalOpen = true;
   
         setTimeout(() => {
-          this.isErrorModalOpen = false;
-        }, 3000);
+          this.isEditErrorModalOpen = false;
+          // Recargar la página después del error
+          window.location.reload();
+        }, 3000); // 3 segundos para cerrar el modal y refrescar la página
       }
     );
   }
+
+  // Devuelve true si el permiso está seleccionado
+isPermissionSelected(permissionId: number): boolean {
+  return this.editedRole.permissions.includes(permissionId);
+}
+
+// Se ejecuta cuando cambia el estado del checkbox
+onPermissionChange(permissionId: number, isChecked: boolean) {
+  if (isChecked) {
+    // Si no existe, lo agregamos.
+    if (!this.editedRole.permissions.includes(permissionId)) {
+      this.editedRole.permissions.push(permissionId);
+    }
+  } else {
+    // Si existe, lo removemos.
+    this.editedRole.permissions = this.editedRole.permissions.filter((id: number) => id !== permissionId);
+  }
+}
+
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
