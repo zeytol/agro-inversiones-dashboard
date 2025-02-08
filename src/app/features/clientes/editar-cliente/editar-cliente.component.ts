@@ -14,13 +14,13 @@ export class EditarClienteComponent {
 
   @Output() clienteEdited = new EventEmitter<void>();
 
-  razonSocial: string;
-  tipoCliente: string;
-  tipoDocumento: string;
-  numeroDocumento: string;
-  direccion: string;
-  telefono: string;
-  correo: string;
+  name: string;
+  typeCustomer: string;
+  documentType: string;
+  documentNumber: string;
+  address: string;
+  phone: string;
+  email: string;
   dialogRef!: MatDialogRef<any>;
 
   constructor(
@@ -29,13 +29,13 @@ export class EditarClienteComponent {
     private parentDialogRef: MatDialogRef<any>,
     private http: HttpClient
   ) {
-    this.razonSocial = data.razonSocial;
-    this.tipoCliente = data.tipoCliente;
-    this.tipoDocumento = data.tipoDocumento;
-    this.numeroDocumento = data.numeroDocumento;
-    this.direccion = data.direccion;
-    this.telefono = data.telefono;
-    this.correo = data.correo;
+    this.name = data.name;
+    this.typeCustomer = data.typeCustomer;
+    this.documentType = data.documentType;
+    this.documentNumber = data.documentNumber;
+    this.address = data.address;
+    this.phone = data.phone;
+    this.email = data.email;
   }
 
   onCancel(): void {
@@ -45,23 +45,23 @@ export class EditarClienteComponent {
    
   onEdit(): void {
     if (
-      this.razonSocial &&
-      this.tipoCliente &&
-      this.tipoDocumento &&
-      this.numeroDocumento &&
-      this.direccion &&
-      this.telefono &&
-      this.correo
+      this.name &&
+      this.typeCustomer &&
+      this.documentType &&
+      this.documentNumber &&
+      this.address &&
+      this.phone &&
+      this.email
     ) {
       const updatedCliente = {
         id: this.data.id,
-        razonSocial: this.razonSocial,
-        tipoCliente: this.tipoCliente,
-        tipoDocumento: this.tipoDocumento,
-        numeroDocumento: this.numeroDocumento,
-        direccion: this.direccion,
-        telefono: this.telefono,
-        correo: this.correo,
+        name: this.name,
+        typeCustomer: this.typeCustomer,
+        documentType: this.documentType,
+        documentNumber: this.documentNumber,
+        address: this.address,
+        phone: this.phone,
+        email: this.email,
       };
 
       Swal.fire({
@@ -72,8 +72,8 @@ export class EditarClienteComponent {
           Swal.showLoading();
         },
       });
-    
-      this.http.put(`https://apiclientesagro-hzh0fsa5gsffdxgv.brazilsouth-01.azurewebsites.net/api/clientes/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
+
+      this.http.put(`https://apicustomersagro-djegh3dmfea5hmbu.brazilsouth-01.azurewebsites.net/api/customers/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
         (response: string) => {
           Swal.fire({
             title: 'Cliente editado',
@@ -119,13 +119,13 @@ export class EditarClienteComponent {
   // Validación de campo numero documento
 
   onKeyPress(event: KeyboardEvent): void {
-    if (this.tipoDocumento === 'RUC' || this.tipoDocumento === 'DNI' || this.tipoDocumento === 'Carné de Extranjería') {
+    if (this.documentType === 'RUC' || this.documentType === 'DNI' || this.documentType === 'Carné de Extranjería') {
       const pattern = /^[0-9]*$/;
       if (!pattern.test(event.key)) {
         event.preventDefault();
       }
     }
-    else if (this.tipoDocumento === 'Pasaporte') {
+    else if (this.documentType === 'Pasaporte') {
       const pattern = /^[A-Za-z0-9]*$/;
       if (!pattern.test(event.key)) {
         event.preventDefault();
@@ -134,7 +134,7 @@ export class EditarClienteComponent {
   }
 
   getDocumentoPattern(): string {
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return '^[0-9]{11}$';  
       case 'DNI':
@@ -149,7 +149,7 @@ export class EditarClienteComponent {
   }
 
   getDocumentoMaxLength(): number {
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return 11; 
       case 'DNI':
@@ -164,7 +164,7 @@ export class EditarClienteComponent {
   
  
   limpiarNumeroDocumento(): void {
-     this.numeroDocumento = '';
+     this.documentNumber = '';
   }
 
   onPaste(event: ClipboardEvent): void {
@@ -181,7 +181,7 @@ export class EditarClienteComponent {
       return false;
     }
   
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return /^[0-9]{11}$/.test(textoPegado);  
       case 'DNI':

@@ -52,12 +52,12 @@ export class ClientesComponent {
     this.clientesFiltrados = this.clientes.filter((cliente) => {
       const coincideNombre =
         this.filtroNombre.trim() === '' ||
-        cliente.razonSocial.toLowerCase().includes(this.filtroNombre.toLowerCase());
+        cliente.name.toLowerCase().includes(this.filtroNombre.toLowerCase());
       const coincideDocumento =
         this.filtroDocumento.trim() === '' ||
-        cliente.numeroDocumento.includes(this.filtroDocumento);
+        cliente.documentNumber.includes(this.filtroDocumento);
       const coincideTipo =
-        this.filtroTipo.trim() === '' || cliente.tipoCliente === this.filtroTipo;
+        this.filtroTipo.trim() === '' || cliente.typeCustomer === this.filtroTipo;
 
       return coincideNombre && coincideDocumento && coincideTipo;
     });

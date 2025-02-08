@@ -1,10 +1,10 @@
 export interface Cliente {
     id: number;
-    razonSocial: string;
-    tipoCliente: string;
-    tipoDocumento: string;
-    numeroDocumento: string;
-    direccion: string;
-    telefono: string;
-    correo: string;
+    name: string;
+    documentType: string;
+    documentNumber: string;
+    address: string;
+    phone: string;
+    email: string;
+    typeCustomer: string;
   }

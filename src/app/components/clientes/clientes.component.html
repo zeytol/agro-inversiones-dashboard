@@ -23,8 +23,8 @@
         />
         <select class="filter-select" [(ngModel)]="filtroTipo">
           <option value="">Ingrese Tipo</option>
-          <option value="Empresa">Empresa</option>
-          <option value="Persona Natural">Persona Natural</option>
+          <option value="EMPRESA">EMPRESA</option>
+          <option value="INDIVIDUAL">INDIVIDUAL</option>
         </select>
         <button class="button-with-icon" (click)="filtrarClientes()">
           <svg
@@ -58,24 +58,24 @@
         <thead>
           <tr>       
             <th>Razón Social</th>
-            <th>Tipo de Cliente</th>
             <th>Tipo Documento</th>
             <th>Nro.Documento</th>
             <th>Dirección</th>
             <th>Teléfono</th>
             <th>Correo</th>
+            <th>Tipo Cliente</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let cliente of getClientesPorPagina()">
-            <td>{{ cliente.razonSocial }}</td>
-            <td>{{ cliente.tipoCliente }}</td>
-            <td>{{ cliente.tipoDocumento }}</td>
-            <td>{{ cliente.numeroDocumento }}</td>
-            <td>{{ cliente.direccion }}</td>
-            <td>{{ cliente.telefono }}</td>
-            <td>{{ cliente.correo }}</td>
+            <td>{{ cliente.name }}</td>
+            <td>{{ cliente.documentType }}</td>
+            <td>{{ cliente.documentNumber }}</td>
+            <td>{{ cliente.address }}</td>
+            <td>{{ cliente.phone }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.typeCustomer }}</td>
             <td class="acciones">
               <button class="editBtn" (click)="openEditarClienteModal(cliente)">
                 <svg height="1em" viewBox="0 0 512 512">

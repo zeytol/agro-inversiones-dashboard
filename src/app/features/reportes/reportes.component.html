@@ -21,7 +21,7 @@
                           [labels]="radialBarChartOptions.labels">
                       </apx-chart>
                   </div>
-                  <div class="text-4xl font-bold text-green-500 mt-4 text-center">+ S/. 12,000</div>
+                  <div class="text-4xl font-bold text-green-500 mt-4 text-center">+ S/. {{ radialBarChartOptions.series[0] }}</div>
               </div>
 
               <!-- Gráfico de Líneas -->
@@ -85,11 +85,11 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let report of filteredReports; let i = index" class="hover:bg-gray-50 transition-colors duration-300">
-                        <td class="px-6 py-4 border-b">{{ report.name }}</td>
-                        <td class="px-6 py-4 border-b">{{ report.type }}</td>
-                        <td class="px-6 py-4 border-b">{{ report.date }}</td>
-                        <td class="px-6 py-4 border-b">{{ report.address }}</td>
-                        <td class="px-6 py-4 border-b">{{ report.permission }}</td>
+                        <td class="px-6 py-4 border-b">{{ report.documentType }}</td>
+                        <td class="px-6 py-4 border-b">{{ report.issueDate }}</td>
+                        <td class="px-6 py-4 border-b">{{ report.state }}</td>
+                        <td class="px-6 py-4 border-b">{{ report.state }}</td>
+                        <td class="px-6 py-4 border-b">{{ report.total }}</td>
                         <td class="px-6 py-4 border-b">
                             <span
                                 [class.bg-green-100]="report.status === 'active'"

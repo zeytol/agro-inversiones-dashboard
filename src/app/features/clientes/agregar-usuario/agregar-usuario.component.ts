@@ -15,13 +15,13 @@ export class AgregarUsuarioComponent {
 
   @Output() clienteAdded = new EventEmitter<void>();
 
-  razonSocial: string = '';
-  tipoCliente: string = '';
-  tipoDocumento: string = '';
-  numeroDocumento: string = '';
-  direccion: string = '';
-  telefono: string = '';
-  correo: string = '';
+  name: string = '';
+  documentType: string = '';
+  documentNumber: string = '';
+  address: string = '';
+  phone: string = '';
+  email: string = '';
+  typeCustomer: string = '';
   dialogRef!: MatDialogRef<any>;
 
   constructor(
@@ -81,13 +81,13 @@ export class AgregarUsuarioComponent {
 
   private isFormValid(): boolean {
     return (
-      this.razonSocial !== '' &&
-      this.tipoCliente !== '' &&
-      this.tipoDocumento !== '' &&
-      this.numeroDocumento !== '' &&
-      this.direccion !== '' &&
-      this.telefono !== '' &&
-      this.correo !== ''
+      this.name !== '' &&
+      this.documentType !== '' &&
+      this.documentNumber !== '' &&
+      this.address !== '' &&
+      this.phone !== '' &&
+      this.email !== '' &&
+      this.typeCustomer !== ''
     );
   }
 
@@ -95,13 +95,13 @@ export class AgregarUsuarioComponent {
   private createCliente(): Cliente {
     return {
       id: 0,
-      razonSocial: this.razonSocial,
-      tipoCliente: this.tipoCliente,
-      tipoDocumento: this.tipoDocumento,
-      numeroDocumento: this.numeroDocumento,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      correo: this.correo
+      name: this.name,
+      documentType: this.documentType,
+      documentNumber: this.documentNumber,
+      address: this.address,
+      phone: this.phone,
+      email: this.email,
+      typeCustomer: this.typeCustomer
     };
   }
 
@@ -141,13 +141,13 @@ export class AgregarUsuarioComponent {
   // Validación de campo numero documento
 
   onKeyPress(event: KeyboardEvent): void {
-    if (this.tipoDocumento === 'RUC' || this.tipoDocumento === 'DNI' || this.tipoDocumento === 'Carné de Extranjería') {
+    if (this.documentType === 'RUC' || this.documentType === 'DNI' || this.documentType === 'Carné de Extranjería') {
       const pattern = /^[0-9]*$/;
       if (!pattern.test(event.key)) {
         event.preventDefault();
       }
     }
-    else if (this.tipoDocumento === 'Pasaporte') {
+    else if (this.documentType === 'Pasaporte') {
       const pattern = /^[A-Za-z0-9]*$/;
       if (!pattern.test(event.key)) {
         event.preventDefault();
@@ -156,7 +156,7 @@ export class AgregarUsuarioComponent {
   }
 
   getDocumentoPattern(): string {
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return '^[0-9]{11}$';  
       case 'DNI':
@@ -171,7 +171,7 @@ export class AgregarUsuarioComponent {
   }
 
   getDocumentoMaxLength(): number {
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return 11; 
       case 'DNI':
@@ -186,7 +186,7 @@ export class AgregarUsuarioComponent {
   
  
   limpiarNumeroDocumento(): void {
-     this.numeroDocumento = '';
+     this.documentNumber = '';
   }
 
   onPaste(event: ClipboardEvent): void {
@@ -203,7 +203,7 @@ export class AgregarUsuarioComponent {
       return false;
     }
   
-    switch (this.tipoDocumento) {
+    switch (this.documentType) {
       case 'RUC':
         return /^[0-9]{11}$/.test(textoPegado);  
       case 'DNI':

@@ -8,9 +8,8 @@ import { Cliente } from '../models/client.model';
 })
 export class ClienteService {
 
-  private apiUrl = 'https://apiclientesagro-hzh0fsa5gsffdxgv.brazilsouth-01.azurewebsites.net/api/clientes'; // URL API en Azure
-
-  // private apiUrl = 'http://localhost:81/api/clientes';  // Cambiar a URL local de la API
+  private apiUrl = 'https://apicustomersagro-djegh3dmfea5hmbu.brazilsouth-01.azurewebsites.net/api/customers'; // URL API en Azure
+  // private apiUrl = 'http://localhost:81/api/customers';  // Cambiar a URL local de la API
 
   constructor(private http: HttpClient) { }
 
