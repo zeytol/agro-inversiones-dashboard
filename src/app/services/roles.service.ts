@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -89,13 +90,55 @@ export class RolesService {
     return this.http.put(`${this.baseUrl}/permissions/editar/${id}`, permissionData, { withCredentials: true });
   }
 
-  // Eliminar un permiso
-  deletePermission(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/permissions/eliminar/${id}`, { withCredentials: true });
+  // Eliminar un permiso de un rol
+  deletePermissionFromRole(permissionId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/permissions/eliminar/${permissionId}`, { withCredentials: true }).pipe(
+      catchError((error) => {
+        if (error.status === 200 || error.status === 204) {
+          // Devolver un objeto indicando éxito en lugar de `null`
+          return of({ success: true });
+        }
+        console.error(`❌ Error al eliminar el rol con ID ${permissionId}:`, error);
+        return throwError(() => new Error('No se pudo eliminar el rol.'));
+      })
+    );
+  }  
+
+  // Obtener todos los permisos
+  getPermissionsT(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/permissionsT`, { withCredentials: true }).pipe(
+      catchError((error) => {
+        console.error('Error al obtener permisos:', error);
+        return throwError(() => new Error('No se pudieron obtener los permisos.'));
+      })
+    );
   }
 
-  // Asignar permisos a un rol
-  assignPermissionsToRole(rolId: number, permissions: number[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${rolId}/permissions`, { permissions }, { withCredentials: true });
+  // Editar un permiso existente
+  editPermission(id: number, permissionData: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/permissions/editar/${id}`, permissionData, { withCredentials: true }).pipe(
+      catchError((error) => {
+        console.error(`Error al editar permiso con ID ${id}:`, error);
+        return throwError(() => new Error('No se pudo editar el permiso.'));
+      })
+    );
   }
+
+  // Asignar o desasignar permisos a un rol
+  updatePermissions(rolId: number, permissions: number[]): Observable<any> {
+    const url = `${this.baseUrl}/${rolId}/permissions`;
+    const body = { permissions };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.post<any>(url, body, { headers, withCredentials: true }).pipe(
+      catchError((error) => {
+        if (error.status !== 201) { // Solo capturar errores reales
+          console.error('❌ Error en la solicitud:', error);
+          return throwError(() => new Error('No se pudieron actualizar los permisos.'));
+        }
+        return throwError(() => error); // Permitir respuestas 201 pasar
+      })
+    );
+  }
+  
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RolesService } from '../../../services/roles.service';
+import {NgxPaginationModule} from 'ngx-pagination';
 import { Router } from '@angular/router';
 
 @Component({
@@ -56,8 +57,10 @@ export class RolesListComponent implements OnInit {
     );
   }
 
+  p: number = 1;
+
   fetchPermissions() {
-    this.rolesService.getPermissions().subscribe(
+    this.rolesService.getPermissionsT().subscribe(
       (data) => {
         this.availablePermissions = data.map((perm: any) => ({
           ...perm,

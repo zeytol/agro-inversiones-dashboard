@@ -42,7 +42,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let role of roles">
+            <tr *ngFor="let role of roles | paginate: { itemsPerPage: 10, currentPage: p }" class="hover:bg-gray-50">
               <td class="px-6 py-4">{{ role.role_name }}</td>
               <td class="px-6 py-4">{{ role.description }}</td>
               <td class="px-6 py-4">
@@ -64,6 +64,16 @@
             </tr>
           </tbody>
         </table>
+        <!-- Paginación -->
+        <div class="flex justify-center mt-4">
+          <pagination-controls 
+            (pageChange)="p = $event" 
+            previousLabel="← Anterior" 
+            nextLabel="Siguiente →" 
+            class="pagination-controls"
+            [responsive]="true">
+          </pagination-controls>
+        </div>
       </div>
     </div>
   </div>
@@ -203,14 +213,6 @@
 
     <label class="block mb-2">Descripción</label>
     <input [(ngModel)]="editedRole.description" class="w-full p-2 border rounded mb-4" placeholder="Ej. Administrador con acceso completo"/>
-
-    <label class="block mb-2">Permisos</label>
-    <div *ngFor="let permission of availablePermissions">
-      <input type="checkbox"
-             [ngModel]="isPermissionSelected(permission.id)"
-             (ngModelChange)="onPermissionChange(permission.id, $event)" />
-      <label class="ml-2">{{ permission.permission_name }}</label>
-    </div>
 
     <div class="flex justify-end space-x-2 mt-4">
       <button (click)="closeEditRoleModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">

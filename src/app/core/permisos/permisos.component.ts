@@ -15,6 +15,12 @@ export class PermisosComponent implements OnInit {
   selectedRoleId: number | null = null;
   selectedPermissions: number[] = [];
   isCreateModalOpen = false;
+  isLoading = false;
+  showSuccessModal = false;
+  showErrorModal = false;
+  isDeleting = false;
+  showDeleteSuccessModal = false;
+  showDeleteErrorModal = false;
 
   constructor(private rolesService: RolesService, private router: Router) {}
 
@@ -29,7 +35,7 @@ export class PermisosComponent implements OnInit {
 
   // Obtener lista de permisos
   fetchPermissions() {
-    this.rolesService.getPermissions().subscribe(
+    this.rolesService.getPermissionsT().subscribe(
       (data) => {
         this.permissions = data;
       },
@@ -43,7 +49,18 @@ export class PermisosComponent implements OnInit {
   fetchRoles() {
     this.rolesService.getRoles().subscribe(
       (data) => {
-        this.roles = data;
+        this.roles = data.map((role: any) => ({
+          id: role.id,
+          role_name: role.roleName,
+          description: role.description,
+          // Mapeamos cada permiso para cambiar "permissionName" por "permission_name"
+          permissions: (role.permissions || []).map((perm: any) => ({
+            id: perm.id,
+            permission_name: perm.permissionName,
+            description: perm.description,
+            module: perm.module
+          }))
+        }));
       },
       (error) => {
         console.error('Error al obtener roles:', error);
@@ -51,49 +68,103 @@ export class PermisosComponent implements OnInit {
     );
   }
 
-  // Crear un nuevo permiso
-  createPermission() {
-    this.rolesService.createPermission(this.newPermission).subscribe(
-      () => {
-        this.fetchPermissions();
-        this.isCreateModalOpen = false;
-        this.newPermission = { permissionName: '', description: '', moduleId: 1 };
-      },
-      (error) => {
-        console.error('Error al crear permiso:', error);
-      }
-    );
-  }
-
-  // Eliminar un permiso
+  // Eliminar un permiso con modales de carga y éxito/error
   deletePermission(id: number) {
     if (confirm('¿Estás seguro de eliminar este permiso?')) {
-      this.rolesService.deletePermission(id).subscribe(
-        () => {
-          this.fetchPermissions();
+      this.isDeleting = true; // Mostrar modal de carga
+  
+      this.rolesService.deletePermissionFromRole(id).subscribe(
+        (response) => {
+          if (response.success) { // Verifica si el backend envía success: true
+            console.log('✅ Permiso eliminado correctamente:', response);
+            this.showDeleteSuccessModal = true;
+          } else {
+            console.error('❌ Respuesta inesperada:', response);
+            this.showDeleteErrorModal = true;
+          }
+          this.isDeleting = false;
+  
+          setTimeout(() => {
+            this.showDeleteSuccessModal = false;
+            this.showDeleteErrorModal = false;
+            this.fetchPermissions(); // Recargar lista de permisos
+          }, 3000);
         },
         (error) => {
-          console.error('Error al eliminar permiso:', error);
+          console.error('❌ Error al eliminar permiso:', error);
+          this.showDeleteErrorModal = true;
+          this.isDeleting = false;
+  
+          setTimeout(() => {
+            this.showDeleteSuccessModal = false;
+            this.showDeleteErrorModal = false;
+            this.fetchPermissions(); // Recargar lista de permisos
+          }, 3000);
         }
       );
     }
+  }  
+
+  // Alternar selección de un permiso
+  togglePermission(permissionId: number, event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+
+    if (checked) {
+      this.selectedPermissions.push(permissionId); // Agregar si está seleccionado
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(id => id !== permissionId); // Quitar si se desmarca
+    }
+
+    console.log('Permisos seleccionados:', this.selectedPermissions); // Depuración
   }
 
   // Asignar permisos a un rol
-  assignPermissions() {
-    if (this.selectedRoleId && this.selectedPermissions.length > 0) {
-      this.rolesService.assignPermissionsToRole(this.selectedRoleId, this.selectedPermissions).subscribe(
-        () => {
-          alert('Permisos asignados correctamente');
-        },
-        (error) => {
-          console.error('Error al asignar permisos:', error);
-        }
-      );
-    } else {
-      alert('Selecciona un rol y al menos un permiso.');
+  assignPermissionsToRole() {
+    if (!this.selectedRoleId) {
+      alert('Por favor, selecciona un rol.');
+      return;
     }
-  }
+  
+    if (this.selectedPermissions.length === 0) {
+      alert('Por favor, selecciona al menos un permiso.');
+      return;
+    }
+  
+    this.isLoading = true; // Mostrar modal de carga
+  
+    this.rolesService.updatePermissions(this.selectedRoleId, this.selectedPermissions).subscribe(
+      (response) => {
+        console.log('✅ Permisos asignados correctamente:', response);
+        this.isLoading = false;
+        this.showSuccessModal = true;
+  
+        setTimeout(() => {
+          this.showSuccessModal = false;
+          window.location.reload();
+        }, 3000);
+      },
+      (error) => {
+        if (error.status === 201) { // Si es 201, no es error
+          console.log('✅ Permisos asignados correctamente.');
+          this.showSuccessModal = true;
+  
+          setTimeout(() => {
+            this.showSuccessModal = false;
+            window.location.reload();
+          }, 3000);
+        } else {
+          console.error('❌ Error al actualizar permisos:', error);
+          this.isLoading = false;
+          this.showErrorModal = true;
+  
+          setTimeout(() => {
+            this.showErrorModal = false;
+            window.location.reload();
+          }, 3000);
+        }
+      }
+    );
+  }  
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
