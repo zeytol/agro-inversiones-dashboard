@@ -1,7 +1,9 @@
+// user.model.ts
 export interface User {
   id: number;
-  username: string;
+  created_at: string | null;
   email: string;
-  state: number; // 1 = Activo, 0 = Inactivo
-  enabled: boolean; // Nuevo campozz
+  enabled: number;
+  password: string;
+  username: string;
 }

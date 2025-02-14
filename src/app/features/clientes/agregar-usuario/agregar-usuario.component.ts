@@ -23,6 +23,7 @@ export class AgregarUsuarioComponent {
   telefono: string = '';
   correo: string = '';
   dialogRef!: MatDialogRef<any>;
+  usuarioAdded: any;
 
   constructor(
     public dialog: MatDialog,

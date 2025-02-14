@@ -1,98 +1,192 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../services/user.service';
-import { User } from '../../../models/user.model';
-import { finalize, catchError } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { throwError } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css'],
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+viewRolesPermissions(arg0: any) {
+throw new Error('Method not implemented.');
+}
+selectedUser: any;
+  toggleSidebar() {
+    this.isSidebarVisible = !this.isSidebarVisible;
+    setTimeout(() => this.updateChartsSize(), 300); 
+  }
+    private frontendIdCounter = 1;
+
+  private updateChartsSize() {
+    this.charts.forEach(chart => chart.chart.redraw());
+  }
+  users$ = new BehaviorSubject<any[]>([]);
+  userForm: FormGroup;
+  selectedUserId: number | null = null;
+  message = { text: '', type: '' };
+  isLoading = false;
+  charts: any[] = [];
+
+  showModal = false;
+  showDeleteModal = false;
+  userToDelete: any = null;
   isSidebarVisible = true;
-  users: User[] = [];
-  loading = false;
-  editingUser: User | null = null;
-  userToDelete: User | null = null;
-  isAddingUser = false;
 
-  readonly UserState = {
-    ACTIVE: 1,
-    INACTIVE: 0,
-  };
-
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private fb: FormBuilder) {
+    this.userForm = this.fb.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
-  toggleSidebar(): void {
-    this.isSidebarVisible = !this.isSidebarVisible;
-  }
-
   loadUsers(): void {
-    this.loading = true;
+    this.isLoading = true;
     this.userService.getUsers().pipe(
-      finalize(() => (this.loading = false)),
-      catchError(err => this.handleError('Error cargando usuarios', err))
-    ).subscribe(users => this.users = users);
+      finalize(() => this.isLoading = false)
+    ).subscribe(
+      data => {
+        this.users$.next(data);
+      },
+      error => {
+        console.error('Error cargando usuarios:', error);
+        this.showMessage('Error al cargar usuarios', 'error');
+      }
+    );
   }
 
-  openAddUserModal(): void {
-    this.isAddingUser = true;
-  }
-
-  handleUserAdded(newUser: User): void {
-    this.users.push(newUser);
-    this.isAddingUser = false;
-  }
-
-  handleEditUser(user: User): void {
-    this.editingUser = { ...user };
-  }
-
-  handleUserUpdated(updatedUser: User): void {
-    const index = this.users.findIndex(u => u.id === updatedUser.id);
-    if (index !== -1) this.users[index] = updatedUser;
-    this.editingUser = null;
-  }
-
-  handleDeleteUser(user: User): void {
-    if (confirm(`Are you sure you want to delete ${user.username}?`)) {
-      this.userService.deleteUser(user.id).subscribe({
-        next: () => {
-          this.users = this.users.filter(u => u.id !== user.id);
-        },
-        error: err => this.handleError('Error eliminando usuario', err)
+  openModal(user: any = null): void {
+    this.showModal = true;
+    if (user) {
+      this.selectedUserId = user.id;
+      this.userForm.patchValue({
+        username: user.username,
+        email: user.email,
+        password: '' 
       });
+    } else {
+      this.resetForm();
     }
   }
+
+  openDeleteModal(user: any): void {
+    this.userToDelete = user;
+    this.showDeleteModal = true;
+  }
+
+  submitForm(): void {
+    if (this.userForm.invalid) return;
   
-  confirmDeleteUser(): void {
-    if (this.userToDelete && this.userToDelete.id) {
-      this.userService.deleteUser(this.userToDelete.id).pipe(
-        catchError(err => this.handleError('Error al eliminar usuario', err))
-      ).subscribe(() => {
-        this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
-        this.userToDelete = null;
-      });
+    const user = this.userForm.value;
+    this.isLoading = true;
+  
+    if (this.selectedUserId) {
+      this.userService.editUser(this.selectedUserId, user).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe(
+        () => {
+          this.showMessage('Usuario actualizado con éxito', 'success');
+          this.loadUsers();
+          this.closeModal();
+        },
+        (error) => {
+          this.showMessage('Error al actualizar usuario', 'error');
+          console.error(error);
+        }
+      );
+    } else {
+      this.userService.addUser(user).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe(
+        () => {
+          this.showMessage('Usuario agregado con éxito', 'success');
+          this.loadUsers();
+          this.closeModal();
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status === 201) {
+            this.showMessage('Usuario agregado con éxito', 'success');
+            this.loadUsers();
+            this.closeModal();
+          } else {
+            this.showMessage('Error al agregar usuario', 'error');
+            console.error(error);
+          }
+        }
+      );
     }
   }
-
-  filterUsersByState(state: number): void {
-    this.loading = true;
-    this.userService.getUsers().pipe(
-      finalize(() => (this.loading = false)),
-      catchError(err => this.handleError('Error filtrando usuarios', err))
-    ).subscribe(users => this.users = users.filter(user => user.state === state));
+  deleteUser(): void {
+    if (!this.userToDelete || typeof this.userToDelete.id !== 'number') {
+      this.showMessage('No se ha seleccionado un usuario válido para eliminar', 'error');
+      return;
+    }
+  
+    // Mostrar confirmación con SweetAlert2
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.userService.deleteUser(this.userToDelete.id).pipe(
+          finalize(() => this.isLoading = false)
+        ).subscribe(
+          () => {
+            this.showMessage('Usuario eliminado con éxito', 'success');
+            this.loadUsers();
+            this.closeDeleteModal();
+          },
+          (error: HttpErrorResponse) => {
+            if (error.status === 200) {
+              this.showMessage('Usuario eliminado con éxito', 'success');
+              this.loadUsers();
+              this.closeDeleteModal();
+            } else {
+              console.error('Error al eliminar el usuario:', error);
+              this.showMessage('Ocurrió un error al eliminar el usuario', 'error');
+            }
+          }
+        );
+      }
+    });
   }
 
-  private handleError(message: string, err: HttpErrorResponse) {
-    console.error(message, err);
-    alert(`${message}. Inténtelo de nuevo más tarde.`);
-    return throwError(() => err);
+  closeModal(): void {
+    this.showModal = false;
+    this.resetForm();
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.userToDelete = null;
+  }
+
+  resetForm(): void {
+    this.userForm.reset();
+    this.selectedUserId = null;
+  }
+
+  showMessage(text: string, type: 'success' | 'error') {
+    Swal.fire({
+      icon: type,
+      title: text,
+      showConfirmButton: false,
+      timer: 3000 
+    });
   }
 }

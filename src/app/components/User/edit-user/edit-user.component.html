@@ -1,0 +1,52 @@
+<!-- edit-user.component.html -->
+<div class="bg-white p-6 rounded shadow-lg w-96">
+    <h3 class="text-lg font-semibold mb-4">Editar Usuario</h3>
+  
+    <div *ngIf="message.text" class="p-3 rounded mb-4" [ngClass]="{
+      'bg-green-100 text-green-700': message.type === 'success',
+      'bg-red-100 text-red-700': message.type === 'error'
+    }">
+      {{ message.text }}
+    </div>
+  
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label class="block font-semibold">Usuario:</label>
+        <input type="text" formControlName="username" 
+               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500">
+        <span *ngIf="userForm.get('username')?.errors?.['required'] && userForm.get('username')?.touched"
+              class="text-red-500 text-sm">El usuario es requerido</span>
+      </div>
+  
+      <div>
+        <label class="block font-semibold">Correo:</label>
+        <input type="email" formControlName="email" 
+               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500">
+        <span *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched"
+              class="text-red-500 text-sm">El correo es requerido</span>
+        <span *ngIf="userForm.get('email')?.errors?.['email'] && userForm.get('email')?.touched"
+              class="text-red-500 text-sm">Ingrese un correo válido</span>
+      </div>
+  
+      <div>
+        <label class="block font-semibold">Nueva Contraseña:</label>
+        <input type="password" formControlName="password" 
+               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500">
+        <span *ngIf="userForm.get('password')?.errors?.['required'] && userForm.get('password')?.touched"
+              class="text-red-500 text-sm">La contraseña es requerida</span>
+        <span *ngIf="userForm.get('password')?.errors?.['minlength'] && userForm.get('password')?.touched"
+              class="text-red-500 text-sm">La contraseña debe tener al menos 6 caracteres</span>
+      </div>
+  
+      <div class="flex gap-2">
+        <button type="submit" [disabled]="userForm.invalid || isLoading"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition disabled:bg-blue-300">
+          {{ isLoading ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button type="button" (click)="onClose()"
+                class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>

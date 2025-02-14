@@ -1,62 +1,53 @@
+// delete-user.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UserService } from '../../../services/user.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-delete-user',
-  template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div class="w-full max-w-md bg-white rounded-xl shadow-2xl">
-        <div class="bg-red-50 p-5 border-b">
-          <h3 class="text-2xl font-semibold text-red-800">Confirmar Eliminación</h3>
-        </div>
-
-        <div class="p-6">
-          <p class="text-lg text-gray-600">
-            ¿Está seguro que desea eliminar el usuario 
-            <span class="font-bold text-red-600">{{ user.username }}</span>?
-          </p>
-        </div>
-
-        <div class="flex justify-end p-4 space-x-3 border-t">
-          <button 
-            (click)="cancelDelete()" 
-            class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md"
-          >
-            Cancelar
-          </button>
-          <button 
-            (click)="deleteUser()" 
-            class="px-4 py-2 text-white bg-red-600 rounded-md"
-          >
-            Sí, Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './delete-user.component.html'
 })
 export class DeleteUserComponent {
-  @Input() user: any;
-  @Output() userDeleted = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<void>();
+  @Input() userId!: number;
+  @Input() username!: string;
+  @Output() userDeleted = new EventEmitter<void>();
+  @Output() closeModal = new EventEmitter<void>();
+
+  isLoading = false;
+  message = { text: '', type: '' };
 
   constructor(private userService: UserService) {}
 
-  deleteUser(): void {
-    if (this.user) {
-      this.userService.deleteUser(this.user.id).subscribe({
-        next: () => {
-          this.userDeleted.emit(this.user);
-        },
-        error: (err) => {
-          console.error('Error al eliminar usuario:', err);
-          alert('No se pudo eliminar el usuario. Intente de nuevo.');
+  onConfirmDelete(): void {
+    this.isLoading = true;
+    this.userService.deleteUser(this.userId).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe(
+      () => {
+        this.showMessage('Usuario eliminado con éxito', 'success');
+        this.userDeleted.emit();
+        this.onClose();
+      },
+      (error: HttpErrorResponse) => {
+        if (error.status === 200) {
+          this.showMessage('Usuario eliminado con éxito', 'success');
+          this.userDeleted.emit();
+          this.onClose();
+        } else {
+          this.showMessage('Error al eliminar usuario', 'error');
+          console.error(error);
         }
-      });
-    }
+      }
+    );
   }
 
-  cancelDelete(): void {
-    this.cancel.emit();
+  onClose(): void {
+    this.closeModal.emit();
+  }
+
+  private showMessage(text: string, type: string): void {
+    this.message = { text, type };
+    setTimeout(() => this.message = { text: '', type: '' }, 3000);
   }
 }

@@ -13,7 +13,7 @@ import { User } from '../../../models/user.model';
           <button (click)="cancelAdd()" class="text-red-500 text-2xl">&times;</button>
         </div>
 
-        <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="p-6">
+        <form [(ngSubmit)="submitForm()" class="p-6">
           <div class="mb-4">
             <label class="block text-gray-700 mb-2">Nombre de Usuario</label>
             <input 
@@ -96,22 +96,6 @@ export class AddUserComponent {
     });
   }
 
-  submitForm(): void {
-    if (this.userForm.invalid) return;
-
-    this.isSubmitting = true;
-    this.userService.addUser(this.userForm.value).subscribe({
-      next: (newUser: any) => {
-        this.userAdded.emit(newUser);
-        this.cancel.emit();
-      },
-      error: (err) => {
-        console.error('Error al agregar usuario:', err);
-        alert('No se pudo agregar el usuario. Intente de nuevo.');
-        this.isSubmitting = false;
-      }
-    });
-  }
 
   cancelAdd(): void {
     this.cancel.emit();
