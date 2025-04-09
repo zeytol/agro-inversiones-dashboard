@@ -23,7 +23,7 @@ export class EliminarCategoriaComponent {
 
   eliminarCategoria(): void {
     // URL para la eliminación de categoría basada en su ID
-    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/${this.categoriaSeleccionada.id}`;
+    const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/${this.categoriaSeleccionada.id}`;
     Swal.fire({
       title: 'Eliminando...',
       text: 'Por favor, espera mientras se elimina la categoría.',

@@ -9,8 +9,8 @@ import { catchError } from 'rxjs/operators';
 })
 export class SuppliersService {
   private suppliers: any[] = []; 
-  private apiUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/suppliers';
-  private categoriesUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/CatSuppliers'; 
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/suppliers';
+  private categoriesUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/CatSuppliers'; 
 
   constructor(private http: HttpClient) {}
 
@@ -23,12 +23,12 @@ export class SuppliersService {
       });
     } else {
       
-      return this.http.get<any[]>(this.apiUrl);
+      return this.http.get<any[]>(this.apiUrl, {withCredentials: true});
     }
   }
 
   getCategories(): Observable<any[]> {
-    return this.http.get<any[]>(this.categoriesUrl);
+    return this.http.get<any[]>(this.categoriesUrl, {withCredentials: true});
   }
 
   setSuppliers(suppliers: any[]): void {
@@ -36,7 +36,7 @@ export class SuppliersService {
   }
 
   addSupplier(supplier: any): Observable<any> {
-    const apiUrladd = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/suppliers/register';
+    const apiUrladd = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/suppliers/register';
     return this.http.post<any>(apiUrladd, supplier).pipe(
       catchError((error) => {
         console.error('Error al agregar proveedor:', error);
@@ -46,7 +46,7 @@ export class SuppliersService {
 }
 
   editSupplier(id: number, supplier: any): Observable<any> {
-    const apiUrlEdit = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/suppliers/edit/${id}`;
+    const apiUrlEdit = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/suppliers/edit/${id}`;
     return this.http.put<any>(apiUrlEdit, supplier).pipe(
       catchError((error) => {
         console.error('Error al editar proveedor:', error);

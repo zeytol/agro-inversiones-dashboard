@@ -41,7 +41,7 @@ const routes: Routes = [
   { path: 'roles/crear', component: CreateRoleComponent, canActivate: [AuthGuard] },
   { path: 'permisos/crear', component: CreatePermissionComponent, canActivate: [AuthGuard] },
   { path: 'role', component: RolesComponent, canActivate: [AuthGuard] },
-  { path: 'proveedores', component: ProveedoresComponent, canActivate: [AuthGuard] },
+  { path: 'proveedores', component: ProveedoresComponent, canActivate: [AuthGuard]},
   { path: 'inventario', component: InventarioComponent, canActivate: [AuthGuard]},
   { path: 'ventas', component: VentasComponent, canActivate: [AuthGuard] },  
   { path: '', redirectTo: '/login', pathMatch: 'full' }, 

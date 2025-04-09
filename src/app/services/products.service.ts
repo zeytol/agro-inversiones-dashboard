@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ProductsService {
   private productos: any[] = [];
-  private apiUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products';
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/products';
 
   constructor(private http: HttpClient) {}
 
@@ -18,7 +18,7 @@ export class ProductsService {
         observer.complete();
       });
     } else {
-      return this.http.get<any[]>(this.apiUrl);
+      return this.http.get<any[]>(this.apiUrl, {withCredentials: true});
     }
   }
 
@@ -36,7 +36,7 @@ export class ProductsService {
  }
   // Método para eliminar un producto
   eliminarProducto(productId: number): Observable<string> {
-    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products/delete/${productId}`;
+    const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/products/delete/${productId}`;
   
     return this.http.delete<string>(url, { responseType: 'text' as 'json' });
   }

@@ -7,7 +7,7 @@ import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-const apiUrl = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/products';
+const apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/products';
 
 interface Product {
   id: number;
@@ -63,7 +63,7 @@ export class InventarioComponent implements OnInit {
 
   fetchProducts(): void {
     const deletedProductIds = this.getDeletedProductIds();
-    this.http.get<Product[]>(apiUrl).subscribe(
+    this.http.get<Product[]>(apiUrl, {withCredentials: true}).subscribe(
       (data) => {
         this.allProducts = data.filter(product => !deletedProductIds.includes(product.id));
         this.displayedProducts = [...this.allProducts];
@@ -374,7 +374,7 @@ addRowToTable(product: Product): void {
       }
     } else {
       // Buscar en la API si no está en allProducts
-      this.http.get<Product[]>(apiUrl).subscribe(
+      this.http.get<Product[]>(apiUrl, {withCredentials: true}).subscribe(
         (products) => {
           product = products.find(
             (p) => p.codeProduct && p.codeProduct.toLowerCase() === searchCodeNormalized
@@ -417,7 +417,7 @@ addRowToTable(product: Product): void {
     }
     
     // Realizar la consulta a la API para obtener los productos que coinciden con la categoría buscada
-    this.http.get<Product[]>(apiUrl).subscribe(
+    this.http.get<Product[]>(apiUrl, {withCredentials: true}).subscribe(
       (products) => {
         // Filtrar productos que contienen la categoría buscada
         const filteredProducts = products.filter((product) => {

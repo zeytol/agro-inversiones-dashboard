@@ -41,8 +41,8 @@ export class FiltrarModalComponent implements OnInit {
   }
 
   cargarCategorias(): void {
-    const url = 'https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories';
-    this.http.get<any[]>(url).subscribe({
+    const url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories';
+    this.http.get<any[]>(url, {withCredentials: true}).subscribe({
       next: (data) => {
         this.categorias = data; // Asigna los datos a la lista de categorías
       },
@@ -87,7 +87,7 @@ export class FiltrarModalComponent implements OnInit {
       return;
     }
   
-    const url = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
+    const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
   
     Swal.fire({
       title: 'Eliminando...',

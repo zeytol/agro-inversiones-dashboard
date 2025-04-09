@@ -95,13 +95,13 @@ export class AgregarUsuarioComponent {
   private createCliente(): Cliente {
     return {
       id: 0,
-      razonSocial: this.razonSocial,
-      tipoCliente: this.tipoCliente,
-      tipoDocumento: this.tipoDocumento,
-      numeroDocumento: this.numeroDocumento,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      correo: this.correo
+      name: this.razonSocial,
+      typeCustomer: this.tipoCliente,
+      documentType: this.tipoDocumento,
+      documentNumber: this.numeroDocumento,
+      address: this.direccion,
+      phone: this.telefono,
+      email: this.correo
     };
   }
 

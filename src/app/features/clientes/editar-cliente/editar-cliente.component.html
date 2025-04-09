@@ -5,7 +5,7 @@
 
       <mat-form-field appearance="fill" class="input-field">
         <mat-label>Razón Social</mat-label>
-        <input matInput name="razonSocial" required minlength="3" [(ngModel)]="razonSocial" #razonSocialField="ngModel" [disabled]="userForm.submitted && (razonSocialField.invalid ?? false)">
+        <input matInput name="razonSocial" required minlength="3" [(ngModel)]="name" #razonSocialField="ngModel" [disabled]="userForm.submitted && (razonSocialField.invalid ?? false)">
         <mat-error *ngIf="razonSocialField.invalid && razonSocialField.touched">
           La razón social es requerida y debe tener al menos 3 caracteres.
         </mat-error>

@@ -24,7 +24,7 @@ export class LoginComponent {
     formData.append('password', this.loginData.password);
 
     this.http.post(
-        'https://agro-inversiones-oauth-cca2drebeabyhufq.canadacentral-01.azurewebsites.net/login',
+        'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/login',
         formData.toString(),
         {
           headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),

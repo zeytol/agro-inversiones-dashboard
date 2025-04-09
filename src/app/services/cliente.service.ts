@@ -8,14 +8,14 @@ import { Cliente } from '../models/client.model';
 })
 export class ClienteService {
 
-  private apiUrl = 'https://apiclientesagro-hzh0fsa5gsffdxgv.brazilsouth-01.azurewebsites.net/api/clientes'; // URL API en Azure
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers'; // URL API en Azure
 
   // private apiUrl = 'http://localhost:81/api/clientes';  // Cambiar a URL local de la API
 
   constructor(private http: HttpClient) { }
 
   listarClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.apiUrl);
+    return this.http.get<Cliente[]>(this.apiUrl, {withCredentials: true});
   }
 
   obtenerClientePorId(id: number): Observable<Cliente> {

@@ -265,7 +265,7 @@ export class GestionProductosComponent implements OnInit {
 
 
   getCategorias(): Observable<any> {
-    return this.http.get('https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/categories');
+    return this.http.get('https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories');
   }
 
 

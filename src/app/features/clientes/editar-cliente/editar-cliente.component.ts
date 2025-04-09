@@ -14,7 +14,7 @@ export class EditarClienteComponent {
 
   @Output() clienteEdited = new EventEmitter<void>();
 
-  razonSocial: string;
+  name: string;
   tipoCliente: string;
   tipoDocumento: string;
   numeroDocumento: string;
@@ -29,13 +29,13 @@ export class EditarClienteComponent {
     private parentDialogRef: MatDialogRef<any>,
     private http: HttpClient
   ) {
-    this.razonSocial = data.razonSocial;
-    this.tipoCliente = data.tipoCliente;
-    this.tipoDocumento = data.tipoDocumento;
-    this.numeroDocumento = data.numeroDocumento;
-    this.direccion = data.direccion;
-    this.telefono = data.telefono;
-    this.correo = data.correo;
+    this.name = data.name;
+    this.tipoCliente = data.typeCustomer;
+    this.tipoDocumento = data.documentType;
+    this.numeroDocumento = data.documentNumber;
+    this.direccion = data.address;
+    this.telefono = data.phone;
+    this.correo = data.email;
   }
 
   onCancel(): void {
@@ -45,7 +45,7 @@ export class EditarClienteComponent {
    
   onEdit(): void {
     if (
-      this.razonSocial &&
+      this.name &&
       this.tipoCliente &&
       this.tipoDocumento &&
       this.numeroDocumento &&
@@ -55,7 +55,7 @@ export class EditarClienteComponent {
     ) {
       const updatedCliente = {
         id: this.data.id,
-        razonSocial: this.razonSocial,
+        razonSocial: this.name,
         tipoCliente: this.tipoCliente,
         tipoDocumento: this.tipoDocumento,
         numeroDocumento: this.numeroDocumento,
