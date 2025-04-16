@@ -258,23 +258,14 @@
                 </th>
               </tr>
             </thead>
+
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  A0001
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  Papel Amarillo
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  25
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  S/. 12.99
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  S/. 324.75
-                </td>
+              <tr  *ngFor="let item of carrito">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"> A0001 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{{ item.cantidad }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"> S/. {{ item.salePrice.toFixed(2) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"> S/. {{ (item.cantidad * item.salePrice).toFixed(2) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button class="text-red-600 hover:text-red-900">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -286,30 +277,18 @@
             </tbody>
             <tfoot class="bg-gray-50">
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  Subtotal:
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  S/. 324.75
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900"> Subtotal: </td>
+                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900"> S/. {{ subtotal().toFixed(2) }}</td>
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  IGV (18%):
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  S/. 58.46
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900"> IGV (18%): </td>
+                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">S/. {{ igv().toFixed(2) }}</td>
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-bold text-gray-900">
-                  Total a Pagar:
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900">
-                  S/. 383.21
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-bold text-gray-900">Total a Pagar:</td>
+                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900"> S/. {{ total().toFixed(2) }}</td>
                 <td></td>
               </tr>
             </tfoot>

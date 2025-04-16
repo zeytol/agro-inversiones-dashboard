@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import { CarritoService } from '../../../services/carrito.service';
+
 @Component({
   selector: 'app-carrito-modal',
   templateUrl: './carrito-modal.component.html',
@@ -10,13 +12,16 @@ export class CarritoModalComponent {
   @Input() totalCarrito: number = 0; // Recibe el total del carrito desde el componente padre
   @Output() cerrarCarritoModal = new EventEmitter<void>(); // Emite evento para cerrar el modal
   carritoVisible: boolean = true// Método para cerrar el carrito
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private carritoService: CarritoService
+  ) {}
   cerrarCarrito() {
     this.cerrarCarritoModal.emit(); // Emite el evento para cerrar el carrito
   }
   aceptarCarrito() {
+    this.carritoService.setCarrito(this.carrito);
     this.router.navigate(['/ventas']); // Redirige a la ruta '/ventas'
-    console.log("Carrito cerrado y redirigido a /ventas");
   }
 
   // Método para eliminar un producto del carrito
@@ -69,15 +74,19 @@ calcularTotal() {
 
   // Método para actualizar el total del carrito
   actualizarTotal() {
-    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
+    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * item.salePrice, 0);
+  
+    //this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
   }
 
   // Método para calcular el subtotal del carrito
   subtotal(): number {
-    return this.carrito.reduce((acc, item) => {
+    return this.carrito.reduce((acc, item) => acc + item.cantidad * item.salePrice, 0);
+
+    /*return this.carrito.reduce((acc, item) => {
       const precioSinSimbolo = parseFloat(item.precio.replace('$', '')); // Elimina el símbolo de moneda
       return acc + (precioSinSimbolo * item.cantidad);
-    }, 0);
+    }, 0);*/
   }
 
 

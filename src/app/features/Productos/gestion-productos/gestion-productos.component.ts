@@ -368,12 +368,12 @@ export class GestionProductosComponent implements OnInit {
 
   // Método para incrementar la cantidad de un producto en el carrito
   incrementarCantidad(item: any) {
-    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.nombre === item.nombre);
+    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.name === item.name);
 
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
       this.actualizarTotal(); // Actualiza el total después de incrementar
-      console.log(`Cantidad de ${item.nombre} incrementada a ${itemEnCarrito.cantidad}.`);
+      console.log(`Cantidad de ${item.name} incrementada a ${itemEnCarrito.cantidad}.`);
     }
   }
 
@@ -387,7 +387,11 @@ export class GestionProductosComponent implements OnInit {
 
   // Método para actualizar el total del carrito
   actualizarTotal() {
-    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.purchasePrice.replace('$', '')), 0);
+    this.totalCarrito = this.carrito.reduce((acc, item) => {
+      const precio = parseFloat(String(item.purchasePrice).replace('$', '')) || 0;
+      return acc + (item.cantidad * precio);
+    }, 0);
+    //this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.purchasePrice.replace('$', '')), 0);
   }
 
   // Método para calcular el subtotal del carrito
