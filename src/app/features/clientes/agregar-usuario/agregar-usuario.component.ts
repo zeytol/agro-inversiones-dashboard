@@ -1,7 +1,7 @@
 import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClienteService } from '../../../services/cliente.service';
-import { Cliente } from '../../../models/client.model';
+import { customers } from '../../../models/client.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -45,8 +45,9 @@ export class AgregarUsuarioComponent {
       return;
     }
 
-    const cliente: Cliente = this.createCliente();
-
+    const cliente: customers = this.createCliente();
+    
+    console.log('Cliente a enviar:', cliente);
     Swal.fire({
       title: 'Agregando cliente...',
       html: 'Por favor, espera mientras se registra el cliente.',
@@ -92,7 +93,7 @@ export class AgregarUsuarioComponent {
   }
 
   // Método para crear objeto cliente
-  private createCliente(): Cliente {
+  private createCliente(): customers {
     return {
       id: 0,
       name: this.razonSocial,

@@ -124,7 +124,8 @@ export class EditarModalComponent {
     });
     this.http.put(url, formData, {
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
+      withCredentials: true
     }).subscribe({
       next: (response: any) => {
         console.log('Respuesta:', response);

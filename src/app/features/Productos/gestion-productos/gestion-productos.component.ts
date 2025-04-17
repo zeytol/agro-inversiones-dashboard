@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProductsService } from '../../../services/products.service';
 import { CategoryProductsService } from '../../../services/category-products.service';
-
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-gestion-productos',
@@ -51,8 +51,6 @@ export class GestionProductosComponent implements OnInit {
   productosFiltrados: any[] = [];
   productosPorPagina = 16;
   paginaActual = 0;
-  
-
 
   // Método para filtrar productos al hacer clic en una categoría
   filtrarPorCategoria(categoria: string) {
@@ -143,8 +141,6 @@ export class GestionProductosComponent implements OnInit {
     };
   }
 
-
-
   agregarProducto(): void {
     // Lógica para agregar el nuevo producto
     console.log('Producto agregado:', this.newProduct);
@@ -167,9 +163,6 @@ export class GestionProductosComponent implements OnInit {
     // Resetea el formulario después de agregar el producto
     this.resetForm();
   }
-
-
-
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -196,7 +189,7 @@ export class GestionProductosComponent implements OnInit {
       next: (productos) => {
         this.productos = productos;
         this.productosFiltrados = productos;
-        this.productsService.setProductos(productos);
+    
       },
       error: (err) => {
         console.error('Error al cargar productos:', err);
@@ -438,7 +431,6 @@ export class GestionProductosComponent implements OnInit {
   }
 }
 
-import { MatPaginatorIntl } from '@angular/material/paginator';
 export function getPaginatorIntl() {
   const paginatorIntl = new MatPaginatorIntl();
 

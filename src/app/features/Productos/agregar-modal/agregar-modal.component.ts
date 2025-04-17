@@ -129,7 +129,7 @@ export class AgregarModalComponent {
     }));
     formData.append('image', this.selectedFile);
   
-    const url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/products/register';
+    const url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/products/register';
     Swal.fire({
       title: 'Registrando producto...',
       html: 'Por favor, espera mientras se completa el registro.',
@@ -141,7 +141,8 @@ export class AgregarModalComponent {
 
     this.http.post(url, formData, {
       observe: 'response',  
-      responseType: 'json'  
+      responseType: 'json',
+      withCredentials: true  
     }).subscribe({
       next: (response: any) => {
         console.log('Respuesta del servidor:', response); 

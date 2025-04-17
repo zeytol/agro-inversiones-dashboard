@@ -161,7 +161,7 @@ export class ProveedoresComponent implements OnInit {
     const newProveedor = {
       ...this.newProveedor,
       registration_date: new Date().toISOString(),
-      categorySuppliers: { id: this.newProveedor.categorySuppliers.id }
+      // categorySuppliers: { id: this.newProveedor.categorySuppliers.id }
     };
   
     this.suppliersService.addSupplier(newProveedor).subscribe(
@@ -390,12 +390,6 @@ export class ProveedoresComponent implements OnInit {
 
           // Mostrar el modal de error
           this.showModalEliminarError = true;
-
-          // Cerrar el modal de error después de 3 segundos y refrescar la página
-          setTimeout(() => {
-            this.showModalEliminarError = false; // Cerrar el modal de error
-            window.location.reload(); // Recargar la página
-          }, 3000); // 3000 ms = 3 segundos
         }
       );
     }
