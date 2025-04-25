@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProductsService } from '../../../services/products.service';
 import { CategoryProductsService } from '../../../services/category-products.service';
-
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-gestion-productos',
@@ -51,8 +51,6 @@ export class GestionProductosComponent implements OnInit {
   productosFiltrados: any[] = [];
   productosPorPagina = 16;
   paginaActual = 0;
-  
-
 
   // Método para filtrar productos al hacer clic en una categoría
   filtrarPorCategoria(categoria: string) {
@@ -143,8 +141,6 @@ export class GestionProductosComponent implements OnInit {
     };
   }
 
-
-
   agregarProducto(): void {
     // Lógica para agregar el nuevo producto
     console.log('Producto agregado:', this.newProduct);
@@ -167,9 +163,6 @@ export class GestionProductosComponent implements OnInit {
     // Resetea el formulario después de agregar el producto
     this.resetForm();
   }
-
-
-
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -196,7 +189,7 @@ export class GestionProductosComponent implements OnInit {
       next: (productos) => {
         this.productos = productos;
         this.productosFiltrados = productos;
-        this.productsService.setProductos(productos);
+    
       },
       error: (err) => {
         console.error('Error al cargar productos:', err);
@@ -210,10 +203,22 @@ export class GestionProductosComponent implements OnInit {
         }
       }
     });
+    //nuevo codigo para agregar nuevos productos
     this.productosFiltrados = this.productosFiltrados.sort((a, b) => {
   
       return a.id - b.id; 
     });
+    const carritoGuardado = localStorage.getItem('carrito');
+const totalGuardado = localStorage.getItem('totalCarrito');
+
+if (carritoGuardado) {
+  this.carrito = JSON.parse(carritoGuardado);
+}
+
+if (totalGuardado) {
+  this.totalCarrito = JSON.parse(totalGuardado);
+}
+
   }
   loadProducts(): void {
     this.productsService.getProductos().subscribe(
@@ -351,6 +356,11 @@ export class GestionProductosComponent implements OnInit {
     console.log('Precio máximo:', this.precioMaximo);
     console.log('Proveedores seleccionados:', this.proveedoresSeleccionados);
   }
+  guardarCarritoEnLocalStorage() {
+    localStorage.setItem('carrito', JSON.stringify(this.carrito));
+    localStorage.setItem('totalCarrito', JSON.stringify(this.totalCarrito));
+  }
+  
 
   // Método para agregar productos al carrito
   agregarACarrito(producto: any) {
@@ -363,7 +373,7 @@ export class GestionProductosComponent implements OnInit {
     }
 
     this.actualizarTotal(); // Actualiza el total después de agregar
-    console.log(`${producto.name} ha sido agregado al carrito.`);
+   this.guardarCarritoEnLocalStorage(); //23-04
   }
 
   // Método para incrementar la cantidad de un producto en el carrito
@@ -372,7 +382,9 @@ export class GestionProductosComponent implements OnInit {
 
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
-      this.actualizarTotal(); // Actualiza el total después de incrementar
+      this.actualizarTotal();// Actualiza el total después de incrementar
+      this.guardarCarritoEnLocalStorage(); // después de actualizar 23-04
+
       console.log(`Cantidad de ${item.name} incrementada a ${itemEnCarrito.cantidad}.`);
     }
   }
@@ -382,6 +394,8 @@ export class GestionProductosComponent implements OnInit {
     if (item.cantidad > 1) {
       item.cantidad--;
       this.actualizarTotal(); // Actualiza el total después de decrementar
+      this.guardarCarritoEnLocalStorage(); // después de actualizar 23-04
+
     }
   }
 
@@ -442,7 +456,6 @@ export class GestionProductosComponent implements OnInit {
   }
 }
 
-import { MatPaginatorIntl } from '@angular/material/paginator';
 export function getPaginatorIntl() {
   const paginatorIntl = new MatPaginatorIntl();
 

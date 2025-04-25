@@ -7,12 +7,14 @@ export class AuthService {
   private isAuthenticated = false;
 
   login() {
-    this.isAuthenticated = true; 
+    this.isAuthenticated = true;
+    localStorage.removeItem('carrito'); 
   }
 
   logout() {
     this.isAuthenticated = false;
     localStorage.removeItem('token'); 
+    localStorage.removeItem('carrito');
   }
 
   isLoggedIn(): boolean {

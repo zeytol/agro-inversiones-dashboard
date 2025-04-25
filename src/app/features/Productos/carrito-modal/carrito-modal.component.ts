@@ -16,6 +16,14 @@ export class CarritoModalComponent {
     private router: Router,
     private carritoService: CarritoService
   ) {}
+  ngOnInit() {
+    if (!this.carrito || this.carrito.length === 0) {
+      this.carrito = this.carritoService.getCarrito(); // Carga del localStorage si está vacío
+      this.actualizarTotal();
+
+    }
+  }
+  
   cerrarCarrito() {
     this.cerrarCarritoModal.emit(); // Emite el evento para cerrar el carrito
   }
@@ -25,11 +33,9 @@ export class CarritoModalComponent {
   }
 
   // Método para eliminar un producto del carrito
-  eliminarProducto(producto: any) {
-    // Elimina el producto utilizando el name del producto
-    this.carrito = this.carrito.filter(item => item.name !== producto.name);
-    this.actualizarTotal(); // Actualiza el total después de eliminar
-    console.log(`Producto con name "${producto.name}" eliminado`);
+  eliminarProducto(i: number) {
+    this.carritoService.eliminarProducto(i);       // Actualiza en localStorage
+    this.carrito = this.carritoService.getCarrito(); // Refresca en pantalla
   }
 
   // Método para actualizar el total
@@ -48,6 +54,7 @@ calcularTotal() {
     } else {
       this.carrito.push({ ...producto, cantidad: 1 }); // Si no está, lo agrega con cantidad 1
     }
+    this.carritoService.setCarrito(this.carrito);
 
     this.actualizarTotal(); // Actualiza el total después de agregar
     console.log(`${producto.name} ha sido agregado al carrito.`);
@@ -75,6 +82,7 @@ calcularTotal() {
   // Método para actualizar el total del carrito
   actualizarTotal() {
     this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * item.salePrice, 0);
+    this.carritoService.setCarrito(this.carrito);
   
     //this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.precio.replace('$', '')), 0);
   }

@@ -46,6 +46,10 @@ eliminarItem(item: any): void {
   this.carrito = this.carrito.filter(p => p.name !== item.name);
   this.carritoService.setCarrito(this.carrito); // actualizamos el servicio también
 }
+eliminarProducto(index: number): void {
+  this.carritoService.eliminarProducto(index); // elimina en localStorage
+  this.carrito = this.carritoService.getCarrito();
+}
 
 
 

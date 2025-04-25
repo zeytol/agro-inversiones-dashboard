@@ -21,41 +21,4 @@ export class EliminarCategoriaComponent {
     this.showDeleteModal = false;  // Cerrar el modal
   }
 
-  eliminarCategoria(): void {
-    // URL para la eliminación de categoría basada en su ID
-    const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/${this.categoriaSeleccionada.id}`;
-    Swal.fire({
-      title: 'Eliminando...',
-      text: 'Por favor, espera mientras se elimina la categoría.',
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      willOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
-    this.http.delete(url).subscribe({
-      next: (response) => {
-         Swal.fire({
-                    title: 'categoría Eliminado',
-                    text: 'El producto se ha eliminado correctamente.',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                  }).then(() => {
-                    window.location.reload();
-                  });
-        this.cerrarDeleteModal();  
-      },
-      error: (err) => {
-        Swal.fire({
-                    title: 'Error',
-                    text: 'No se pudo eliminar la categoría.',
-                    icon: 'error',
-                    confirmButtonText: 'Reintentar'
-                  });
-        console.error('Error al eliminar la categoría:', err);
-
-      }
-    });
-  }
 }

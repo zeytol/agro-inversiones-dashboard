@@ -37,7 +37,7 @@ export class SuppliersService {
 
   addSupplier(supplier: any): Observable<any> {
     const apiUrladd = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/suppliers/register';
-    return this.http.post<any>(apiUrladd, supplier).pipe(
+    return this.http.post<any>(apiUrladd, supplier, {withCredentials: true}).pipe(
       catchError((error) => {
         console.error('Error al agregar proveedor:', error);
         throw error; // Lanza el error para que el componente lo maneje
@@ -47,7 +47,7 @@ export class SuppliersService {
 
   editSupplier(id: number, supplier: any): Observable<any> {
     const apiUrlEdit = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/suppliers/edit/${id}`;
-    return this.http.put<any>(apiUrlEdit, supplier).pipe(
+    return this.http.put<any>(apiUrlEdit, supplier, {withCredentials: true}).pipe(
       catchError((error) => {
         console.error('Error al editar proveedor:', error);
         throw error; 
@@ -57,7 +57,7 @@ export class SuppliersService {
 
   deleteSupplier(id: number): Observable<any> {
     const apiUrlDelete = `https://agroinversiones-api-ffaxcadua6gwf0fs.canadacentral-01.azurewebsites.net/api/suppliers/delete/${id}`;
-    return this.http.delete<any>(apiUrlDelete).pipe(
+    return this.http.delete<any>(apiUrlDelete, {withCredentials: true}).pipe(
       catchError((error) => {
         console.error('Error al eliminar proveedor:', error);
         throw error; // Esto permite manejar el error en el componente

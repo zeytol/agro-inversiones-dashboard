@@ -73,7 +73,7 @@ export class EditarClienteComponent {
         },
       });
 
-      this.http.put(`https://apiclientesagro-hzh0fsa5gsffdxgv.brazilsouth-01.azurewebsites.net/api/clientes/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
+      this.http.put(`https://apiclientesagro-hzh0fsa5gsffdxgv.brazilsouth-01.azurewebsites.net/api/customers/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
         (response: string) => {
           Swal.fire({
             title: 'Cliente editado',

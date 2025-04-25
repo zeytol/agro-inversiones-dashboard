@@ -76,7 +76,7 @@ export class EditarCategoriaComponent {
     }
 
     // Enviar los datos con multipart/form-data
-    this.http.put(url, formData).subscribe({
+    this.http.put(url, formData, {withCredentials: true}).subscribe({
       next: (response) => {
         Swal.fire({
           title: 'Categoría editado',

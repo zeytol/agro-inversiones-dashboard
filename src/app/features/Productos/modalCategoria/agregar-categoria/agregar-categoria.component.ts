@@ -91,7 +91,7 @@ export class AgregarCategoriaComponent {
       }
     });
   
-    this.http.post(url, formData, { observe: 'response', responseType: 'text' }).subscribe({
+    this.http.post(url, formData, { observe: 'response', responseType: 'text', withCredentials: true }).subscribe({
       next: (response: any) => {
         if (response.status === 201) { 
           Swal.fire({

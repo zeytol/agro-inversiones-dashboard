@@ -100,7 +100,7 @@ export class FiltrarModalComponent implements OnInit {
     });
   
     // Configuración de respuesta como texto
-    this.http.delete(url, { responseType: 'text' }).subscribe({
+    this.http.delete(url, { responseType: 'text', withCredentials: true }).subscribe({
       next: (response) => {
         // Verificamos si la respuesta es adecuada (puede ser un mensaje o un código de estado)
         Swal.fire({

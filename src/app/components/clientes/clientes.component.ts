@@ -5,7 +5,7 @@ import { ConfirmDeleteModalComponent } from '../../features/clientes/confirm-del
 import { AgregarUsuarioComponent } from '../../features/clientes/agregar-usuario/agregar-usuario.component';
 import { EditarClienteComponent } from '../../features/clientes/editar-cliente/editar-cliente.component'; 
 import { ClienteDetalleComponent } from '../../features/clientes/cliente-detalle/cliente-detalle.component';
-import { Cliente } from '../../models/client.model';
+import { customers } from '../../models/client.model';
 import Swal from 'sweetalert2';
 
  
@@ -16,8 +16,8 @@ import Swal from 'sweetalert2';
 })
 export class ClientesComponent {
   isSidebarVisible = true;
-  clientes: Cliente[] = [];
-  clientesFiltrados: Cliente[] = [];
+  clientes: customers[] = [];
+  clientesFiltrados: customers[] = [];
   
   filtroNombre: string = '';
   filtroDocumento: string = '';
@@ -38,7 +38,7 @@ export class ClientesComponent {
 
    listarClientes(): void {
     this.clienteService.listarClientes().subscribe(
-      (clientes: Cliente[]) => {
+      (clientes: customers[]) => {
         this.clientes = clientes;
         this.clientesFiltrados = [...clientes];
       },
@@ -123,7 +123,7 @@ export class ClientesComponent {
     });
   }
 
-  openEditarClienteModal(cliente: Cliente): void {
+  openEditarClienteModal(cliente: customers): void {
     const dialogRef = this.dialog.open(EditarClienteComponent, {
       width: '400px',
       data: cliente
@@ -147,14 +147,14 @@ export class ClientesComponent {
     });
   }
 
-  openDetalleClienteModal(cliente: Cliente): void {
+  openDetalleClienteModal(cliente: customers): void {
     this.dialog.open(ClienteDetalleComponent, {
       width: '400px',
       data: cliente 
     });
   }
 
-  getClientesPorPagina(): Cliente[] {
+  getClientesPorPagina(): customers[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     return this.clientesFiltrados.slice(startIndex, endIndex);

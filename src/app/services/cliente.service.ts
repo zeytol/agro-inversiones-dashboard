@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Cliente } from '../models/client.model';
+import { customers } from '../models/client.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,24 +14,24 @@ export class ClienteService {
 
   constructor(private http: HttpClient) { }
 
-  listarClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.apiUrl, {withCredentials: true});
+  listarClientes(): Observable<customers[]> {
+    return this.http.get<customers[]>(this.apiUrl, {withCredentials: true});
   }
 
-  obtenerClientePorId(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.apiUrl}/${id}`);
+  obtenerClientePorId(id: number): Observable<customers> {
+    return this.http.get<customers>(`${this.apiUrl, {withCredentials: true}}/${id}`);
   }
 
-  guardarCliente(cliente: Cliente): Observable<any> {
-    return this.http.post<any>(this.apiUrl, cliente, { responseType: 'text' as 'json' });
+  guardarCliente(customers: customers): Observable<any> {
+    return this.http.post<any>(this.apiUrl, customers, { responseType: 'text' as 'json', withCredentials: true});
   }
 
-  actualizarCliente(id: number, cliente: Cliente): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${id}`, cliente, { responseType: 'text' as 'json' });
+  actualizarCliente(id: number, customers: customers): Observable<string> {
+    return this.http.put<string>(`${this.apiUrl, {withCredentials: true}}/${id}`, customers, { responseType: 'text' as 'json' });
   }
 
   eliminarCliente(id: number): Observable<string> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
+    return this.http.delete(`${this.apiUrl, {withCredentials: true}}/${id}`, { responseType: 'text' });
   }
   
 }
