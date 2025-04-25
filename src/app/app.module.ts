@@ -68,6 +68,7 @@ import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/a
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
 import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cliente-detalle.component';
+import { PermisosComponent } from './components/permisos/permisos.component';
 
 @NgModule({
   declarations: [
@@ -119,6 +120,7 @@ import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cli
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
     ClienteDetalleComponent,
+    PermisosComponent,
   ],
   imports: [
     BrowserModule,

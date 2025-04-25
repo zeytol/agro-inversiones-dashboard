@@ -1,85 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
-  isSidebarVisible = true;
-  users: any[] = [];
-  loading: boolean = false;
-  editingUser: any | null = null;
-  userToDelete: any | null = null;
-  isAddingUser: boolean = false;
-  userRolesPermissions: any | null = null;
+  usuarios: any[] = [];
+  error: string = '';
 
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+    this.obtenerUsuarios();
   }
 
-  toggleSidebar() {
-    this.isSidebarVisible = !this.isSidebarVisible;
-  }
-
-  loadUsers(): void {
-    this.loading = true;
-    this.userService.getUsers().subscribe({
+  obtenerUsuarios(): void {
+    this.userService.getUsuarios().subscribe({
       next: (data) => {
-        this.users = data;
-        this.loading = false;
+        this.usuarios = data;
       },
       error: (err) => {
-        console.error('Error loading users:', err);
-        this.loading = false;
-        alert('There was an error loading the users. Please try again later.');
+        this.error = err.message || 'Error desconocido';
+        console.error('Error al cargar usuarios:', err);
       }
     });
-  }
-  
-  openAddUserModal(): void {
-    this.isAddingUser = true;
-  }
-
-  handleUserAdded(newUser: any): void {
-    this.users.push(newUser);
-    this.isAddingUser = false;
-  }
-
-  handleEditUser(user: any): void {
-    this.editingUser = { ...user };
-  }
-
-  handleUserUpdated(updatedUser: any): void {
-    const index = this.users.findIndex(user => user.id === updatedUser.id);
-    if (index !== -1) {
-      this.users[index] = updatedUser;
-    }
-    this.editingUser = null;
-  }
-
-  handleDeleteUser(user: any): void {
-    this.userToDelete = user;
-  }
-
-  handleUserDeleted(deletedUser: any): void {
-    this.users = this.users.filter(user => user.id !== deletedUser.id);
-    this.userToDelete = null;
-  }
-
-  // Roles and Permissions handlers
-  // Método para ver roles y permisos
-  viewRolesPermissions(user: any): void {
-    this.userRolesPermissions = {
-      username: user.username,
-      roles: user.roles || [],
-      permissions: user.permissions || []
-    };
-  }
-  // Método para cerrar el modal
-  closeRolesModal(): void {
-    this.userRolesPermissions = null;
   }
 }
