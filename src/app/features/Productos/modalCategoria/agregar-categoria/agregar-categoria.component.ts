@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CategoryEditService } from '../../../../services/category-edit.service';
 import Swal from 'sweetalert2';
 
 export interface Categoria {
@@ -29,7 +30,7 @@ export class AgregarCategoriaComponent {
   imagePreview: string | ArrayBuffer | null = null;
   imageError: string | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private categoryEditService: CategoryEditService) { }
 
   // Método para seleccionar archivo
   onFileSelected(event: any): void {
@@ -80,7 +81,7 @@ export class AgregarCategoriaComponent {
       formData.append('image', this.selectedFile);
     }
   
-    const url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/register';
+    //onst url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/register';
   
     Swal.fire({
       title: 'Registrando categoría...',
@@ -91,7 +92,8 @@ export class AgregarCategoriaComponent {
       }
     });
   
-    this.http.post(url, formData, { observe: 'response', responseType: 'text', withCredentials: true }).subscribe({
+    //this.http.post(url, formData, { observe: 'response', responseType: 'text', withCredentials: true }).subscribe({
+      this.categoryEditService.agregarCategoria(formData).subscribe({
       next: (response: any) => {
         if (response.status === 201) { 
           Swal.fire({
