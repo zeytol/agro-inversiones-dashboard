@@ -91,10 +91,6 @@ calcularTotal() {
   subtotal(): number {
     return this.carrito.reduce((acc, item) => acc + item.cantidad * item.salePrice, 0);
 
-    /*return this.carrito.reduce((acc, item) => {
-      const precioSinSimbolo = parseFloat(item.precio.replace('$', '')); // Elimina el símbolo de moneda
-      return acc + (precioSinSimbolo * item.cantidad);
-    }, 0);*/
   }
 
 

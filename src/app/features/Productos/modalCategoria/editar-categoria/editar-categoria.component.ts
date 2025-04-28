@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CategoryEditService } from '../../../../services/category-edit.service';
 import Swal from 'sweetalert2';
 
 export interface Categoria {
@@ -22,7 +23,9 @@ export class EditarCategoriaComponent {
   selectedFile: any = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private categoryEditService: CategoryEditService
+  ) { }
 
   ngOnInit(): void {
     // Verifica si la categoría tiene imagen y se muestra una imagen predeterminada si no tiene imagen
@@ -53,14 +56,22 @@ export class EditarCategoriaComponent {
   }
 
   editarCategoria(): void {
-    const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/edit/${this.categoriaSeleccionada.id}`;
+   // const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/edit/${this.categoriaSeleccionada.id}`;
 
-    const formData = new FormData();
-    formData.append('CatProduct', new Blob([JSON.stringify({
+    //const formData = new FormData();
+    //formData.append('CatProduct', new Blob([JSON.stringify({
+    const datosCategoria = {
       name: this.categoriaSeleccionada.name,
       description: this.categoriaSeleccionada.description,
       image: '' // Se puede incluir la imagen si se sube
-    })], { type: 'application/json' }));
+    //})], { type: 'application/json' }));
+  };
+  const formData = new FormData();
+  formData.append('CatProduct', new Blob([JSON.stringify(datosCategoria)], { type: 'application/json' }));
+
+  if (this.selectedFile) {
+    formData.append('image', this.selectedFile);  // Se agrega la imagen si se ha seleccionado
+  }
 
     Swal.fire({
       title: 'Editando categoría...',
@@ -76,7 +87,11 @@ export class EditarCategoriaComponent {
     }
 
     // Enviar los datos con multipart/form-data
-    this.http.put(url, formData, {withCredentials: true}).subscribe({
+    //this.http.put(url, formData, {withCredentials: true}).subscribe({
+      this.categoryEditService.editarCategoria(
+        this.categoriaSeleccionada.id,
+        formData
+      ).subscribe({
       next: (response) => {
         Swal.fire({
           title: 'Categoría editado',
