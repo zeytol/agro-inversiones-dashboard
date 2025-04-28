@@ -203,10 +203,22 @@ export class GestionProductosComponent implements OnInit {
         }
       }
     });
+    //nuevo codigo para agregar nuevos productos
     this.productosFiltrados = this.productosFiltrados.sort((a, b) => {
   
       return a.id - b.id; 
     });
+    const carritoGuardado = localStorage.getItem('carrito');
+const totalGuardado = localStorage.getItem('totalCarrito');
+
+if (carritoGuardado) {
+  this.carrito = JSON.parse(carritoGuardado);
+}
+
+if (totalGuardado) {
+  this.totalCarrito = JSON.parse(totalGuardado);
+}
+
   }
   loadProducts(): void {
     this.productsService.getProductos().subscribe(
@@ -344,6 +356,11 @@ export class GestionProductosComponent implements OnInit {
     console.log('Precio máximo:', this.precioMaximo);
     console.log('Proveedores seleccionados:', this.proveedoresSeleccionados);
   }
+  guardarCarritoEnLocalStorage() {
+    localStorage.setItem('carrito', JSON.stringify(this.carrito));
+    localStorage.setItem('totalCarrito', JSON.stringify(this.totalCarrito));
+  }
+  
 
   // Método para agregar productos al carrito
   agregarACarrito(producto: any) {
@@ -356,17 +373,19 @@ export class GestionProductosComponent implements OnInit {
     }
 
     this.actualizarTotal(); // Actualiza el total después de agregar
-    console.log(`${producto.name} ha sido agregado al carrito.`);
+   this.guardarCarritoEnLocalStorage(); //23-04
   }
 
   // Método para incrementar la cantidad de un producto en el carrito
   incrementarCantidad(item: any) {
-    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.nombre === item.nombre);
+    const itemEnCarrito = this.carrito.find(carritoItem => carritoItem.name === item.name);
 
     if (itemEnCarrito) {
       itemEnCarrito.cantidad++; // Incrementa la cantidad del producto
-      this.actualizarTotal(); // Actualiza el total después de incrementar
-      console.log(`Cantidad de ${item.nombre} incrementada a ${itemEnCarrito.cantidad}.`);
+      this.actualizarTotal();// Actualiza el total después de incrementar
+      this.guardarCarritoEnLocalStorage(); // después de actualizar 23-04
+
+      console.log(`Cantidad de ${item.name} incrementada a ${itemEnCarrito.cantidad}.`);
     }
   }
 
@@ -375,12 +394,18 @@ export class GestionProductosComponent implements OnInit {
     if (item.cantidad > 1) {
       item.cantidad--;
       this.actualizarTotal(); // Actualiza el total después de decrementar
+      this.guardarCarritoEnLocalStorage(); // después de actualizar 23-04
+
     }
   }
 
   // Método para actualizar el total del carrito
   actualizarTotal() {
-    this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.purchasePrice.replace('$', '')), 0);
+    this.totalCarrito = this.carrito.reduce((acc, item) => {
+      const precio = parseFloat(String(item.purchasePrice).replace('$', '')) || 0;
+      return acc + (item.cantidad * precio);
+    }, 0);
+    //this.totalCarrito = this.carrito.reduce((acc, item) => acc + item.cantidad * parseFloat(item.purchasePrice.replace('$', '')), 0);
   }
 
   // Método para calcular el subtotal del carrito

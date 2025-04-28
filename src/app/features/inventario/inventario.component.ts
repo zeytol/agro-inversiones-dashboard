@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { InventarioService } from '../../services/inventario.service';
 
 const apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/products';
 
@@ -53,7 +54,7 @@ export class InventarioComponent implements OnInit {
 
   
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private inventarioService: InventarioService) {}
 
   ngOnInit(): void {
     this.loadDisplayedProducts();
