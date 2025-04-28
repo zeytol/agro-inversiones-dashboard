@@ -8,7 +8,8 @@ import { catchError } from 'rxjs/operators';
 })
 export class UserService {
 
-  private baseUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/users';
+  private baseUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/users/all';
+  private base1Url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/roles';
 
   constructor(private http: HttpClient) { }
 
@@ -21,6 +22,19 @@ export class UserService {
           return throwError(() => new Error('No se pudieron obtener los usuarios.'));
         }
         return throwError(() => error);
+      })
+    );
+  }
+
+  // Listar todos los roles
+  getRoles(): Observable<any> {
+    return this.http.get(this.base1Url, { withCredentials: true }).pipe(
+      catchError((error) => {
+        if (error.status !== 200) {
+        console.error('Error al obtener roles:', error);
+        return throwError(() => new Error('No se pudieron obtener los roles.'));
+      }
+      return throwError(() => error);
       })
     );
   }

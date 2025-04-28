@@ -1,33 +1,70 @@
-<div class="container mt-4">
-  <h2>Lista de Usuarios</h2>
+<div class="dashboard-layout flex flex-col h-screen">
+  <!-- Header -->
+  <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
-  <!-- Mostrar error si ocurre -->
-  <div *ngIf="error" class="alert alert-danger">
-    {{ error }}
-  </div>
+  <!-- Contenedor principal -->
+  <div class="main-container flex flex-grow">
+    <!-- Sidebar -->
+    <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
 
-  <!-- Mostrar tabla de usuarios -->
-  <table class="table table-striped" *ngIf="usuarios.length > 0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Email</th>
-        <!-- agrega más columnas según los campos que tenga tu API -->
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let usuario of usuarios">
-        <td>{{ usuario.id }}</td>
-        <td>{{ usuario.nombre }}</td>
-        <td>{{ usuario.email }}</td>
-        <!-- ajusta según los campos reales -->
-      </tr>
-    </tbody>
-  </table>
+    <!-- Contenido -->
+    <div class="container mx-auto p-4 flex-1">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-semibold text-gray-800">Roles del Sistema</h2>
+        <button (click)="goToPermissions()"
+          class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+          🔒 Ver Roles
+        </button>
+      </div>
 
-  <!-- Mensaje si no hay usuarios -->
-  <div *ngIf="!error && usuarios.length === 0">
-    No hay usuarios disponibles.
+      <!-- Lista de Usuarios -->
+      <div>
+        <h3 class="text-xl font-medium text-gray-700 mb-4">Lista de Usuarios</h3>
+
+        <!-- Error -->
+        <div *ngIf="error" class="bg-red-100 text-red-700 p-3 rounded mb-4">
+          {{ error }}
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden" *ngIf="usuarios.length > 0">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="text-left px-6 py-3">Usuario</th>
+                <th class="text-left px-6 py-3">Email</th>
+                <th class="text-left px-6 py-3">Teléfono</th>
+                <th class="text-left px-6 py-3">Fecha de creación</th>
+                <th class="text-left px-6 py-3">Activo</th>
+                <th class="text-left px-6 py-3">Rol</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuarios" class="border-t hover:bg-gray-50">
+                <td class="px-6 py-3">{{ usuario.username }}</td>
+                <td class="px-6 py-3">{{ usuario.email }}</td>
+                <td class="px-6 py-3">{{ usuario.telefono || 'No registrado' }}</td>
+                <td class="px-6 py-3">
+                  {{ usuario.created_at | date: 'dd/MM/yyyy' }}
+                </td>
+                <td class="px-6 py-3">
+                  <span [ngClass]="usuario.enabled ? 'text-green-600' : 'text-red-600'">
+                    {{ usuario.enabled ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+                <td class="px-6 py-3">
+                  {{ usuario.rol }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Sin usuarios -->
+        <div *ngIf="!error && usuarios.length === 0" class="text-gray-500 mt-4">
+          No hay usuarios disponibles.
+        </div>
+      </div>
+    </div>
   </div>
 </div>
