@@ -1,53 +1,41 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private jsonUrl = 'assets/dataUsers.json';
-  private users: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  private baseUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/users/all';
+  private base1Url = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/roles';
 
-  getUsers(): Observable<any[]> {
-    if (this.users.length === 0) {
-      return this.http.get<any[]>(this.jsonUrl).pipe(
-        map((data) => {
-          this.users = data; 
-          return this.users;
-        })
-      );
-    } else {
-      return of(this.users);
-    }
+  constructor(private http: HttpClient) { }
+
+  // Listar todos los usuarios
+  getUsuarios(): Observable<any> {
+    return this.http.get(this.baseUrl, { withCredentials: true }).pipe(
+      catchError((error) => {
+        if (error.status !== 200) {
+          console.error('Error al obtener usuarios:', error);
+          return throwError(() => new Error('No se pudieron obtener los usuarios.'));
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
-  addUser(newUser: any): Observable<any> {
-    newUser.id = this.generateId(); 
-    this.users.push(newUser);
-    return of(newUser);
-  }
-
-  updateUser(editingUser: any): Observable<any> {
-    const index = this.users.findIndex((user) => user.id === editingUser.id);
-    if (index > -1) {
-      this.users[index] = editingUser;
-      return of(editingUser);
-    }
-    throw new Error('Usuario no encontrado');
-  }
-
-  deleteUser(id: number): Observable<any> {
-    this.users = this.users.filter((user) => user.id !== id);
-    return of({ message: 'Usuario eliminado con éxito' });
-  }
-
-  private generateId(): number {
-    return this.users.length > 0
-      ? Math.max(...this.users.map((user) => user.id)) + 1
-      : 1;
+  // Listar todos los roles
+  getRoles(): Observable<any> {
+    return this.http.get(this.base1Url, { withCredentials: true }).pipe(
+      catchError((error) => {
+        if (error.status !== 200) {
+        console.error('Error al obtener roles:', error);
+        return throwError(() => new Error('No se pudieron obtener los roles.'));
+      }
+      return throwError(() => error);
+      })
+    );
   }
 }

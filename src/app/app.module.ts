@@ -55,9 +55,6 @@ import { RoleDeleteComponent } from './components/roles/role-delete/role-delete.
 import { VentasComponent } from './features/ventas/ventas/ventas.component';
 import { UsersComponent } from '../app/components/User/users/users.component';
 import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
-import { EditUserComponent } from '../app/components/User/edit-user/edit-user.component';
-import { AddUserComponent } from '../app/components/User/add-user/add-user.component';
-import { DeleteUserComponent } from '../app/components/User/delete-user/delete-user.component';
 import { RegisterComponent } from './core/register/register.component';
 import { ReportesComponent } from './features/reportes/reportes.component';
 import { AgregarReporteComponent } from './features/reportes/agregar-reporte/agregar-reporte.component';
@@ -68,6 +65,7 @@ import { AgregarCategoriaComponent } from './features/Productos/modalCategoria/a
 import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/eliminar-categoria/eliminar-categoria.component';
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
 import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cliente-detalle.component';
+import { PermisosComponent } from './components/permisos/permisos.component';
 
 @NgModule({
   declarations: [
@@ -106,9 +104,6 @@ import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cli
     EliminarDocComponent,
     UsersComponent,
     RoleModalComponent,
-    EditUserComponent,
-    AddUserComponent,
-    DeleteUserComponent,
     RegisterComponent,
     ReportesComponent,
     AgregarReporteComponent,
@@ -119,6 +114,7 @@ import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cli
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
     ClienteDetalleComponent,
+    PermisosComponent,
   ],
   imports: [
     BrowserModule,
