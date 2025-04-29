@@ -2,6 +2,7 @@ import { Component, ViewChild, TemplateRef, Inject, Output, EventEmitter } from 
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2'; 
+import { ClienteService } from '../../../services/cliente.service';
 
 @Component({
   selector: 'app-editar-cliente',
@@ -27,7 +28,9 @@ export class EditarClienteComponent {
     public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private parentDialogRef: MatDialogRef<any>,
-    private http: HttpClient
+    private http: HttpClient,
+    private clienteService: ClienteService
+
   ) {
     this.name = data.name;
     this.tipoCliente = data.typeCustomer;
@@ -55,14 +58,15 @@ export class EditarClienteComponent {
     ) {
       const updatedCliente = {
         id: this.data.id,
-        razonSocial: this.name,
-        tipoCliente: this.tipoCliente,
-        tipoDocumento: this.tipoDocumento,
-        numeroDocumento: this.numeroDocumento,
-        direccion: this.direccion,
-        telefono: this.telefono,
-        correo: this.correo,
+        name: this.name,
+        typeCustomer: this.tipoCliente,
+        documentType: this.tipoDocumento,
+        documentNumber: this.numeroDocumento,
+        address: this.direccion,
+        phone: this.telefono,
+        email: this.correo,
       };
+      
 
       Swal.fire({
         title: 'Editando cliente...',
@@ -73,7 +77,7 @@ export class EditarClienteComponent {
         },
       });
 
-      this.http.put(`https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers/${updatedCliente.id}`, updatedCliente, { responseType: 'text' }).subscribe(
+      this.http.put(`https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers/${updatedCliente.id}`, updatedCliente, { responseType: 'text', withCredentials: true }).subscribe(
         (response: string) => {
           Swal.fire({
             title: 'Cliente editado',

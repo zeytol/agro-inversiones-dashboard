@@ -59,7 +59,8 @@ export class AgregarUsuarioComponent {
 
     try {
       const response = await this.clienteService.guardarCliente(cliente).toPromise();
-      
+      console.log('Respuesta del servidor:', response);  // Agrega esta línea
+
       Swal.fire({
         title: 'Cliente registrado',
         text: 'El cliente se ha registrado con éxito.',
@@ -77,6 +78,7 @@ export class AgregarUsuarioComponent {
         confirmButtonText: 'Aceptar'
       });
       console.error('Error al agregar cliente:', error);
+
     }
   }
 
@@ -92,21 +94,27 @@ export class AgregarUsuarioComponent {
     );
   }
 
-  // Método para crear objeto cliente
-  private createCliente(): customers {
-    return {
-      id: 0,
-      name: this.razonSocial,
-      typeCustomer: this.tipoCliente,
-      documentType: this.tipoDocumento,
-      documentNumber: this.numeroDocumento,
-      address: this.direccion,
-      phone: this.telefono,
-      email: this.correo
-    };
-  }
-
-  // Método modal de éxito
+private createCliente(): any {
+  return {
+    name: this.razonSocial,
+    typeCustomer: this.mapTipoCliente(this.tipoCliente),
+    documentType: this.tipoDocumento,
+    documentNumber: this.numeroDocumento,
+    address: this.direccion,
+    phone: this.telefono,
+    email: this.correo
+  };
+}
+private mapTipoCliente(tipo: string): string {
+  switch (tipo) {
+    case 'Persona Natural':
+      return 'INDIVIDUAL';
+    case 'Empresa':
+      return 'EMPRESA';
+    default:
+      return tipo; 
+  } 
+ }
   private showSuccessModal(response: any): void {
     console.log(response); 
     this.dialogRef = this.dialog.open(this.successModal, {
@@ -119,7 +127,6 @@ export class AgregarUsuarioComponent {
     });
   }
 
-  // Método modal de error
   private showErrorModal(): void {
     this.dialogRef = this.dialog.open(this.errorModal, {
       width: '400px',
@@ -139,7 +146,6 @@ export class AgregarUsuarioComponent {
     this.dialogRef.close();
   }
 
-  // Validación de campo numero documento
 
   onKeyPress(event: KeyboardEvent): void {
     if (this.tipoDocumento === 'RUC' || this.tipoDocumento === 'DNI' || this.tipoDocumento === 'Carné de Extranjería') {
