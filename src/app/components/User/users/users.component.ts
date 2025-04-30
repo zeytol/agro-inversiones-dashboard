@@ -22,6 +22,8 @@ export class UsersComponent implements OnInit {
     this.obtenerUsuarios();
   }
 
+  p: number = 1;
+
   // Navegar a la página de usuarios
   goToPermissions() {
     this.router.navigate(['/roles']);

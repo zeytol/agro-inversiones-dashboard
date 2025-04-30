@@ -52,7 +52,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let usuario of usuarios" class="border-t hover:bg-gray-50">
+              <tr *ngFor="let usuario of usuarios | paginate: { itemsPerPage: 10, currentPage: p }" class="border-t hover:bg-gray-50">
                 <td class="px-4 py-2">{{ usuario.username }}</td>
                 <td class="px-4 py-2">{{ usuario.email }}</td>
                 <td class="px-4 py-2">{{ usuario.telefono || 'No registrado' }}</td>
@@ -76,6 +76,17 @@
               </tr>
             </tbody>
           </table>
+
+          <!-- Paginación -->
+        <div class="flex justify-center mt-4">
+          <pagination-controls 
+            (pageChange)="p = $event" 
+            previousLabel="← Anterior" 
+            nextLabel="Siguiente →" 
+            class="pagination-controls"
+            [responsive]="true">
+          </pagination-controls>
+        </div>
         </div>
 
         <!-- Sin usuarios -->
