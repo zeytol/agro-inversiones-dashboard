@@ -1,0 +1,193 @@
+/* Centrado total en la pantalla */
+.edit-user-form {
+    width: 100%;
+    max-width: 500px; /* Limitar el tamaño máximo */
+    margin: 50px auto; /* Centrado automático */
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards; /* Animación de aparición */
+  }
+  
+  /* Animación de FadeIn */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* Estilo del título */
+  .edit-user-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    animation: slideIn 0.7s ease-out forwards;
+  }
+  
+  /* Animación del título */
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Estilo de los campos de entrada */
+  .input-field {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  .input-field:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+  }
+  
+  /* Etiquetas de los campos */
+  label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+    display: block;
+    transition: color 0.3s ease;
+  }
+  
+  /* Animación de los campos */
+  .form-group {
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease-in-out forwards;
+    animation-delay: 0.3s;
+  }
+  
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Estilo de los botones */
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Esto permite que los botones se acomoden en pantallas pequeñas */
+  }
+  
+  /* Estilo general de botones */
+  .btn-submit, .btn-cancel {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    width: 48%;
+    box-sizing: border-box;
+  }
+  
+  /* Botón de guardar */
+  .btn-submit {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .btn-submit:hover {
+    background-color: #45a049;
+    transform: scale(1.05); /* Efecto de agrandado */
+  }
+  
+  /* Botón de cancelar */
+  .btn-cancel {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .btn-cancel:hover {
+    background-color: #e53935;
+    transform: scale(1.05); /* Efecto de agrandado */
+  }
+  
+  /* Efecto de animación para los botones */
+  @keyframes buttonFade {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Botones con animación */
+  .form-buttons button {
+    animation: buttonFade 0.6s ease-out forwards;
+    animation-delay: 0.5s;
+  }
+  
+  /* Media Query para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .edit-user-form {
+      padding: 15px; /* Reducir el padding para pantallas pequeñas */
+      margin: 20px auto; /* Reducir el margen superior */
+    }
+  
+    .edit-user-title {
+      font-size: 20px; /* Reducir el tamaño del título en pantallas pequeñas */
+    }
+  
+    /* Los botones deben apilarse verticalmente */
+    .form-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    /* Ajustar el tamaño de los botones */
+    .btn-submit, .btn-cancel {
+      width: 100%;
+      padding: 15px;
+    }
+  }
+  
+  /* Media Query para pantallas muy pequeñas (móviles) */
+  @media (max-width: 480px) {
+    .input-field {
+      font-size: 12px; /* Reducir el tamaño de la fuente en los campos */
+    }
+  
+    .btn-submit, .btn-cancel {
+      font-size: 14px; /* Reducir el tamaño de la fuente en los botones */
+    }
+  
+    .edit-user-form {
+      margin: 10px; /* Reducir el margen para dispositivos más pequeños */
+    }
+  }
+  

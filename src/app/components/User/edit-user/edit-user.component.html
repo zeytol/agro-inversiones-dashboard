@@ -1,86 +1,28 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-    <div class="relative w-full max-w-md mx-auto my-6">
-      <div class="relative flex flex-col w-full bg-white border-0 rounded-xl shadow-2xl outline-none focus:outline-none">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between p-5 border-b border-solid rounded-t border-blueGray-200 bg-blue-50">
-          <h3 class="text-2xl font-semibold text-blue-800">Edit User</h3>
-          <button 
-            (click)="cancelEdit()" 
-            class="float-right p-1 ml-auto text-3xl font-semibold leading-none text-red-500 bg-transparent border-0 outline-none opacity-60 hover:opacity-100 focus:outline-none"
-          >
-            ×
-          </button>
-        </div>
-        
-        <!-- Modal Body -->
-        <form (ngSubmit)="updateUser()" class="relative flex-auto p-6">
-          <div class="mb-4">
-            <label for="username" class="block mb-2 text-sm font-medium text-gray-700">Username</label>
-            <input 
-              id="username" 
-              [(ngModel)]="user.username" 
-              name="username" 
-              type="text" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
-            <input 
-              id="email" 
-              [(ngModel)]="user.email" 
-              name="email" 
-              type="email" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="phone" class="block mb-2 text-sm font-medium text-gray-700">Phone</label>
-            <input 
-              id="phone" 
-              [(ngModel)]="user.phone" 
-              name="phone" 
-              type="text" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-  
-          <div class="mb-4">
-            <label for="status" class="block mb-2 text-sm font-medium text-gray-700">Status</label>
-            <select 
-              id="status" 
-              [(ngModel)]="user.status" 
-              name="status" 
-              class="w-full px-3 py-2 transition-all duration-300 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-  
-          <!-- Modal Footer -->
-          <div class="flex items-center justify-end pt-4 border-t border-solid rounded-b border-blueGray-200">
-            <button 
-              type="button" 
-              (click)="cancelEdit()" 
-              class="px-6 py-2 mb-1 mr-4 text-sm font-bold text-red-500 uppercase transition-all duration-150 ease-linear bg-transparent rounded outline-none hover:bg-red-100 focus:outline-none"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              class="px-6 py-2 mb-1 text-sm font-bold text-white uppercase transition-all duration-150 ease-linear bg-green-600 rounded shadow outline-none hover:bg-green-700 hover:shadow-lg focus:outline-none"
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+<h2 class="edit-user-title">Editar Usuario</h2>
+
+<form [formGroup]="editUserForm" (ngSubmit)="editarUsuario()" class="edit-user-form">
+  <div class="form-group">
+    <label for="username">Nombre de usuario:</label>
+    <input id="username" formControlName="username" class="input-field" />
   </div>
+
+  <div class="form-group">
+    <label for="email">Email:</label>
+    <input id="email" formControlName="email" class="input-field" />
+  </div>
+
+  <div class="form-group">
+    <label for="telefono">Teléfono:</label>
+    <input id="telefono" formControlName="telefono" class="input-field" />
+  </div>
+
+  <div class="form-group">
+    <label for="rol">Rol:</label>
+    <input id="rol" formControlName="rol" class="input-field" />
+  </div>
+
+  <div class="form-buttons">
+    <button type="submit" [disabled]="editUserForm.invalid" class="btn-submit">Guardar</button>
+    <button type="button" (click)="cancelar()" class="btn-cancel">Cancelar</button>
+  </div>
+</form>
