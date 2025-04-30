@@ -66,6 +66,8 @@ import { EliminarCategoriaComponent } from './features/Productos/modalCategoria/
 import { EditarCategoriaComponent } from './features/Productos/modalCategoria/editar-categoria/editar-categoria.component';
 import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cliente-detalle.component';
 import { PermisosComponent } from './components/permisos/permisos.component';
+import { AddUserComponent } from './components/User/add-user/add-user.component';
+import { EditUserComponent } from './components/User/edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +86,7 @@ import { PermisosComponent } from './components/permisos/permisos.component';
     GestionProductosComponent,
     AgregarModalComponent,
     EditarModalComponent,
+    EditUserComponent,
     FiltrarModalComponent,
     CarritoModalComponent,
     DetallesModalComponent,
@@ -111,6 +114,7 @@ import { PermisosComponent } from './components/permisos/permisos.component';
     TipoReporteComponent,
     ExportarReporteComponent,
     AgregarCategoriaComponent,
+    AddUserComponent,
     EliminarCategoriaComponent,
     EditarCategoriaComponent,
     ClienteDetalleComponent,
