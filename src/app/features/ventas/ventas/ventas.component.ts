@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
+import { CarritoService } from '../../../services/carrito.service';
 
 @Component({
   selector: 'app-ventas',
@@ -20,6 +21,37 @@ export class VentasComponent {
   correo: string = '';
   frecuencia: string = '';
   selectedImage: File | null = null;
+  carrito: any[] = [];
+
+  constructor(private carritoService: CarritoService) {}
+  
+
+ngOnInit(): void {
+  this.carrito = this.carritoService.getCarrito();
+}
+
+subtotal(): number {
+  return this.carritoService.calcularSubtotal();
+}
+
+igv(): number {
+  return this.carritoService.calcularIGV();
+}
+
+total(): number {
+  return this.carritoService.calcularTotal();
+}
+
+eliminarItem(item: any): void {
+  this.carrito = this.carrito.filter(p => p.name !== item.name);
+  this.carritoService.setCarrito(this.carrito); // actualizamos el servicio también
+}
+eliminarProducto(index: number): void {
+  this.carritoService.eliminarProducto(index); // elimina en localStorage
+  this.carrito = this.carritoService.getCarrito();
+}
+
+
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;

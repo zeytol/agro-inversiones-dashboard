@@ -82,7 +82,7 @@
 
 </div>
 
-     <!-- Campo de Búsqueda de Producto -->
+     <!-- Campo de Búsqueda de Producto 
         <div class="flex items-end space-x-2">
           <div class="flex-grow">
             <label for="product-code" class="block text-sm font-medium text-gray-700">Producto</label>
@@ -101,16 +101,16 @@
             </svg>
             Buscar Producto
           </button>
-        </div>
+        </div>-->
       </div>
 
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-        <!-- Datos del Cliente -->
+      <!--<div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+         Datos del Cliente 
         <div class="bg-white p-6 rounded-lg">
             <h2 class="text-xl font-bold text-center mb-6">Datos del Cliente</h2>
             <div class="grid grid-cols-2 gap-6">
-                <!-- Column for inputs -->
+                Column for inputs 
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600">DNI:</label>
@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 
-                <!-- Column for image -->
+                Column for image 
                 <div class="flex flex-col items-center justify-center">
                     <div class="w-32 h-32 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -147,11 +147,11 @@
 
 
         
-        <!-- Datos del Producto -->
+         Datos del Producto 
         <div class="bg-white p-6 rounded-lg ">
             <h2 class="text-xl font-bold text-center mb-6">Datos del Producto</h2>
             <div class="grid grid-cols-2 gap-6">
-                <!-- Column for inputs -->
+                Column for inputs 
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-600">Código:</label>
@@ -175,7 +175,7 @@
                     </div>
                 </div>
 
-                <!-- Column for image -->
+               Column for image
                 <div class="flex flex-col items-center justify-center">
                     <div class="w-32 h-32 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,7 +185,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     
 <!-- Sección de Detalles de Factura Mejorada -->
@@ -258,25 +258,16 @@
                 </th>
               </tr>
             </thead>
+
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  A0001
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  Papel Amarillo
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  25
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  S/. 12.99
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  S/. 324.75
-                </td>
+              <tr  *ngFor="let item of carrito; let i = index">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"> {{ item.codeProduct }} </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{{ item.cantidad }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"> S/. {{ item.salePrice.toFixed(2) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"> S/. {{ (item.cantidad * item.salePrice).toFixed(2) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button class="text-red-600 hover:text-red-900">
+                  <button class="text-red-600 hover:text-red-900" (click)="eliminarProducto(i)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -286,30 +277,18 @@
             </tbody>
             <tfoot class="bg-gray-50">
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  Subtotal:
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  S/. 324.75
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900"> Subtotal: </td>
+                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900"> S/. {{ subtotal().toFixed(2) }}</td>
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  IGV (18%):
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">
-                  S/. 58.46
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900"> IGV (18%): </td>
+                <td class="px-6 py-3 text-right text-sm font-medium text-gray-900">S/. {{ igv().toFixed(2) }}</td>
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-bold text-gray-900">
-                  Total a Pagar:
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900">
-                  S/. 383.21
-                </td>
+                <td colspan="4" class="px-6 py-3 text-right text-sm font-bold text-gray-900">Total a Pagar:</td>
+                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900"> S/. {{ total().toFixed(2) }}</td>
                 <td></td>
               </tr>
             </tfoot>
