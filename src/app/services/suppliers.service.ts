@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class SuppliersService {
   private suppliers: any[] = []; 
-  private apiUrl = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/suppliers';
+  private apiUrl = 'http://localhost:8091/api/suppliers';
 
   constructor(private http: HttpClient) {}
 

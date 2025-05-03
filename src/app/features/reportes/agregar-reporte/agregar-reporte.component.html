@@ -35,8 +35,9 @@
           <div>
             <label class="block font-medium mb-1">Estado del Reporte</label>
             <select [(ngModel)]="report.status" name="status" class="block w-full border rounded-md p-2">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="" disabled selected hidden>Selecciona un estado</option>  <!-- Actúa como un placeholder -->
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
           <div>
@@ -55,6 +56,20 @@
             <label class="block font-medium mb-1">Descripción</label>
             <textarea [(ngModel)]="report.description" name="description" rows="3" class="block w-full border rounded-md p-2"></textarea>
           </div>
+          <div *ngIf="selectedReportType === 'Ventas'" class="col-span-2 grid grid-cols-3 gap-4 mt-4">
+            <div>
+              <label class="block font-medium mb-1">Subtotal</label>
+              <input type="number" [(ngModel)]="report.subTotal" name="subTotal" class="block w-full border rounded-md p-2" readonly>
+            </div>
+            <div>
+              <label class="block font-medium mb-1">IGV</label>
+              <input type="number" [(ngModel)]="report.igv" name="igv" class="block w-full border rounded-md p-2" readonly>
+            </div>
+            <div>
+              <label class="block font-medium mb-1">Total</label>
+              <input type="number" [(ngModel)]="report.total" name="total" class="block w-full border rounded-md p-2" readonly>
+            </div>
+          </div>
         </div>
         <div class="flex justify-end mt-4">
           <button type="button" (click)="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md">Cancelar</button>
@@ -66,7 +81,8 @@
     <!-- Modal Secundario: Tipo de Reporte -->
     <app-tipo-reporte
         *ngIf="isTipoReporteModalOpen"
-        [tableData]="tableData" 
+        [tableData]="tableData"
+        [selectedReportType]="selectedReportType"
         (onClose)="closeTipoReporteModal()"
         (onSelect)="handleReportTypeSelection($event)">
     </app-tipo-reporte>
