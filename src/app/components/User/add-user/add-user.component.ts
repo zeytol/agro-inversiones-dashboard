@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 })
 export class AddUserComponent {
   userForm: FormGroup;
+  modalVisible: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -26,9 +27,15 @@ export class AddUserComponent {
     });
   }
 
+  // Función para cancelar y cerrar el modal
   cancelAdd() {
-    // Aquí puedes cerrar el modal o limpiar el formulario
     this.userForm.reset({ enabled: true });
+    this.closeModal();
+  }
+
+  // Función para cerrar el modal
+  closeModal() {
+    this.modalVisible = false; // Esto oculta el modal
   }
 
   onSubmit() {
