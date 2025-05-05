@@ -4,6 +4,7 @@ import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'; 
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -16,7 +17,7 @@ export class UsersComponent implements OnInit {
   isSidebarVisible = true;
   error: string = '';
 
-  constructor(private userService: UserService, private router: Router, private dialog: MatDialog) {}
+  constructor(private userService: UserService, private router: Router, private dialog: MatDialog, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.obtenerUsuarios();
@@ -28,6 +29,96 @@ export class UsersComponent implements OnInit {
   goToPermissions() {
     this.router.navigate(['/roles']);
   }
+
+  registrarUsuario(): void {
+    const form = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      enabled: [true]
+    });
+  
+    Swal.fire({
+      title: 'Registrar nuevo usuario',
+      html: `
+        <style>
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+          }
+  
+          .form-group label {
+            font-weight: 500;
+            text-align: left;
+          }
+  
+          .form-group input,
+          .form-group select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+          }
+        </style>
+  
+        <div class="form-group">
+          <input id="swal-username" placeholder="Nombre de usuario">
+          <input id="swal-password" placeholder="Contraseña" type="password">
+          <input id="swal-email" placeholder="Correo electrónico">
+          <input id="swal-telefono" placeholder="Teléfono">
+          <select id="swal-enabled">
+            <option value="true" selected>Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      preConfirm: () => {
+        const username = (document.getElementById('swal-username') as HTMLInputElement).value.trim();
+        const password = (document.getElementById('swal-password') as HTMLInputElement).value;
+        const email = (document.getElementById('swal-email') as HTMLInputElement).value.trim();
+        const telefono = (document.getElementById('swal-telefono') as HTMLInputElement).value.trim();
+        const enabled = (document.getElementById('swal-enabled') as HTMLSelectElement).value === 'true';
+  
+        form.setValue({ username, password, email, telefono, enabled });
+  
+        if (form.invalid) {
+          Swal.showValidationMessage('Por favor completa todos los campos correctamente.');
+          return;
+        }
+  
+        return form.value;
+      }
+    }).then(result => {
+      if (result.isConfirmed && result.value) {
+        Swal.fire({
+          title: 'Registrando usuario...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+  
+        this.userService.registrarUsuario(result.value).subscribe({
+          next: () => {
+            Swal.fire('Éxito', 'Usuario registrado correctamente.', 'success');
+            this.obtenerUsuarios();
+          },
+          error: (err) => {
+            Swal.fire('Error', `No se pudo registrar el usuario. ${err.message}`, 'error');
+          }
+        });
+      }
+    });
+  }
+    
 
   obtenerUsuarios(): void {
     this.userService.getUsuarios().subscribe({
