@@ -40,45 +40,50 @@
           {{ error }}
         </div>
 
-        <!-- Tabla -->
-        <div class="w-full overflow-x-auto pb-4">
-          <table class="min-w-[1200px] w-full divide-y divide-gray-200 text-sm text-left" *ngIf="usuarios.length > 0">
+        <!-- Tabla sin scroll y con bordes mejor alineada -->
+        <div class="w-full pb-4 overflow-x-auto">
+          <table class="w-full table-auto border border-gray-300 text-sm text-left" *ngIf="usuarios.length > 0">
             <thead class="bg-gray-100 text-gray-700">
               <tr>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Usuario</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Email</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Teléfono</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Fecha de creación</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Activo</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Rol</th>
-                <th class="px-4 py-3 font-semibold whitespace-nowrap">Acciones</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[100px]">Usuario</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[160px]">Email</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[120px]">Teléfono</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[130px]">Fecha de creación</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[80px]">Activo</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[120px]">Rol</th>
+                <th class="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap min-w-[120px] text-center">Acciones</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
               <tr *ngFor="let usuario of usuarios | paginate: { itemsPerPage: 10, currentPage: p }" class="hover:bg-gray-50">
-                <td class="px-4 py-3 whitespace-nowrap">{{ usuario.username }}</td>
-                <td class="px-4 py-3 whitespace-nowrap">{{ usuario.email }}</td>
-                <td class="px-4 py-3 whitespace-nowrap">{{ usuario.telefono || 'No registrado' }}</td>
-                <td class="px-4 py-3 whitespace-nowrap">{{ usuario.created_at | date: 'dd/MM/yyyy' }}</td>
-                <td class="px-4 py-3">
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap break-words">{{ usuario.username }}</td>
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap break-words">{{ usuario.email }}</td>
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap">
+                  {{ usuario.telefono || 'No registrado' }}
+                </td>
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap">
+                  {{ usuario.created_at ? (usuario.created_at | date: 'dd/MM/yyyy') : 'No registrado' }}
+                </td>
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap">
                   <span [ngClass]="usuario.enabled ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
                     {{ usuario.enabled ? 'Sí' : 'No' }}
                   </span>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap">{{ usuario.rol }}</td>
-                <td class="px-4 py-3">
-                  <div class="flex gap-2 flex-nowrap">
-                    <button class="bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 text-xs"
-                            (click)="verDetalle(usuario)">👁 Ver</button>
-                    <button class="bg-yellow-500 text-white px-3 py-1 rounded-full hover:bg-yellow-600 text-xs"
-                            (click)="openEditUserModal(usuario)">✏️ Editar</button>
-                    <button class="bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 text-xs"
-                            (click)="eliminarUsuario(usuario)">🗑 Eliminar</button>
+                <td class="border border-gray-300 px-4 py-3 whitespace-nowrap">{{ usuario.rol || 'No asignado' }}</td>
+                <td class="border border-gray-300 px-4 py-3 text-center">
+                  <div class="flex justify-center gap-1">
+                    <button class="bg-blue-500 text-white px-2 py-1 rounded-full hover:bg-blue-600 text-xs"
+                            (click)="verDetalle(usuario)">👁</button>
+                    <button class="bg-yellow-500 text-white px-2 py-1 rounded-full hover:bg-yellow-600 text-xs"
+                            (click)="openEditUserModal(usuario)">✏️</button>
+                    <button class="bg-red-500 text-white px-2 py-1 rounded-full hover:bg-red-600 text-xs"
+                            (click)="eliminarUsuario(usuario)">🗑</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
 
           <!-- Paginación -->
           <div class="flex justify-center mt-4">
