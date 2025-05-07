@@ -56,8 +56,11 @@ export class ClientesComponent {
       const coincideDocumento =
         this.filtroDocumento.trim() === '' ||
         cliente.documentNumber.includes(this.filtroDocumento);
-      const coincideTipo =
-        this.filtroTipo.trim() === '' || cliente.typeCustomer === this.filtroTipo;
+        const coincideTipo =
+        this.filtroTipo.trim() === '' ||
+        cliente.typeCustomer.toLowerCase().trim() === this.filtroTipo.toLowerCase().trim();
+      
+      
 
       return coincideNombre && coincideDocumento && coincideTipo;
     });

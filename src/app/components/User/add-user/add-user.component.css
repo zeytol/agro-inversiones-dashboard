@@ -1,0 +1,118 @@
+.formulario-usuario {
+  width: 100%;
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  animation: slideFadeIn 0.6s ease-out;
+}
+
+.formulario-usuario h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.grupo-formulario {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.grupo-formulario label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #444;
+}
+
+.grupo-formulario input,
+.grupo-formulario select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grupo-formulario input:focus,
+.grupo-formulario select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.botones {
+  display: flex;
+  justify-content: space-between;
+}
+
+button[type="submit"] {
+  width: 48%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+button.cancelar {
+  width: 48%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #ccc;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.cancelar:hover {
+  background-color: #999;
+}
+
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 500px) {
+  .formulario-usuario {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .formulario-usuario {
+    padding: 1rem 0.5rem;
+  }
+
+  input,
+  select,
+  button {
+    font-size: 0.95rem;
+  }
+}

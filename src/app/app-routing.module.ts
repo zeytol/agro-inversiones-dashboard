@@ -21,6 +21,7 @@ import { UsersComponent } from '../app/components/User/users/users.component';
 import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
 import { DocumentosComponent } from './features/documentos/documentos/documentos.component'
 import { ReportesComponent } from './features/reportes/reportes.component';
+import { PermisosComponent } from './components/permisos/permisos.component';
 import { GestionComponent } from './features/gestion/gestion.component';
 
 const routes: Routes = [
@@ -30,7 +31,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'ventas', component: VentasComponent, canActivate: [AuthGuard] },
-  { path: 'roles', component: RoleModalComponent, canActivate: [AuthGuard] },
+  { path: 'roles1', component: RoleModalComponent, canActivate: [AuthGuard] },
   { path: 'ventas', component: VentasComponent, canActivate: [AuthGuard] }, 
   { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
   { path: 'productos', component: GestionProductosComponent, canActivate: [AuthGuard] },
@@ -40,6 +41,7 @@ const routes: Routes = [
   { path: 'roles/ajustes', component: AssignPermissionsComponent, canActivate: [AuthGuard] },
   { path: 'roles/detalle/:id', component: RoleDetailComponent, canActivate: [AuthGuard] },
   { path: 'roles/crear', component: CreateRoleComponent, canActivate: [AuthGuard] },
+  { path: 'permisos', component: PermisosComponent, canActivate: [AuthGuard] },
   { path: 'permisos/crear', component: CreatePermissionComponent, canActivate: [AuthGuard] },
   { path: 'role', component: RolesComponent, canActivate: [AuthGuard] },
   { path: 'proveedores', component: ProveedoresComponent, canActivate: [AuthGuard]},

@@ -1,62 +1,86 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-user',
-  templateUrl: './add-user.component.html'
+  templateUrl: './add-user.component.html',
+  styleUrls: ['./add-user.component.css']
 })
 export class AddUserComponent {
-  @Output() userAdded = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<void>();
+  userForm: FormGroup;
+  modalVisible: boolean = true;
 
-  newUser = {
-    username: '',
-    email: '',
-    phone: '',
-    status: 'Active',
-    photo: '',
-    roles: [],
-    modules: []
-  };
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private router: Router
+  ) {
+    this.userForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      enabled: [true]
+    });
+  }
 
-  constructor(private userService: UserService) {}
+  // Función para cancelar y cerrar el modal
+  cancelAdd() {
+    this.userForm.reset({ enabled: true });
+    this.closeModal();
+  }
 
-  addUser(): void {
-    if (this.validateNewUser()) {
-      this.userService.addUser(this.newUser).subscribe({
-        next: (data) => {
-          this.userAdded.emit(data);
-          this.resetForm();
-        },
-        error: (err) => {
-          console.error('Error adding user:', err);
-        }
+  // Función para cerrar el modal
+  closeModal() {
+    this.modalVisible = false; // Esto oculta el modal
+  }
+
+  onSubmit() {
+    if (this.userForm.invalid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Formulario inválido',
+        text: 'Por favor, completa todos los campos correctamente.'
       });
+      return;
     }
-  }
-
-  validateNewUser(): boolean {
-    if (!this.newUser.username || !this.newUser.email || !this.newUser.phone) {
-      alert('Please complete all fields.');
-      return false;
-    }
-    return true;
-  }
-
-  cancelAdd(): void {
-    this.cancel.emit();
-    this.resetForm();
-  }
-
-  private resetForm(): void {
-    this.newUser = {
-      username: '',
-      email: '',
-      phone: '',
-      status: 'Active',
-      photo: '',
-      roles: [],
-      modules: []
-    };
+  
+    const formData = this.userForm.value;
+  
+    Swal.fire({
+      title: 'Registrando usuario...',
+      text: 'Por favor espera',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+  
+    this.userService.registrarUsuario(formData).subscribe({
+      next: (response) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario registrado',
+          text: 'El usuario ha sido registrado correctamente.',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.cancelAdd(); // Cierra el modal y limpia el formulario
+          location.reload();
+        });
+      },
+      error: (error) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al registrar',
+          text: 'Ocurrió un error al guardar el usuario. Intenta nuevamente.'
+        });
+        console.error('Error al registrar el usuario:', error.message);
+      }
+    });
   }
 }
