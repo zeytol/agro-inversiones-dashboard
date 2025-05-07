@@ -10,7 +10,12 @@ export class CarritoService {
   setCarrito(items: any[]):void {
     localStorage.setItem(this.carritoKey,JSON.stringify(items));
   }
+  private porcentajeIGV: number = 0;
 
+  setPorcentajeIGV(valor: number): void {
+    this.porcentajeIGV = valor;
+  }
+  
   getCarrito(): any[] {
     const carrito = localStorage.getItem(this.carritoKey);
     return carrito ? JSON.parse(carrito) : [];

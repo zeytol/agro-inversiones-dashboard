@@ -7,6 +7,9 @@ import { customers } from '../models/client.model';
   providedIn: 'root'
 })
 export class ClienteService {
+  getClientes() {
+    throw new Error('Method not implemented.');
+  }
 
   private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers'; // URL API en Azure
 
@@ -19,19 +22,18 @@ export class ClienteService {
   }
 
   obtenerClientePorId(id: number): Observable<customers> {
-    return this.http.get<customers>(`${this.apiUrl, {withCredentials: true}}/${id}`);
+    return this.http.get<customers>(`${this.apiUrl}/${id}`, {withCredentials: true});
   }
 
   guardarCliente(customers: customers): Observable<any> {
     return this.http.post<any>(this.apiUrl, customers, { responseType: 'text' as 'json', withCredentials: true});
   }
 
-  actualizarCliente(id: number, customers: customers): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl, {withCredentials: true}}/${id}`, customers, { responseType: 'text' as 'json' });
-  }
-
+actualizarCliente(id: number, customers: customers): Observable<string> {
+  return this.http.put<string>(`${this.apiUrl}/${id}`, customers, { responseType: 'text' as 'json', withCredentials: true });
+}
   eliminarCliente(id: number): Observable<string> {
-    return this.http.delete(`${this.apiUrl, {withCredentials: true}}/${id}`, { responseType: 'text' });
+return this.http.delete<string>(`${this.apiUrl}/${id}`, { responseType: 'text' as 'json', withCredentials: true });
   }
   
 }
