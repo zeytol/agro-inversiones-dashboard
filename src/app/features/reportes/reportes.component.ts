@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ReportesService } from '../../services/reportes.service'; // Asegúrate de que la ruta sea correcta
+import Swal from 'sweetalert2'; // Asegúrate de importar SweetAlert2 en tu archivo
+
 
 @Component({
   selector: 'app-reportes',
@@ -17,34 +19,32 @@ export class ReportesComponent implements OnInit {
   // Datos originales y filtrados
   reports: any[] = [];
   filteredReports: any[] = [];
+  selectedReportType: string = 'ventas';
+  stockFilterType: string = 'alto'; 
 
-  // Configuración del gráfico de línea
+
+  // Gráfico de línea
   lineChartOptions: any = {
-    series: [
-      {
-        name: 'Ventas Mensuales',
-        data: [50, 70, 40, 80, 100, 60, 90]
-      }
-    ],
+    series: [],  
     chart: {
       type: 'line',
-      height: 250 // Altura reducida
+      height: 350
     },
     title: {
-      text: 'Promedio de Ventas por Mes',
-      align: 'left'
+      text: 'Ventas Mensuales',
+      align: 'center'
     },
     xaxis: {
-      categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul']
+      categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
     }
   };
 
-  // Configuración del gráfico circular
+  // Gráfico circular
   pieChartOptions: any = {
-    series: [30, 25, 15, 20, 10],
+    series: [],
     chart: {
       type: 'pie',
-      height: 250 // Altura reducida
+      height: 250  
     },
     labels: ['Ventas', 'Inventario', 'Clientes', 'Proveedores', 'Finanzas'],
     responsive: [
@@ -62,40 +62,78 @@ export class ReportesComponent implements OnInit {
     ]
   };
 
-  // Configuración del gráfico radial para "Suma Total de Ventas"
+  // Gráfico "Suma Total de Ventas"
   radialBarChartOptions: any = {
-    series: [75], // Porcentaje (por ejemplo, 75%)
+    series: [],  
     chart: {
       type: 'radialBar',
-      height: 200 // Altura reducida
+      height: 350
     },
     plotOptions: {
       radialBar: {
-        hollow: {
-          size: '60%' // Tamaño del círculo interior
-        },
-        dataLabels: {
-          name: {
-            show: false
-          },
-          value: {
-            fontSize: '18px', // Tamaño del texto reducido
-            color: '#4caf50',
-            fontWeight: 'bold'
-          }
-        }
+        hollow: { size: '70%' }
       }
     },
-    labels: ['Total de Ventas']
+    labels: ['Ganancia del Mes']
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private reportesService: ReportesService) {}
 
   ngOnInit(): void {
-    // Cargar datos desde el archivo JSON
-    this.http.get<any[]>('assets/reports.json').subscribe((data) => {
-      this.reports = data;
-      this.filteredReports = data; // Inicialmente, todos los datos están visibles
+    this.loadLocalReports(); 
+    this.loadReportes();
+  }
+
+  isFormValid(newReport: any): boolean {
+    return newReport && 
+    newReport.name && 
+    newReport.type && 
+    newReport.date &&
+    newReport.address &&
+    newReport.status &&
+    newReport.category;
+  }
+
+  loadLocalReports() {
+    const saved = localStorage.getItem('savedReports');
+    console.log(saved); 
+    this.reports = saved ? JSON.parse(saved) : [];
+    this.filteredReports = [...this.reports];
+    this.applyFilters(this.selectedReportType);  
+  }
+  
+  
+  loadReportes(): void {
+
+    //const fechaActual = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato YYYY-MM-DD
+
+    const fechaActual = new Date();
+    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Asegurar formato "01", "02", etc.
+    const anio = fechaActual.getFullYear();
+    const fecha = `${anio}-${mes}`; 
+    
+    this.reportesService.getReporteGraficos().subscribe((data) => {
+      console.log(data); 
+  
+      // Validar datos antes de asignarlos para evitar errores con NaN
+      this.pieChartOptions.series = [
+        Number(data.ventas) || 0,
+        Number(data.inventario) || 0,
+        Number(data.clientes) || 0,
+        Number(data.proveedores) || 0,
+        Number(data.finanzas) || 0
+      ];
+  
+      this.lineChartOptions.series = [
+        {
+          name: 'Ventas por Mes',
+          data: data.ventasPorMes || []
+        }
+      ];
+  
+      this.radialBarChartOptions.series = [
+        Number(data.gan1Month) || 0
+      ];
     });
   }
 
@@ -103,81 +141,157 @@ export class ReportesComponent implements OnInit {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
-  // Abrir el modal
+ 
   openFilterModal() {
     this.isFilterModalOpen = true;
   }
 
-  // Cerrar el modal
+ 
   closeFilterModal() {
     this.isFilterModalOpen = false;
   }
 
-  // Aplicar filtros
-  applyFilters() {
+   
+  applyFilters(reportType: string) {
+    this.selectedReportType = reportType;  
     this.filteredReports = this.reports.filter((report) => {
-      const matchesStatus = this.filterStatus
-        ? report.status === this.filterStatus
-        : true;
-      const matchesCategory = this.filterCategory
-        ? report.category.toLowerCase().includes(this.filterCategory.toLowerCase())
-        : true;
-      return matchesStatus && matchesCategory;
+      return report.type.toLowerCase() === this.selectedReportType.toLowerCase();
     });
     this.closeFilterModal();
   }
 
   isAddReportModalOpen = false;
 
-openAddReportModal() {
-  this.isAddReportModalOpen = true;
-}
-
-closeAddReportModal() {
-  this.isAddReportModalOpen = false;
-}
-
-addReportToTable(newReport: any) {
-  this.reports.push(newReport);
-  this.filteredReports = [...this.reports];
-}
-isEditModalOpen = false;
-selectedReport: any = null;
-
-openEditModal(report: any) {
-  this.selectedReport = { ...report }; // Crear una copia del reporte seleccionado
-  this.isEditModalOpen = true;
-}
-
-closeEditModal() {
-  this.isEditModalOpen = false;
-  this.selectedReport = null;
-}
-
-updateReport(updatedReport: any) {
-  const index = this.reports.findIndex((r) => r.name === updatedReport.name);
-  if (index !== -1) {
-    this.reports[index] = updatedReport;
-    this.filteredReports = [...this.reports]; // Actualizar tabla filtrada
+  openAddReportModal() {
+    this.isAddReportModalOpen = true;
   }
-  this.closeEditModal();
-}
-deleteReport(index: number) {
-  const confirmed = confirm('¿Estás seguro de que deseas eliminar este reporte?');
-  if (confirmed) {
-    this.reports.splice(index, 1); // Elimina el reporte del array principal
-    this.filteredReports = [...this.reports]; // Actualiza la tabla filtrada
+
+  closeAddReportModal() {
+    this.isAddReportModalOpen = false;
   }
-}
 
-isExportModalOpen: boolean = false;
+  addReportToTable(newReport: any) {
+    // Validar si el formulario de reporte es válido
+    if (!this.isFormValid(newReport)) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, completa todos los campos obligatorios.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+    
+    newReport.id = Date.now().toString(); // solo lo vuelve string sin comilla
+    this.reports.push(newReport);
+    localStorage.setItem('savedReports', JSON.stringify(this.reports));
+  
+    const tipoNormalizado = newReport.type.toLowerCase();
+    this.selectedReportType = tipoNormalizado;
+    this.applyFilters(this.selectedReportType);
+    
+    // Mostrar modal de éxito al guardar el reporte
+    Swal.fire({
+      title: 'Reporte agregado',
+      text: `El reporte de tipo "${newReport.type}" ha sido guardado exitosamente.`,
+      icon: 'success',
+      confirmButtonText: 'Aceptar'
+    });
+  }
 
-openExportModal() {
-  this.isExportModalOpen = true;
-}
+   
+  isEditModalOpen = false;
+  selectedReport: any = null;
 
-closeExportModal() {
-  this.isExportModalOpen = false;
-}
+  openEditModal(report: any) {
+    this.selectedReport = { ...report };
+    this.isEditModalOpen = true;
+  }
 
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.selectedReport = null;
+  }
+
+  updateReport(updatedReport: any) {
+    // Validar si el formulario es válido
+    if (!this.isFormValid(updatedReport)) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, completa todos los campos obligatorios.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    const index = this.reports.findIndex((r) => r.id === updatedReport.id);
+  
+    if (index !== -1) {
+      this.reports[index] = updatedReport;
+      this.filteredReports = [...this.reports];  
+      this.applyFilters(this.selectedReportType);  
+      localStorage.setItem('savedReports', JSON.stringify(this.reports));  
+
+      Swal.fire({
+        title: 'Reporte actualizado',
+        text: `El reporte de tipo "${updatedReport.type}" se ha actualizado correctamente.`,
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      });
+    } else {
+      console.error('Reporte no encontrado');
+    }
+    
+    this.closeEditModal();  
+  }
+
+  deleteReport(index: number) {
+    const reportToDelete = this.filteredReports[index];
+    const reportType = reportToDelete.type;
+
+
+    Swal.fire({
+      title: `¿Eliminar reporte de "${reportType}"?`,
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const realIndex = this.reports.findIndex(r => r.id === reportToDelete.id);
+
+        if (realIndex !== -1) {
+          this.reports.splice(realIndex, 1);
+          localStorage.setItem('savedReports', JSON.stringify(this.reports));
+          this.applyFilters(this.selectedReportType); // actualizar vista filtrada
+
+          Swal.fire({
+            title: 'Eliminado',
+            text: `El reporte de tipo "${reportType}" fue eliminado exitosamente.`,
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo encontrar el reporte a eliminar.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          });
+        }
+      }
+    });
+  }
+
+  isExportModalOpen: boolean = false;
+
+  openExportModal() {
+    this.isExportModalOpen = true;
+  }
+
+  closeExportModal() {
+    this.isExportModalOpen = false;
+  }
 }
