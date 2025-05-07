@@ -28,6 +28,9 @@
         <a routerLink="/reportes" class="sidebar-link" [class.active]="isActive('/reportes')">
             <i class="fas fa-chart-line"></i> Reportes
         </a>
+        <a routerLink="/gestion" class="sidebar-link" [class.active]="isActive('/gestion')">
+            <i class="fas fa-cogs"></i> Gestión
+        </a>
         <a (click)="logout()"class="sidebar-link" [class.active]="isActive('/cerrarSesion')">
             <i class="fa-duotone fa-solid fa-building-lock"></i>Cerrar Sesión
         </a>

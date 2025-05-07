@@ -16,6 +16,7 @@ import {NgxPaginationModule, } from 'ngx-pagination';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { InventarioComponent } from './features/inventario/inventario.component';
 
+
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
