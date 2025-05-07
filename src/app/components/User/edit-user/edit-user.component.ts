@@ -23,8 +23,9 @@ export class EditUserComponent implements OnInit {
       username: [this.data.username, [Validators.required]],
       email: [this.data.email, [Validators.required, Validators.email]],
       telefono: [this.data.telefono, [Validators.required]],
-      rol: [this.data.rol, [Validators.required]]
-    });
+      rol: [this.data.rol, [Validators.required]],
+      enabled: [this.data.enabled, [Validators.required]]
+    });    
   }
 
   ngOnInit(): void {}
