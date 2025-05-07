@@ -21,6 +21,7 @@ import { UsersComponent } from '../app/components/User/users/users.component';
 import { RoleModalComponent } from './components/roles/role-modal/role-modal.component';
 import { DocumentosComponent } from './features/documentos/documentos/documentos.component'
 import { ReportesComponent } from './features/reportes/reportes.component';
+import { GestionComponent } from './features/gestion/gestion.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'role', component: RolesComponent, canActivate: [AuthGuard] },
   { path: 'proveedores', component: ProveedoresComponent, canActivate: [AuthGuard]},
   { path: 'inventario', component: InventarioComponent, canActivate: [AuthGuard]},
+  { path: 'gestion', component: GestionComponent, canActivate: [AuthGuard]},
   { path: 'ventas', component: VentasComponent, canActivate: [AuthGuard] },  
   { path: '', redirectTo: '/login', pathMatch: 'full' }, 
   { path: '**', redirectTo: 'login' },
