@@ -173,9 +173,9 @@ export class GestionComponent {
     }
   
 
-  toggleSidebar(): void {
-    this.isSidebarVisible = !this.isSidebarVisible;
-    this.sidebarToggle.emit();
-  }
+    toggleSidebar(): void {
+      this.isSidebarVisible = !this.isSidebarVisible;
+      this.sidebarToggle.emit();
+    }
 
 }

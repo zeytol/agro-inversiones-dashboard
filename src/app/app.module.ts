@@ -15,6 +15,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {NgxPaginationModule, } from 'ngx-pagination';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { InventarioComponent } from './features/inventario/inventario.component';
+import { GestionComponent } from './features/gestion/gestion.component';  
+
 
 
 // Importaciones de Font Awesome
@@ -41,6 +43,7 @@ import { EditarDocComponent } from './features/documentos/modals/editar-doc/edit
 import { AgregarDocComponent } from './features/documentos/modals/agregar-doc/agregar-doc.component';
 import { EnviarDocComponent } from './features/documentos/modals/enviar-doc/enviar-doc.component';
 import { EliminarDocComponent } from './features/documentos/modals/eliminar-doc/eliminar-doc.component';
+
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
@@ -80,6 +83,7 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     VentasComponent,
     AgregarClienteComponent,
     InventarioComponent,
+    GestionComponent,
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
@@ -134,8 +138,7 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    HttpClientModule, 
+    MatSelectModule, 
     NgxPaginationModule,
     MatPaginatorModule,
     ReactiveFormsModule,

@@ -3,9 +3,12 @@
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
   <!-- Contenedor principal -->
-  <div class="main-container">
+  <div class="main-container flex flex-grow" >
     <!-- Sidebar -->
-    <app-siderbang *ngIf="isSidebarVisible" class="siderbang"></app-siderbang>
+   <app-siderbang
+      *ngIf="isSidebarVisible"
+      class="siderbang w-64"
+    ></app-siderbang>
 
     <!-- Contenido de gestión de documentos -->
     <div class="container">
