@@ -41,8 +41,10 @@ export class FiltrarModalComponent implements OnInit {
   }
 
   cargarCategorias(): void {
-    const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories';
-    this.http.get<any[]>(url).subscribe({
+    const url = 'http://localhost:8091/api/categories';
+    this.http.get<any[]>(url, { withCredentials: true }).subscribe({
+      //const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories';
+      //this.http.get<any[]>(url).subscribe({
       next: (data) => {
         this.categorias = data; // Asigna los datos a la lista de categorías
       },
@@ -86,9 +88,10 @@ export class FiltrarModalComponent implements OnInit {
       console.error('La categoría seleccionada es inválida o no tiene un ID.');
       return;
     }
-  
-    const url = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
-  
+
+    const url = `http://localhost:8091/api/categories/delete/${categoriaSeleccionada.id}`;
+    //const url = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/categories/delete/${categoriaSeleccionada.id}`;
+
     Swal.fire({
       title: 'Eliminando...',
       text: 'Por favor, espera mientras se elimina la categoría.',
@@ -98,9 +101,10 @@ export class FiltrarModalComponent implements OnInit {
         Swal.showLoading();
       }
     });
-  
+
     // Configuración de respuesta como texto
-    this.http.delete(url, { responseType: 'text' }).subscribe({
+    //this.http.delete(url, { responseType: 'text' }).subscribe({
+    this.http.delete(url, { responseType: 'text', withCredentials: true }).subscribe({
       next: (response) => {
         // Verificamos si la respuesta es adecuada (puede ser un mensaje o un código de estado)
         Swal.fire({
@@ -111,10 +115,10 @@ export class FiltrarModalComponent implements OnInit {
         }).then(() => {
           window.location.reload();
         });
-  
+
         // Filtramos la categoría eliminada de la lista
         this.categorias = this.categorias.filter(c => c.id !== categoriaSeleccionada.id);
-  
+
         // Cerramos el modal de eliminación
         this.cerrarDeleteModal();
       },
@@ -126,7 +130,7 @@ export class FiltrarModalComponent implements OnInit {
           icon: 'error',
           confirmButtonText: 'Reintentar'
         });
-  
+
         // Consola de errores para depuración
         console.error('Error al eliminar la categoría:', err);
         console.log('Detalles del error:', {
@@ -138,6 +142,5 @@ export class FiltrarModalComponent implements OnInit {
       }
     });
   }
-  
 
 }

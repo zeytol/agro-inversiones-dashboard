@@ -69,7 +69,7 @@ export class AgregarReporteComponent {
   const type = reportType.toLowerCase();
 
     if (type === 'ventas') {
-      this.reportesService.getReporteVentas('04-2025').subscribe({
+      this.reportesService.getReporteVentas('05-2025').subscribe({
         next: (data: any) => {
           const ventas: any[] = data.ventasDelMes || [];
           console.log("Datos de ventas:", ventas);

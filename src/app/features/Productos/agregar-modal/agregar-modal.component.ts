@@ -129,7 +129,8 @@ export class AgregarModalComponent {
     }));
     formData.append('image', this.selectedFile);
   
-    const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/register';
+    //const url = 'https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/register';
+    const url = 'http://localhost:8091/api/products/register';
     Swal.fire({
       title: 'Registrando producto...',
       html: 'Por favor, espera mientras se completa el registro.',
@@ -141,7 +142,8 @@ export class AgregarModalComponent {
 
     this.http.post(url, formData, {
       observe: 'response',  
-      responseType: 'json'  
+      responseType: 'json',
+      withCredentials: true    
     }).subscribe({
       next: (response: any) => {
         console.log('Respuesta del servidor:', response); 

@@ -7,37 +7,35 @@ import { Cliente } from '../models/client.model';
   providedIn: 'root'
 })
 export class ClienteService {
-   
-  //private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers'; // URL API en Azure
-  private apiUrl = 'http://localhost:8091/api/customers';  // Cambiar a URL local de la API
+
+  private apiUrl = 'http://localhost:8091/api/customers'; // URL API en Azure
+
+  // private apiUrl = 'http://localhost:81/api/clientes';  // Cambiar a URL local de la API
 
   constructor(private http: HttpClient) { }
 
-  // Método para configurar las opciones de la solicitud, incluyendo withCredentials
-  private getOptions() {
-    return {
-      withCredentials: true // Incluye las credenciales (cookies, cabeceras de autenticación, etc.)
-    };
-  }
-
   listarClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.apiUrl, this.getOptions());
+    return this.http.get<Cliente[]>(this.apiUrl, {withCredentials: true});
   }
 
   obtenerClientePorId(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.apiUrl}/${id}`, this.getOptions());
+    return this.http.get<Cliente>(`${this.apiUrl}/${id}`, {withCredentials: true});
   }
 
   guardarCliente(cliente: Cliente): Observable<any> {
-    return this.http.post<any>(this.apiUrl, cliente, { ...this.getOptions(), responseType: 'text' as 'json' });
+    return this.http.post<any>(this.apiUrl, cliente, { responseType: 'text' as 'json', withCredentials: true});
   }
 
   actualizarCliente(id: number, cliente: Cliente): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${id}`, cliente, { ...this.getOptions(), responseType: 'text' as 'json' });
+    return this.http.put<string>(`${this.apiUrl}/${id}`, cliente, { responseType: 'text' as 'json', withCredentials: true});
   }
 
   eliminarCliente(id: number): Observable<string> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { ...this.getOptions(), responseType: 'text' });
+    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text', withCredentials: true});
+  }
+
+  getClientePorDni(dni: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/buscar/${dni}`, { withCredentials: true });
   }
   
 }

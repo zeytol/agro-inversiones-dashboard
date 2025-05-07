@@ -21,7 +21,8 @@ export class CategoryProductsService {
         observer.complete();
       });
     } else {
-      return this.http.get<any[]>(this.apiUrl);
+      return this.http.get<any[]>(this.apiUrl, {withCredentials: true});
+      //return this.http.get<any[]>(this.apiUrl);
     }
   }
 

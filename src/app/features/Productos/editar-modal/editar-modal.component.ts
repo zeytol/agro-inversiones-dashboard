@@ -30,6 +30,7 @@ export class EditarModalComponent {
     this.cerrarModal.emit();
     
   }
+
   ngOnInit() {
     this.cargarCategorias(); 
     this.cargarSuppliers();
@@ -113,7 +114,8 @@ export class EditarModalComponent {
       formData.append('image', this.selectedFile);
     }
 
-    const url = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/edit/${this.productoSeleccionado.id}`;
+    //const url = `https://agroinversiones-api-dev-productos.azurewebsites.net/api/products/edit/${this.productoSeleccionado.id}`;
+    const url = `http://localhost:8091/api/products/edit/${this.productoSeleccionado.id}`;
     Swal.fire({
       title: 'Editando producto...',
       html: 'Por favor, espera mientras se completa el registro.',
