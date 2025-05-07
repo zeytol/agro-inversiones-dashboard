@@ -7,6 +7,9 @@ import { customers } from '../models/client.model';
   providedIn: 'root'
 })
 export class ClienteService {
+  getClientes() {
+    throw new Error('Method not implemented.');
+  }
 
   private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers'; // URL API en Azure
 
