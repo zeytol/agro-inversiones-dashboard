@@ -1,4 +1,3 @@
-// assign-permissions.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RoleService } from '../role.service';
@@ -48,7 +47,6 @@ throw new Error('Method not implemented.');
   }
 
   editRole(roleId: number): void {
-    // Implementar lógica de edición
     console.log('Editar rol:', roleId);
   }
 
@@ -66,5 +64,4 @@ throw new Error('Method not implemented.');
     throw new Error('Method not implemented.');
   }
 
-  // ... mantener los demás métodos existentes
 }

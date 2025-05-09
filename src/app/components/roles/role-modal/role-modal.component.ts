@@ -1,4 +1,3 @@
-// role-modal.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 interface RoleDetail {

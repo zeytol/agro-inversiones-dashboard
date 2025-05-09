@@ -5,20 +5,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     templateUrl: './success-modal.component.html',
 })
 export class SuccessModalComponent {
-    @Input() title: string = ''; // Título del modal
-    @Input() placeholder: string = ''; // Placeholder para el input
-    @Input() isOpen: boolean = false; // Control de visibilidad
-    @Output() onClose = new EventEmitter<void>(); // Evento para cerrar el modal
-    @Output() onSave = new EventEmitter<string>(); // Evento para guardar datos
+    @Input() title: string = ''; 
+    @Input() placeholder: string = ''; 
+    @Input() isOpen: boolean = false; 
+    @Output() onClose = new EventEmitter<void>(); 
+    @Output() onSave = new EventEmitter<string>(); 
   
-    inputValue: string = ''; // Valor temporal del input
-  
+    inputValue: string = '';
     closeModal() {
       this.onClose.emit();
     }
   
     saveModal() {
       this.onSave.emit(this.inputValue);
-      this.inputValue = ''; // Limpiar input tras guardar
+      this.inputValue = ''; 
     }
   }

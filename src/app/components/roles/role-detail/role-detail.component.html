@@ -1,6 +1,5 @@
 <div class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
   <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-    <!-- Header -->
     <div class="flex justify-between items-center p-4 border-b">
       <h2 class="text-xl font-semibold text-gray-800">Detalles del Rol</h2>
       <button 
@@ -10,10 +9,7 @@
         ×
       </button>
     </div>
-
-    <!-- Content -->
     <div class="p-6">
-      <!-- Role Info -->
       <div class="mb-6">
         <h3 class="text-sm font-medium text-gray-500">Nombre del Rol</h3>
         <p class="mt-1 text-gray-900">{{ role?.role_name }}</p>
@@ -24,7 +20,6 @@
         <p class="mt-1 text-gray-900">{{ role?.description }}</p>
       </div>
 
-      <!-- Permissions -->
       <div>
         <h3 class="text-sm font-medium text-gray-500 mb-4">Permisos Asociados:</h3>
         <div class="grid grid-cols-2 gap-4">
@@ -44,7 +39,6 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
       <button
         (click)="close()"

@@ -1,24 +1,16 @@
 <div class="dashboard-layout flex flex-col h-screen">
-  <!-- Header -->
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
-
-  <!-- Contenedor principal -->
   <div class="main-container flex flex-grow">
-    <!-- Sidebar -->
     <app-siderbang *ngIf="isSidebarVisible" class="siderbang w-64"></app-siderbang>
-
     <div class="container mx-auto p-4">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-3xl font-semibold">Roles del Sistema</h2>
 
         <div class="flex space-x-4">
-          <!-- Botón para regresar a Usuarios -->
           <button (click)="goToUsers()" 
                   class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
             🔙 Regresar a Usuarios
           </button>
-
-          <!-- Botón para agregar un nuevo rol -->
           <button (click)="openCreateRoleModal()" 
                   class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
             ➕ Crear Nuevo Rol
@@ -30,7 +22,6 @@
         </div>
       </div>
 
-      <!-- Tabla de Roles -->
       <div class="overflow-x-auto shadow-lg rounded-lg">
         <table class="min-w-full bg-white border border-gray-200">
           <thead>
@@ -64,7 +55,6 @@
             </tr>
           </tbody>
         </table>
-        <!-- Paginación -->
         <div class="flex justify-center mt-4">
           <pagination-controls 
             (pageChange)="p = $event" 
@@ -78,8 +68,6 @@
     </div>
   </div>
 </div>
-
-<!-- Modal para agregar nuevo rol -->
 <div *ngIf="isCreateRoleModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h3 class="text-xl font-semibold mb-4">Crear Nuevo Rol</h3>
@@ -101,7 +89,6 @@
   </div>
 </div>
 
-<!-- Modal de Carga para Crear Rol -->
 <div *ngIf="isCreatingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
     <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-green-600 rounded-full"></div>
@@ -109,7 +96,6 @@
   </div>
 </div>
 
-<!-- Modal de Éxito para Crear Rol -->
 <div *ngIf="isCreateSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-green-600">✔ Rol Creado</h3>
@@ -117,7 +103,6 @@
   </div>
 </div>
 
-<!-- Modal de Error para Crear Rol -->
 <div *ngIf="isCreateErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-red-600">❌ Error al crear</h3>
@@ -125,7 +110,6 @@
   </div>
 </div>
 
-<!-- Modal de Detalles del Rol -->
 <div *ngIf="isDetailRoleModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h3 class="text-xl font-semibold mb-4">Detalles del Rol</h3>
@@ -162,7 +146,6 @@
   </div>
 </div>
 
-<!-- Modal de Confirmación de Eliminación -->
 <div *ngIf="isDeleteRoleModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h3 class="text-xl font-semibold mb-4 text-red-600">⚠️ Confirmar Eliminación</h3>
@@ -179,7 +162,6 @@
   </div>
 </div>
 
-<!-- Modal de Carga para Eliminación -->
 <div *ngIf="isDeletingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
     <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-red-600 rounded-full"></div>
@@ -187,7 +169,6 @@
   </div>
 </div>
 
-<!-- Modal de Éxito para Eliminación -->
 <div *ngIf="isDeleteSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-green-600">✔ Rol Eliminado</h3>
@@ -195,7 +176,6 @@
   </div>
 </div>
 
-<!-- Modal de Error para Eliminación -->
 <div *ngIf="isDeleteErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-red-600">❌ Error al eliminar</h3>
@@ -203,7 +183,6 @@
   </div>
 </div>
 
-<!-- Modal para editar rol -->
 <div *ngIf="isEditRoleModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h3 class="text-xl font-semibold mb-4">Editar Rol</h3>
@@ -225,7 +204,6 @@
   </div>
 </div>
 
-<!-- Modal de Carga para Editar Rol -->
 <div *ngIf="isEditingRole" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4 w-80">
     <div class="animate-spin h-6 w-6 border-4 border-gray-300 border-t-blue-600 rounded-full"></div>
@@ -233,7 +211,6 @@
   </div>
 </div>
 
-<!-- Modal de Éxito para Editar Rol -->
 <div *ngIf="isEditSuccessModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-blue-600">✔ Rol Actualizado</h3>
@@ -241,7 +218,6 @@
   </div>
 </div>
 
-<!-- Modal de Error para Editar Rol -->
 <div *ngIf="isEditErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h3 class="text-lg font-semibold text-red-600">❌ Error al actualizar</h3>
