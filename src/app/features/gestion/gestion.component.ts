@@ -1,8 +1,7 @@
 import { Component,Output,EventEmitter, OnInit } from '@angular/core';
 import { DocumentService, Documento } from '../../services/document.service';
 import Swal from 'sweetalert2';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
 
 
 @Component({
@@ -22,6 +21,7 @@ export class GestionComponent {
   searchTerm: string = '';
 
     @Output() sidebarToggle = new EventEmitter<void>();
+  totalPaginas: any;
 
     constructor(private documentService: DocumentService) {}
 
@@ -166,10 +166,6 @@ export class GestionComponent {
       return Array.from({ length: totalPaginas }, (_, i) => i + 1);
     }
   
-    // Calcular el total de páginas
-    totalPaginas(): number {
-      return Math.ceil(this.documents.length / this.documentosPorPagina);
-    }
     toggleSidebar(): void {
       this.isSidebarVisible = !this.isSidebarVisible;
       this.sidebarToggle.emit();
