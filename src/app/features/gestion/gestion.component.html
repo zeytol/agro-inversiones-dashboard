@@ -3,71 +3,53 @@
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
   <!-- Contenedor principal -->
-  <div class="main-container">
+  <div class="main-container flex flex-grow" >
     <!-- Sidebar -->
-    <app-siderbang *ngIf="isSidebarVisible" class="siderbang"></app-siderbang>
+   <app-siderbang
+      *ngIf="isSidebarVisible"
+      class="siderbang w-64"
+    ></app-siderbang>
 
-    <!-- Contenido de gestión de documentos -->
     <div class="container">
       <h1>Gestión de documentos electrónicos</h1>
 
-      <!-- Filtros (ARRIBA) -->
-       <div class="filters-container">
+      <div class="filters-container">
         <div class="search-container">
           <input
             type="text"
             placeholder="Buscar por nombre o cliente"
             class="search-input"
+            [(ngModel)]="searchTerm"
+            (imput)="buscarDocumentos()"
           />
-          <button class="search-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"
-              ></path>
-            </svg>
+          <button class="search-button" (click)="buscarDocumentos()">
+             <i class="bi bi-search"></i>
           </button>
         </div>
 
-          <!-- Filtro por fecha -->
-         <div class="date-filter-container">
-          <input
-            type="text"
-            placeholder="Filtrar por fecha"
-            class="date-filter-input"
-            readonly
-            (click)="openDatePicker()"
-          />
-          <button class="date-picker-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path d="M7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z"></path>
-              <path d="M5 22h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2h-2V2h-2v2H9V2H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2zM19 8l.001 12H5V8h14z"></path>
-            </svg>
-          </button>
+        <div class="date-filter-container">
+          <mat-form-field appearance="fill" class="custom-date-filter">
+            <mat-label>Filtrar por fecha</mat-label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="selectedDate"
+              (dateChange)="updateFormattedDate()"
+              placeholder="Selecciona una fecha"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
         </div>
       </div>
-      
-      
 
-
-
-      <!-- TABLA (DEBAJO de los filtros) -->
       <div class="table-section">
         <div class="table-header">
           <button class="add-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);">
-              <path d="M17.004 5H9c-1.838 0-3.586.737-4.924 2.076C2.737 8.415 2 10.163 2 12c0 1.838.737 3.586 2.076 4.924C5.414 18.263 7.162 19 9 19h8v-2H9c-1.303 0-2.55-.529-3.51-1.49C4.529 14.55 4 13.303 4 12c0-1.302.529-2.549 1.49-3.51C6.45 7.529 7.697 7 9 7h8V6l.001 1h.003c.79 0 1.539.314 2.109.886.571.571.886 1.322.887 2.116a2.966 2.966 0 0 1-.884 2.11A2.988 2.988 0 0 1 17 13H9a.99.99 0 0 1-.698-.3A.991.991 0 0 1 8 12c0-.252.11-.507.301-.698A.987.987 0 0 1 9 11h8V9H9c-.79 0-1.541.315-2.114.889C6.314 10.461 6 11.211 6 12s.314 1.54.888 2.114A2.974 2.974 0 0 0 9 15h8.001a4.97 4.97 0 0 0 3.528-1.473 4.967 4.967 0 0 0-.001-7.055A4.95 4.95 0 0 0 17.004 5z"></path>
-            </svg>
-            Agregar
+            <i class="bi bi-plus-circle"></i>Agregar
           </button>
         </div>
 
@@ -84,34 +66,62 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let doc of documents">
-              <td>{{ doc.fecha }}</td>
-              <td>{{ doc.tipo }}</td>
-              <td>{{ doc.numero }}</td>
+            <tr *ngFor="let doc of documentosPaginados">
+              <td>{{ doc.fechaEmision }}</td>
+              <td>{{ doc.tipoDocumento }}</td>
+              <td>{{ doc.numeroDocumento }}</td>
               <td>{{ doc.cliente }}</td>
-              <td>{{ doc.monto }}</td>
+              <td>{{ doc.montoTotal }}</td>
               <td>{{ doc.estado }}</td>
               <td class="actions">
                 <button class="action-btn download-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="m12 16 4-5h-3V4h-2v7H8z"></path>
-                    <path d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"></path>
+                    <path
+                      d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"
+                    ></path>
                   </svg>
                 </button>
                 <button class="action-btn delete-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"
+                    ></path>
                     <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
                   </svg>
                 </button>
                 <button class="action-btn edit-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M13.707 2.293A.996.996 0 0 0 13 2H6c-1.103 0-2 .897-2 2v16c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V9a.996.996 0 0 0-.293-.707l-6-6zM6 4h6.586L18 9.414l.002 9.174-2.568-2.568c.35-.595.566-1.281.566-2.02 0-2.206-1.794-4-4-4s-4 1.794-4 4 1.794 4 4 4c.739 0 1.425-.216 2.02-.566L16.586 20H6V4zm6 12c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"></path>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M13.707 2.293A.996.996 0 0 0 13 2H6c-1.103 0-2 .897-2 2v16c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V9a.996.996 0 0 0-.293-.707l-6-6zM6 4h6.586L18 9.414l.002 9.174-2.568-2.568c.35-.595.566-1.281.566-2.02 0-2.206-1.794-4-4-4s-4 1.794-4 4 1.794 4 4 4c.739 0 1.425-.216 2.02-.566L16.586 20H6V4zm6 12c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"
+                    ></path>
                   </svg>
                 </button>
                 <button class="action-btn send-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M20.56 3.34a1 1 0 0 0-1-.08l-17 8a1 1 0 0 0-.57.92 1 1 0 0 0 .6.9L8 15.45v6.72L13.84 18l4.76 2.08a.93.93 0 0 0 .4.09 1 1 0 0 0 .52-.15 1 1 0 0 0 .48-.79l1-15a1 1 0 0 0-.44-.89zM18.1 17.68l-5.27-2.31L16 9.17l-7.65 4.25-2.93-1.29 13.47-6.34z"></path>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M20.56 3.34a1 1 0 0 0-1-.08l-17 8a1 1 0 0 0-.57.92 1 1 0 0 0 .6.9L8 15.45v6.72L13.84 18l4.76 2.08a.93.93 0 0 0 .4.09 1 1 0 0 0 .52-.15 1 1 0 0 0 .48-.79l1-15a1 1 0 0 0-.44-.89zM18.1 17.68l-5.27-2.31L16 9.17l-7.65 4.25-2.93-1.29 13.47-6.34z"
+                    ></path>
                   </svg>
                 </button>
               </td>
@@ -119,9 +129,8 @@
           </tbody>
         </table>
 
-        <!-- Paginación -->
         <div class="pagination">
-          <button class="page-btn prev-btn">
+          <button class="page-btn prev-btn" (click)="cambiarPaginaAnterior()" [disabled]="paginaActual === 1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -134,16 +143,13 @@
             </svg>
             Anterior
           </button>
-          <div class="page-numbers">
-            <button class="page-number active">1</button>
-            <button class="page-number">2</button>
-            <button class="page-number">3</button>
-            <span class="ellipsis">...</span>
-            <button class="page-number">8</button>
-            <button class="page-number">9</button>
-            <button class="page-number">10</button>
+          <div class="page-buttons">
+            <button *ngFor="let page of pageNumbers()" (click)="cambiarPagina(page)" [disabled]="paginaActual === page">
+              {{ page }}
+            </button>
           </div>
-          <button class="page-btn next-btn">
+
+          <button class="page-btn next-btn"  (click)="cambiarPaginaSiguiente()" [disabled]="paginaActual === totalPaginas()">
             Siguiente
             <svg
               xmlns="http://www.w3.org/2000/svg"

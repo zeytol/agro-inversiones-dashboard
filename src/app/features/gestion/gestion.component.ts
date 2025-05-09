@@ -1,124 +1,103 @@
-import { Component,Output,EventEmitter } from '@angular/core';
+import { Component,Output,EventEmitter, OnInit } from '@angular/core';
+import { DocumentService, Documento } from '../../services/document.service';
 import Swal from 'sweetalert2';
 
-interface Documento {
-  fecha: string;
-  tipo?: string; // Tipo de documento (opcional)
-  numero: string;
-  cliente: string;
-  monto: number;
-  estado: number;
-}
+
+
 @Component({
   selector: 'app-gestion',
   templateUrl: './gestion.component.html',
   styleUrls: ['./gestion.component.css']
 })
 export class GestionComponent {
-  selectedDate: string = ''; // Fecha seleccionada en formato 'yyyy-MM-dd'
-  formattedDate: string = ''; // Fecha formateada en formato 'mm/dd/yyyy'
+  selectedDate: string = ''; 
+  formattedDate: string = ''; 
   isSidebarVisible: boolean = true;
+  paginaActual: number = 1;
+  documentosPorPagina: number = 10;
+  documentosPaginados: Documento[] = [];
+  documentosFiltrados: Documento[] = [];  
+  documents: Documento[] = [];
+  searchTerm: string = '';
+
     @Output() sidebarToggle = new EventEmitter<void>();
+  totalPaginas: any;
 
-
-    documents: Documento[] = [
-      {
-        fecha: '01/02/2001',
-        tipo: 'Factura',
-        numero: '12345678901',
-        cliente: 'contacto@tubermix.com',
-        monto: 23,
-        estado: 23
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20546789012',
-        cliente: 'contacto@construtec.com',
-        monto: 40,
-        estado: 40
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20487654321',
-        cliente: 'ventas@insumosagri.com',
-        monto: 56,
-        estado: 56
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20123456789',
-        cliente: 'info@metalesperu.com',
-        monto: 12,
-        estado: 12
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20348789021',
-        cliente: 'distribu@industriales.com',
-        monto: 25,
-        estado: 25
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20678901234',
-        cliente: 'contacto@electroglobal.com',
-        monto: 56,
-        estado: 56
-      },
-      {
-        fecha: '01/02/2001',
-        numero: '20234567890',
-        cliente: 'admin@tecnoco.com',
-        monto: 4,
-        estado: 4
-      }
-    ];
-    constructor() { }
+    constructor(private documentService: DocumentService) {}
 
     ngOnInit(): void {
+      this.cargarDocumentos();
+    }
+    cargarDocumentos(): void {
+      this.documentService.getDocumentos().subscribe({
+        next: (data) => {
+          this.documents = data;
+          this.documentosFiltrados = data; // Inicialmente muestra todos
+          this.paginaActual = 1;
+          this.actualizarDocumentosPaginados();
+        },
+        error: (err) => {
+          console.error('Error al cargar documentos:', err);
+        }
+      });
+    }
+    actualizarDocumentosPaginados(): void {
+      const inicio = (this.paginaActual - 1) * this.documentosPorPagina;
+      const fin = inicio + this.documentosPorPagina;
+      this.documentosPaginados = this.documentosFiltrados.slice(inicio, fin);
+    }
+    filtrarPorBusqueda(): Documento[] {
+      if (!this.searchTerm) {
+        return this.documents; // Si no hay término de búsqueda, devuelve todos los documentos
+      }
+      return this.documents.filter(doc =>
+        doc.cliente.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        doc.numeroDocumento.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+    buscarDocumentos(): void {
+      const termino = this.searchTerm.trim().toLowerCase();
+      if (!termino) {
+        this.documentosFiltrados = this.documents;
+      } else {
+        this.documentosFiltrados = this.documents.filter(doc =>
+          doc.cliente?.toLowerCase().includes(termino)
+        );
+      }
+      this.paginaActual = 1;
+      this.actualizarDocumentosPaginados();
     }
     updateFormattedDate(): void {
       if (this.selectedDate) {
-        const [year, month, day] = this.selectedDate.split('-');
+        const date = new Date(this.selectedDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
         this.formattedDate = `${day}/${month}/${year}`; // Formato 'dd/mm/yyyy'
       } else {
         this.formattedDate = '';
       }
     }
-    openDatePicker(): void {
-      // Aquí iría la lógica para abrir el selector de fecha
-      // Puedes usar un componente de datepicker de Angular Material o similar
-    }
-  
-    
     clearDate(): void {
       this.selectedDate = '';
       this.formattedDate = '';
     }
-  
     confirmDate(): void {
       console.log('Fecha confirmada:', this.formattedDate);
-    }
-
-    buscarDocumentos(termino: string): void {
-      console.log('Buscando:', termino);
-      // Implementar lógica de búsqueda
     }
     
     filtrarPorFecha(fecha: string): void {
       console.log('Filtrando por fecha:', fecha);
       // Implementar lógica de filtrado por fecha
     }
-    
     agregarDocumento(): void {
       console.log('Agregar nuevo documento');
       // Implementar lógica para agregar documento
     }
-    
     descargarDocumento(documento: Documento): void {
       Swal.fire({
         title: '¿Desea descargar este registro?',
-        text: `Documento: ${documento.numero || 'sin número'}`,
+        text: `Documento:'sin número'}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí',
@@ -151,31 +130,44 @@ export class GestionComponent {
         }
       });
     }
-    
     eliminarDocumento(documento: Documento): void {
       console.log('Eliminando documento:', documento);
       // Implementar lógica de eliminación
     }
-    
     editarDocumento(documento: Documento): void {
       console.log('Editando documento:', documento);
       // Implementar lógica de edición
     }
-    
     enviarDocumento(documento: Documento): void {
       console.log('Enviando documento:', documento);
       // Implementar lógica de envío
     }
-    
     cambiarPagina(pagina: number): void {
-      console.log('Cambiando a página:', pagina);
-      // Implementar lógica de paginación
+      this.paginaActual = pagina;
+      this.actualizarDocumentosPaginados();
+    }
+    cambiarPaginaSiguiente(): void {
+      const totalPaginas = this.totalPaginas();
+      if (this.paginaActual < totalPaginas) {
+        this.paginaActual++;
+        this.actualizarDocumentosPaginados();
+        console.log('Cambiando a la siguiente página:', this.paginaActual);
+      }
+    }
+    cambiarPaginaAnterior(): void {
+      if (this.paginaActual > 1) {
+        this.paginaActual--;
+        this.actualizarDocumentosPaginados();
+        console.log('Cambiando a la página anterior:', this.paginaActual);
+      }
+    }
+    pageNumbers(): number[] {
+      const totalPaginas = this.totalPaginas();
+      return Array.from({ length: totalPaginas }, (_, i) => i + 1);
     }
   
-
-  toggleSidebar(): void {
-    this.isSidebarVisible = !this.isSidebarVisible;
-    this.sidebarToggle.emit();
-  }
-
+    toggleSidebar(): void {
+      this.isSidebarVisible = !this.isSidebarVisible;
+      this.sidebarToggle.emit();
+    }
 }
