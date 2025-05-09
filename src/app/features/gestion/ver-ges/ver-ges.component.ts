@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-ver-ges',
@@ -6,5 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './ver-ges.component.css'
 })
 export class VerGesComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
 }

@@ -20,6 +20,7 @@ import { InventarioComponent } from './features/inventario/inventario.component'
 import { GestionComponent } from './features/gestion/gestion.component';  
 
 
+
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -73,6 +74,7 @@ import { ClienteDetalleComponent } from './features/clientes/cliente-detalle/cli
 import { PermisosComponent } from './components/permisos/permisos.component';
 import { AddUserComponent } from './components/User/add-user/add-user.component';
 import { EditUserComponent } from './components/User/edit-user/edit-user.component';
+import { VerGesComponent } from './features/gestion/ver-ges/ver-ges.component';
 
 @NgModule({
   declarations: [
@@ -124,7 +126,8 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     EditarCategoriaComponent,
     ClienteDetalleComponent,
     PermisosComponent,
-    GestionComponent
+    GestionComponent,
+    VerGesComponent
   ],
   imports: [
     BrowserModule,

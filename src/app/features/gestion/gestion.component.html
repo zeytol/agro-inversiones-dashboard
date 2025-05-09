@@ -74,7 +74,7 @@
               <td>{{ doc.montoTotal }}</td>
               <td>{{ doc.estado }}</td>
               <td class="actions">
-                <button class="action-btn download-btn">
+                <button class="action-btn download-btn" (click)="descargarDocumento(doc)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -100,7 +100,7 @@
                     <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
                   </svg>
                 </button>
-                <button class="action-btn edit-btn">
+                <button class="action-btn edit-btn" >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"

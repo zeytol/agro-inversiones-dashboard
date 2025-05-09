@@ -151,18 +151,34 @@ export class VentasComponent {
   }
 
   subtotal(): number {
-    return this.carritoService.calcularSubtotal();  // Muestra el Subtotal
-  }
+    if (this.selectedInvoiceType === 'Factura') {
+      // Si es Factura, calcular subtotal sin IGV
+      return this.carrito.reduce((sum, item) => {
+        const precioSinIGV = item.salePrice / 1.18; // Precio sin IGV
+        return sum + precioSinIGV * item.cantidad;
+      }, 0);
+    } else {
+      // Si es Boleta, el subtotal es el precio con IGV
+      return this.carrito.reduce((sum, item) => {
+        return sum + item.salePrice * item.cantidad; // Precio con IGV incluido
+      }, 0);
+    }  }
   
   igv(): number {
-    return this.carritoService.calcularIGV();  // Muestra el IGV (solo para Factura)
-  }
+    if (this.selectedInvoiceType === 'Factura') {
+      const subtotal = this.subtotal();
+      return subtotal * 0.18; // 18% del subtotal
+    } else {
+      return 0; // No hay IGV para boletas
+    }  }
 
   total(): number {
     if (this.selectedInvoiceType === 'Factura') {
-      return this.carritoService.calcularTotalConIGV();  // Si es Factura, incluir IGV
+      const subtotal = this.subtotal();
+      const igv = this.igv();
+      return subtotal + igv; // Total con IGV
     } else {
-      return this.carritoService.calcularTotalSinIGV();  // Si es Boleta, no incluir IGV
+      return this.subtotal(); // Total sin IGV (ya incluido en el precio)
     }
   }
 
@@ -197,126 +213,124 @@ export class VentasComponent {
   enviarFactura() {
     if (!this.validarCliente()) return;
 
-    // Validar stock antes de crear los items
-    const productoConStockInsuficiente = this.carrito.find(item => {
-      const producto = this.productos.find(p => p.codeProduct === item.codeProduct);
-      return producto && item.cantidad > producto.amount;
-    });
+  // Validar stock antes de crear los items
+  const productoConStockInsuficiente = this.carrito.find(item => {
+    const producto = this.productos.find(p => p.codeProduct === item.codeProduct);
+    return producto && item.cantidad > producto.amount;
+  });
 
-    if (productoConStockInsuficiente) {
-      Swal.fire('Stock insuficiente', `El producto ${productoConStockInsuficiente.name} no tiene stock suficiente.`, 'warning');
-      return;
-    }
+  if (productoConStockInsuficiente) {
+    Swal.fire('Stock insuficiente', `El producto ${productoConStockInsuficiente.name} no tiene stock suficiente.`, 'warning');
+    return;
+  }
 
-    const productos: InvoiceItem[] = this.carrito.map(item => {
-      const cantidad = item.cantidad || 0;
-      const valorUnitario = item.salePrice || 0;
-      const subtotal = +(cantidad * valorUnitario).toFixed(2);
-      const igv = +(subtotal * 0.18).toFixed(2);
-      const totalItem = +(subtotal + igv).toFixed(2);
+  const productos: InvoiceItem[] = this.carrito.map(item => {
+    const cantidad = item.cantidad || 0;
+    const precioConIGV = item.salePrice || 0; // Precio con IGV incluido
+    const subtotal = +(precioConIGV / 1.18 * cantidad).toFixed(2); // Subtotal sin IGV
+    const igv = +(precioConIGV * cantidad - subtotal).toFixed(2); // IGV calculado
+    const totalItem = +(precioConIGV * cantidad).toFixed(2); // Total del producto (igual al precio con IGV)
 
-      console.log(`Producto: ${item.name}, Subtotal: ${subtotal}, IGV: ${igv}, Total: ${totalItem}`);
+    console.log(`Producto: ${item.name}, Subtotal: ${subtotal}, IGV: ${igv}, Total: ${totalItem}`);
 
-      return {
-        unidadDeMedida: 'Unidad',
-        codigo: item.codeProduct,
-        descripcion: item.name,
-        cantidad,
-        valorUnitario,
-        precioUnitario: +(valorUnitario * 1.18),
-        subtotal,
-        igv,
-        total: totalItem
-      };
-    });
+    return {
+      unidadDeMedida: 'Unidad',
+      codigo: item.codeProduct,
+      descripcion: item.name,
+      cantidad,
+      valorUnitario: +(subtotal / cantidad).toFixed(2), // Precio unitario sin IGV
+      precioUnitario: precioConIGV, // Precio unitario con IGV
+      subtotal,
+      igv,
+      total: totalItem
+    };
+  });
 
-    console.log('Productos antes del cálculo de totales:', productos);
+  console.log('Productos antes del cálculo de totales:', productos);
 
+  // Calcular los totales generales
+  const totalGravada = +productos.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2);
+  const totalIgv = +productos.reduce((sum, item) => sum + item.igv, 0).toFixed(2);
+  const totalFactura = +productos.reduce((sum, item) => sum + item.total, 0).toFixed(2);
 
-    const totalGravada = +productos.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2);
-    const totalIgv = +productos.reduce((sum, item) => sum + item.igv, 0).toFixed(2);
-    const totalFactura = +(totalGravada + totalIgv).toFixed(2);
-
-    // Determinar tipo de comprobante
-    const tipoDeComprobante = this.selectedInvoiceType === 'Factura' ? 1 :
+  // Determinar tipo de comprobante
+  const tipoDeComprobante = this.selectedInvoiceType === 'Factura' ? 1 :
     this.selectedInvoiceType === 'Boleta' ? 3 : 0;
 
-    const serie = this.selectedInvoiceType === 'Factura' ? 'F001' : 
+  const serie = this.selectedInvoiceType === 'Factura' ? 'F001' :
     this.selectedInvoiceType === 'Boleta' ? 'B001' : '';
 
-    // Validar tipo de comprobante
-    if (tipoDeComprobante === 0) {
+  // Validar tipo de comprobante
+  if (tipoDeComprobante === 0) {
     Swal.fire('Error', 'Seleccione un tipo de comprobante válido', 'warning');
     return;
-    }
+  }
 
-    // Verificar si los totales son válidos antes de enviar
-    if (isNaN(totalGravada) || isNaN(totalIgv) || isNaN(totalFactura)) {
-      console.error('Error: Totales no válidos.');
-      return;  
-    }
+  // Verificar si los totales son válidos antes de enviar
+  if (isNaN(totalGravada) || isNaN(totalIgv) || isNaN(totalFactura)) {
+    console.error('Error: Totales no válidos.');
+    return;
+  }
 
-    console.log('Total Gravada:', totalGravada);
-    console.log('Total IGV:', totalIgv);
-    console.log('Total Factura:', totalFactura);
+  console.log('Total Gravada:', totalGravada);
+  console.log('Total IGV:', totalIgv);
+  console.log('Total Factura:', totalFactura);
 
-    const moneda: number = 1; // Cambiar a 1 o 2 según la moneda seleccionada
+  const moneda: number = 1; // Cambiar a 1 o 2 según la moneda seleccionada
 
+  if (this.selectedPaymentMethod === null) {
+    Swal.fire('Error', 'Seleccione un método de pago', 'warning');
+    return;
+  }
 
-    if (this.selectedPaymentMethod === null) {
-      Swal.fire('Error', 'Seleccione un método de pago', 'warning');
-      return;
-    }
+  const factura: InvoiceRequest = {
+    tipoDeComprobante,
+    serie,
+    clienteTipoDocumento: this.documentType,
+    clienteNumeroDeDocumento: this.documentNumber,
+    clienteDenominacion: this.name,
+    clienteDireccion: this.address,
+    fechaDeEmision: new Date().toISOString().split('T')[0],
+    moneda: moneda,
+    porcentajeDeIgv: 18,
+    totalGravada,
+    totalIgv: tipoDeComprobante === 1 ? totalIgv : 0,
+    total: totalFactura,
+    items: productos.map(item => ({
+      ...item,
+      igv: tipoDeComprobante === 1 ? item.igv : 0,
+      total: tipoDeComprobante === 1 ? item.total : item.subtotal
+    })),
+    paymentMethod: this.selectedPaymentMethod,
+    operationNumber: this.operationNumber // ✅ solo si agregaste esta propiedad al tipo
+  };
 
-    const factura: InvoiceRequest = {
-      tipoDeComprobante,
-      serie,   
-      clienteTipoDocumento: this.documentType,
-      clienteNumeroDeDocumento: this.documentNumber,
-      clienteDenominacion: this.name,
-      clienteDireccion: this.address,
-      fechaDeEmision: new Date().toISOString().split('T')[0],
-      moneda: moneda, 
-      porcentajeDeIgv: 18,
-      totalGravada,
-      totalIgv: tipoDeComprobante === 1 ? totalIgv : 0,
-      total: tipoDeComprobante === 1 ? totalFactura : totalGravada,
-      items: productos.map(item => ({
-        ...item,
-        igv: tipoDeComprobante === 1 ? item.igv : 0,
-        total: tipoDeComprobante === 1 ? item.total : item.subtotal
-      })),
-      paymentMethod: this.selectedPaymentMethod,  
-      operationNumber: this.operationNumber // ✅ solo si agregaste esta propiedad al tipo
-    };
-  
-    console.log('Factura a enviar:', factura);
+  console.log('Factura a enviar:', factura);
 
+  this.invoiceService.enviarFactura(factura).subscribe({
+    next: (response) => {
+      const mensaje = this.selectedInvoiceType === 'Factura'
+        ? 'Factura enviada correctamente'
+        : 'Boleta enviada correctamente';
 
-    this.invoiceService.enviarFactura(factura).subscribe({
-      next: (response) => {
-        const mensaje = this.selectedInvoiceType === 'Factura'
-          ? 'Factura enviada correctamente'
-          : 'Boleta enviada correctamente';
-  
-        Swal.fire('Éxito', mensaje, 'success').then(() => {
-         
-          this.carrito.forEach(item => {
-            const producto = this.productos.find(p => p.codeProduct === item.codeProduct);
-            if (producto) {
-              producto.amount -= item.cantidad;   
-            }
-          });
-          this.limpiarCamposVenta();
-          this.carritoService.limpiarCarrito();
-          this.carrito = this.carritoService.getCarrito(); 
+      Swal.fire('Éxito', mensaje, 'success').then(() => {
+        this.carrito.forEach(item => {
+          const producto = this.productos.find(p => p.codeProduct === item.codeProduct);
+          if (producto) {
+            producto.amount -= item.cantidad;
+          }
         });
-      },
-      error: (err) => {
-        Swal.fire('Error', 'No se pudo enviar la factura/boleta', 'error');
-        console.error(err);
-      }
-    });
+        this.limpiarCamposVenta();
+        this.carritoService.limpiarCarrito();
+        this.carrito = this.carritoService.getCarrito();
+      });
+    },
+    error: (err) => {
+      Swal.fire('Error', 'No se pudo enviar la factura/boleta', 'error');
+      console.error(err);
+    }
+  });
+    
   }
 
   private limpiarCamposVenta() {

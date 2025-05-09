@@ -2,6 +2,7 @@ import { Component,Output,EventEmitter, OnInit } from '@angular/core';
 import { DocumentService, Documento } from '../../services/document.service';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 
 
@@ -110,37 +111,47 @@ export class GestionComponent {
     }
     descargarDocumento(documento: Documento): void {
       Swal.fire({
-        title: '¿Desea descargar este registro?',
-        text: `Documento:'sin número'}`,
-        icon: 'warning',
+        title: '¿Estás seguro?',
+        text: `¿Deseas descargar el documento "${documento.numeroDocumento || 'sin número'}"?`,
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, descargar',
+        cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            title: 'Descargado!',
-            text: 'El documento se ha descargado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-              // Aquí puedes colocar tu lógica real de descarga:
-              console.log('Descargando documento:', documento);
+          const doc = new jsPDF();
     
-              // Simulación o llamada real a servicio de descarga:
-              // this.servicioDescarga.descargar(documento).subscribe(...)
-            }
+          // Título del PDF
+          doc.setFontSize(16);
+          doc.text('Detalles de la Compra', 10, 10);
+    
+          // Información del documento
+          const data = [
+            ['Fecha de Emisión', documento.fechaEmision || 'N/A'],
+            ['Tipo de Documento', documento.tipoDocumento || 'N/A'],
+            ['Número de Documento', documento.numeroDocumento || 'N/A'],
+            ['Cliente', documento.cliente || 'N/A'],
+            ['Monto Total', documento.montoTotal ? `S/. ${documento.montoTotal}` : 'N/A'],
+            ['Estado de Pago', documento.estado || 'N/A'],
+          ];
+    
+          // Agregar tabla con los datos
+          (doc as any).autoTable({
+            head: [['Campo', 'Valor']],
+            body: data,
+            startY: 20,
           });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire({
-            title: 'Cancelado',
-            text: 'La descarga ha sido cancelada.',
-            icon: 'error',
-            showConfirmButton: false,
-            timer: 2000
-          });
+    
+          // Guardar el PDF
+          doc.save(`compra-${documento.numeroDocumento || 'sin-numero'}.pdf`);
+    
+          Swal.fire(
+            '¡Descargado!',
+            'El documento ha sido descargado con éxito.',
+            'success'
+          );
         }
       });
     }
