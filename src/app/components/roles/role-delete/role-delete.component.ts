@@ -7,8 +7,8 @@ import Swal from 'sweetalert2';
   styleUrls: ['./role-delete.component.css']
 })
 export class RoleDeleteComponent {
-  @Input() roles: any[] = [];  // Lista de roles
-  @Output() roleDeleted = new EventEmitter<number>();  // Evento emitido al eliminar un rol
+  @Input() roles: any[] = []; 
+  @Output() roleDeleted = new EventEmitter<number>(); 
 
   deleteRole(roleId: number): void {
     Swal.fire({
@@ -30,9 +30,8 @@ export class RoleDeleteComponent {
       buttonsStyling: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Filtrar el rol eliminado
         this.roles = this.roles.filter((role) => role.id !== roleId);
-        this.roleDeleted.emit(roleId);  // Emitir el evento para notificar a otros componentes
+        this.roleDeleted.emit(roleId);  
         Swal.fire(
           '¡Eliminado!',
           'El registro ha sido eliminado exitosamente.',
