@@ -19,7 +19,7 @@ export class CreateRoleComponent {
 
   save() {
     this.saveModal.emit(this.modalData);
-    this.close(); // Optionally close after saving
+    this.close(); 
   }
 
   get modalTitle() {

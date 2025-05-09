@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../../services/user.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-add-user',
@@ -27,18 +28,7 @@ export class AddUserComponent {
     });
   }
 
-  // Función para cancelar y cerrar el modal
-  cancelAdd() {
-    this.userForm.reset({ enabled: true });
-    this.closeModal();
-  }
-
-  // Función para cerrar el modal
-  closeModal() {
-    this.modalVisible = false; // Esto oculta el modal
-  }
-
-  onSubmit() {
+  onSubmit(): void {
     if (this.userForm.invalid) {
       Swal.fire({
         icon: 'error',
@@ -47,9 +37,9 @@ export class AddUserComponent {
       });
       return;
     }
-  
+
     const formData = this.userForm.value;
-  
+
     Swal.fire({
       title: 'Registrando usuario...',
       text: 'Por favor espera',
@@ -58,9 +48,9 @@ export class AddUserComponent {
         Swal.showLoading();
       }
     });
-  
+
     this.userService.registrarUsuario(formData).subscribe({
-      next: (response) => {
+      next: () => {
         Swal.close();
         Swal.fire({
           icon: 'success',
@@ -68,7 +58,7 @@ export class AddUserComponent {
           text: 'El usuario ha sido registrado correctamente.',
           confirmButtonText: 'OK'
         }).then(() => {
-          this.cancelAdd(); // Cierra el modal y limpia el formulario
+          this.cancelAdd();
           location.reload();
         });
       },
@@ -82,5 +72,14 @@ export class AddUserComponent {
         console.error('Error al registrar el usuario:', error.message);
       }
     });
+  }
+
+  cancelAdd(): void {
+    this.userForm.reset({ enabled: true });
+    this.closeModal();
+  }
+
+  closeModal(): void {
+    this.modalVisible = false;
   }
 }

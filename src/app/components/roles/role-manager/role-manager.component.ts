@@ -28,7 +28,6 @@ throw new Error('Method not implemented.');
   modalData: any = {};
   selectedRoleDetails: Role | null = null;
   isRoleDetailsModalOpen: boolean = false;
-  // Search properties
   roleSearchTerm: string = '';
   moduleSearchTerm: string = '';
   permissionSearchTerm: string = '';
@@ -48,12 +47,10 @@ throw new Error('Method not implemented.');
     this.isRoleDetailsModalOpen = true;
   }
 
-  // Method to close role details modal
   closeRoleDetailsModal() {
     this.isRoleDetailsModalOpen = false;
     this.selectedRoleDetails = null;
   }
-  // Cargar roles desde el servicio
   loadRoles() {
     this.roleService.getRoles().subscribe(
       (roles: Role[]) => {
@@ -62,10 +59,10 @@ throw new Error('Method not implemented.');
           isExpanded: false,
           modules: role.modules.map((module) => ({
             ...module,
-            isExpanded: false, // Inicialmente colapsado
+            isExpanded: false, 
             permissions: module.permissions.map((permission) => ({
               ...permission,
-              isSelected: false, // Inicialmente no seleccionado
+              isSelected: false, 
             })),
           })),
         }));
@@ -91,7 +88,6 @@ throw new Error('Method not implemented.');
     }
   }
 
-  // Métodos de búsqueda consolidados
   searchRoles() {
     if (!this.roleSearchTerm && !this.moduleSearchTerm && !this.permissionSearchTerm) {
       this.roles = [...this.originalRoles];
@@ -118,7 +114,6 @@ throw new Error('Method not implemented.');
     });
   }
 
-  // Abrir un modal
   openModal(type: string, roleId?: number, moduleName?: string) {
     this.isModalOpen = true;
     this.modalType = type;
@@ -134,7 +129,6 @@ throw new Error('Method not implemented.');
 
   }
 
-  // Agregar un nuevo rol
   addRole() {
     if (!this.modalData.role_name) {
       console.error('Role name is required');
@@ -144,7 +138,7 @@ throw new Error('Method not implemented.');
     const newRole = { 
       role_name: this.modalData.role_name, 
       modules: [],
-      role_id: 0 // Backend should assign the actual ID
+      role_id: 0 
     };
 
     this.roleService.addRole(newRole).subscribe(
@@ -159,7 +153,6 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Agregar un nuevo módulo a un rol
   addModule(roleId: number) {
     if (!this.modalData.module_name) {
       console.error('Module name is required');
@@ -183,7 +176,6 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Agregar un nuevo permiso a un módulo dentro de un rol
   addPermission(roleId: number, moduleName: string) {
     if (!this.modalData.permission_name) {
       console.error('Permission name is required');
@@ -206,7 +198,6 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Eliminar un rol
   deleteRole(roleId: number) {
     this.roleService['deleteRole'](roleId).subscribe(
       () => {
@@ -218,7 +209,6 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Eliminar un módulo de un rol
   deleteModule(roleId: number, moduleName: string) {
     this.roleService.removeModuleFromRole(roleId, moduleName).subscribe(
       () => {
@@ -232,7 +222,6 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Eliminar un permiso de un módulo
   deletePermission(roleId: number, moduleName: string, permissionName: string) {
     this.roleService.removePermissionFromModule(roleId, moduleName, permissionName).subscribe(
       () => {
@@ -246,14 +235,12 @@ throw new Error('Method not implemented.');
     );
   }
 
-  // Método para cerrar modal
   close() {
     this.isModalOpen = false;
     this.closeModal.emit();
   }
 
   submitModal() {
-    // Implementation will depend on your specific requirements
     console.log('Modal submitted');
     this.close();
   }

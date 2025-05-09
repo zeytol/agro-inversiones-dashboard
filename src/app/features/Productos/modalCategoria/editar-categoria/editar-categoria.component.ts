@@ -23,24 +23,23 @@ export class EditarCategoriaComponent {
   selectedFile: any = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private categoryEditService: CategoryEditService
   ) { }
 
   ngOnInit(): void {
-    // Verifica si la categoría tiene imagen y se muestra una imagen predeterminada si no tiene imagen
+    // Mostrar la imagen actual o una por defecto si no existe
     if (this.categoriaSeleccionada.image && this.categoriaSeleccionada.image !== '') {
       this.imagePreview = this.categoriaSeleccionada.image;
     } else {
-      this.imagePreview = 'ruta_por_defecto'; // Cambia esto por una imagen predeterminada si no hay imagen
+      this.imagePreview = 'ruta_por_defecto'; // Cambia esto por una imagen por defecto si lo deseas
     }
   }
 
-  // Manejo de archivo de imagen seleccionado
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Verifica el tipo de archivo (si es una imagen válida)
       if (file.type === 'image/jpeg' || file.type === 'image/png') {
         this.selectedFile = file;
 
@@ -56,23 +55,23 @@ export class EditarCategoriaComponent {
   }
 
   editarCategoria(): void {
-   // const url = `https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/categories/edit/${this.categoriaSeleccionada.id}`;
-
-    //const formData = new FormData();
-    //formData.append('CatProduct', new Blob([JSON.stringify({
-    const datosCategoria = {
+    const datosCategoria: any = {
       name: this.categoriaSeleccionada.name,
       description: this.categoriaSeleccionada.description,
-      image: '' // Se puede incluir la imagen si se sube
-    //})], { type: 'application/json' }));
-  };
-  const formData = new FormData();
-  formData.append('CatProduct', new Blob([JSON.stringify(datosCategoria)], { type: 'application/json' }));
-
-  if (this.selectedFile) {
-    formData.append('image', this.selectedFile);  // Se agrega la imagen si se ha seleccionado
-  }
-
+      image: this.selectedFile ? '' : this.categoriaSeleccionada.image  // envía la URL si no hay nueva imagen
+    };
+  
+    const formData = new FormData();
+    formData.append(
+      'CatProduct',
+      new Blob([JSON.stringify(datosCategoria)], { type: 'application/json' })
+    );
+  
+    // Solo agregamos el archivo de imagen si hay una nueva seleccionada
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile);
+    }
+  
     Swal.fire({
       title: 'Editando categoría...',
       html: 'Por favor, espera mientras se completa el registro.',
@@ -81,20 +80,14 @@ export class EditarCategoriaComponent {
         Swal.showLoading();
       }
     });
-
-    if (this.selectedFile) {
-      formData.append('image', this.selectedFile);
-    }
-
-    // Enviar los datos con multipart/form-data
-    //this.http.put(url, formData, {withCredentials: true}).subscribe({
-      this.categoryEditService.editarCategoria(
-        this.categoriaSeleccionada.id,
-        formData
-      ).subscribe({
+  
+    this.categoryEditService.editarCategoria(
+      this.categoriaSeleccionada.id,
+      formData
+    ).subscribe({
       next: (response) => {
         Swal.fire({
-          title: 'Categoría editado',
+          title: 'Categoría editada',
           text: 'La categoría se ha editado con éxito.',
           icon: 'success',
           confirmButtonText: 'Aceptar'
@@ -113,7 +106,7 @@ export class EditarCategoriaComponent {
         });
       }
     });
-  }
+  }  
 
   cerrarEditarCategoriaModal(): void {
     this.cerrarModal.emit();

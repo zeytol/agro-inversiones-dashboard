@@ -1,33 +1,61 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2';
+
+import { UserService } from '../../../services/user.service';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { UserService } from '../../../services/user.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'; 
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
+
   usuarios: any[] = [];
   isSidebarVisible = true;
   error: string = '';
+  p: number = 1;
 
-  constructor(private userService: UserService, private router: Router, private dialog: MatDialog, private fb: FormBuilder) {}
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    private dialog: MatDialog,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.obtenerUsuarios();
   }
 
-  p: number = 1;
-
-  // Navegar a la página de usuarios
-  goToPermissions() {
+  goToPermissions(): void {
     this.router.navigate(['/roles']);
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarVisible = !this.isSidebarVisible;
+  }
+
+  obtenerUsuarios(): void {
+    this.userService.getUsuarios().subscribe({
+      next: (data) => {
+        this.usuarios = data.map((usuario: any) => ({
+          id: usuario.id,
+          username: usuario.username,
+          email: usuario.email,
+          telefono: usuario.telefono,
+          enabled: usuario.enabled,
+          created_at: usuario.created_at,
+          rol: usuario.rol?.roleName || 'No asignado'
+        }));
+      },
+      error: (err) => {
+        this.error = err.message || 'Error desconocido';
+        console.error('Error al cargar usuarios:', err);
+      }
+    });
   }
 
   registrarUsuario(): void {
@@ -38,7 +66,7 @@ export class UsersComponent implements OnInit {
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       enabled: [true]
     });
-  
+
     Swal.fire({
       title: 'Registrar nuevo usuario',
       html: `
@@ -49,12 +77,10 @@ export class UsersComponent implements OnInit {
             gap: 10px;
             align-items: stretch;
           }
-  
           .form-group label {
             font-weight: 500;
             text-align: left;
           }
-  
           .form-group input,
           .form-group select {
             padding: 0.5rem;
@@ -65,7 +91,6 @@ export class UsersComponent implements OnInit {
             box-sizing: border-box;
           }
         </style>
-  
         <div class="form-group">
           <input id="swal-username" placeholder="Nombre de usuario">
           <input id="swal-password" placeholder="Contraseña" type="password">
@@ -86,14 +111,14 @@ export class UsersComponent implements OnInit {
         const email = (document.getElementById('swal-email') as HTMLInputElement).value.trim();
         const telefono = (document.getElementById('swal-telefono') as HTMLInputElement).value.trim();
         const enabled = (document.getElementById('swal-enabled') as HTMLSelectElement).value === 'true';
-  
+
         form.setValue({ username, password, email, telefono, enabled });
-  
+
         if (form.invalid) {
           Swal.showValidationMessage('Por favor completa todos los campos correctamente.');
           return;
         }
-  
+
         return form.value;
       }
     }).then(result => {
@@ -101,11 +126,9 @@ export class UsersComponent implements OnInit {
         Swal.fire({
           title: 'Registrando usuario...',
           allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
+          didOpen: () => Swal.showLoading()
         });
-  
+
         this.userService.registrarUsuario(result.value).subscribe({
           next: () => {
             Swal.fire('Éxito', 'Usuario registrado correctamente.', 'success');
@@ -118,40 +141,7 @@ export class UsersComponent implements OnInit {
       }
     });
   }
-    
 
-  obtenerUsuarios(): void {
-    this.userService.getUsuarios().subscribe({
-      next: (data) => {
-        this.usuarios = data.map((usuario: any) => ({
-          id: usuario.id,
-          username: usuario.username,
-          email: usuario.email,
-          telefono: usuario.telefono,
-          enabled: usuario.enabled,
-          created_at: usuario.created_at,
-          rol: usuario.rol && usuario.rol.roleName ? usuario.rol.roleName : 'No asignado'
-        }));
-      },
-      error: (err) => {
-        this.error = err.message || 'Error desconocido';
-        console.error('Error al cargar usuarios:', err);
-      }
-    });
-  }
-
-  openAddUserModal(): void {
-    const dialogRef = this.dialog.open(AddUserComponent, {
-      width: '500px',
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === 'usuario_creado') {
-        this.obtenerUsuarios(); // refresca lista
-      }
-    });
-  }
-  
   verDetalle(usuario: any): void {
     this.userService.getUsuarioDetalle(usuario.id).subscribe({
       next: (detalle) => {
@@ -174,13 +164,56 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  asignarRol(): void {
-    // Paso 1: Selecciona usuario
-    const inputOptionsUsuarios: any = {};
-    this.usuarios.forEach((usuario) => {
-      inputOptionsUsuarios[usuario.id] = usuario.username;
+  openAddUserModal(): void {
+    const dialogRef = this.dialog.open(AddUserComponent, { width: '500px' });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'usuario_creado') {
+        this.obtenerUsuarios();
+      }
     });
-  
+  }
+
+  openEditUserModal(usuario: any): void {
+    const dialogRef = this.dialog.open(EditUserComponent, {
+      width: '500px',
+      data: usuario
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'usuario_editado') {
+        this.obtenerUsuarios();
+      }
+    });
+  }
+
+  eliminarUsuario(usuario: any): void {
+    Swal.fire({
+      title: `¿Estás seguro de eliminar al usuario "${usuario.username}"?`,
+      text: "Esta acción no puede ser revertida.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.eliminarUsuario(usuario.id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado!', `El usuario ${usuario.username} ha sido eliminado correctamente.`, 'success');
+            this.obtenerUsuarios();
+          },
+          error: (err) => {
+            Swal.fire('Error!', `No se pudo eliminar al usuario. ${err.message}`, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  asignarRol(): void {
+    const inputOptionsUsuarios: any = {};
+    this.usuarios.forEach(usuario => inputOptionsUsuarios[usuario.id] = usuario.username);
+
     Swal.fire({
       title: 'Seleccionar usuario',
       input: 'select',
@@ -189,25 +222,17 @@ export class UsersComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Siguiente',
       cancelButtonText: 'Cancelar',
-      inputValidator: (value) => {
-        if (!value) {
-          return 'Debes seleccionar un usuario';
-        }
-        return null;
-      }
+      inputValidator: (value) => !value ? 'Debes seleccionar un usuario' : null
     }).then((resultUsuario) => {
       if (resultUsuario.isConfirmed && resultUsuario.value) {
         const usuarioId = +resultUsuario.value;
         const usuarioSeleccionado = this.usuarios.find(u => u.id === usuarioId);
-  
-        // Paso 2: Selecciona rol
+
         this.userService.getRoles().subscribe({
           next: (roles) => {
             const inputOptionsRoles: any = {};
-            roles.forEach((rol: any) => {
-              inputOptionsRoles[rol.id] = rol.roleName;
-            });
-  
+            roles.forEach((rol: any) => inputOptionsRoles[rol.id] = rol.roleName);
+
             Swal.fire({
               title: `Asignar rol a ${usuarioSeleccionado.username}`,
               input: 'select',
@@ -216,20 +241,15 @@ export class UsersComponent implements OnInit {
               showCancelButton: true,
               confirmButtonText: 'Asignar',
               cancelButtonText: 'Cancelar',
-              inputValidator: (value) => {
-                if (!value) {
-                  return 'Debes seleccionar un rol';
-                }
-                return null;
-              }
+              inputValidator: (value) => !value ? 'Debes seleccionar un rol' : null
             }).then((resultRol) => {
               if (resultRol.isConfirmed && resultRol.value) {
                 const rolId = +resultRol.value;
-  
+
                 this.userService.asignarRolAUsuario(usuarioId, rolId).subscribe({
                   next: () => {
                     Swal.fire('Rol Asignado', `El rol fue asignado a ${usuarioSeleccionado.username} correctamente.`, 'success');
-                    this.obtenerUsuarios(); // refresca lista
+                    this.obtenerUsuarios();
                   },
                   error: (err) => {
                     Swal.fire('Error', `No se pudo asignar el rol. ${err.message}`, 'error');
@@ -244,47 +264,5 @@ export class UsersComponent implements OnInit {
         });
       }
     });
-  }
-  
-  // Abre el modal para editar un usuario
-  openEditUserModal(usuario: any): void {
-    const dialogRef = this.dialog.open(EditUserComponent, {
-      width: '500px',
-      data: usuario // Pasa los datos del usuario a editar al modal
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === 'usuario_editado') {
-        this.obtenerUsuarios(); // refresca la lista después de editar
-      }
-    });
-  }
-  
-  eliminarUsuario(usuario: any): void {
-    console.log('Eliminando usuario con ID:', usuario.id); // Agrega este log para verificar el ID
-    Swal.fire({
-      title: `¿Estás seguro de eliminar al usuario "${usuario.username}"?`,
-      text: "Esta acción no puede ser revertida.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.userService.eliminarUsuario(usuario.id).subscribe({
-          next: () => {
-            Swal.fire('Eliminado!', `El usuario ${usuario.username} ha sido eliminado correctamente.`, 'success');
-            this.obtenerUsuarios(); // Refrescar lista después de eliminar
-          },
-          error: (err) => {
-            Swal.fire('Error!', `No se pudo eliminar al usuario. ${err.message}`, 'error');
-          }
-        });
-      }
-    });
-  }
-
-  toggleSidebar() {
-    this.isSidebarVisible = !this.isSidebarVisible;
   }
 }
