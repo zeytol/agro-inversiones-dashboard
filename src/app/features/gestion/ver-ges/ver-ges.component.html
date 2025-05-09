@@ -1,1 +1,17 @@
-<p>ver-ges works!</p>
+<h2 mat-dialog-title>Detalle de la Compra</h2>
+<mat-dialog-content>
+  <p><strong>Fecha de Emisión:</strong> {{ data.fechaEmision || "N/A" }}</p>
+  <p><strong>Tipo de Documento:</strong> {{ data.tipoDocumento || "N/A" }}</p>
+  <p>
+    <strong>Número de Documento:</strong> {{ data.numeroDocumento || "N/A" }}
+  </p>
+  <p><strong>Cliente:</strong> {{ data.cliente || "N/A" }}</p>
+  <p>
+    <strong>Monto Total:</strong>
+    {{ data.montoTotal ? "S/. " + data.montoTotal : "N/A" }}
+  </p>
+  <p><strong>Estado de Pago:</strong> {{ data.estado || "N/A" }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

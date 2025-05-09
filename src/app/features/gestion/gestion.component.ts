@@ -1,7 +1,9 @@
 import { Component,Output,EventEmitter, OnInit } from '@angular/core';
 import { DocumentService, Documento } from '../../services/document.service';
 import Swal from 'sweetalert2';
-
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 
 @Component({
@@ -21,7 +23,6 @@ export class GestionComponent {
   searchTerm: string = '';
 
     @Output() sidebarToggle = new EventEmitter<void>();
-  totalPaginas: any;
 
     constructor(private documentService: DocumentService) {}
 
@@ -67,7 +68,7 @@ export class GestionComponent {
       this.paginaActual = 1;
       this.actualizarDocumentosPaginados();
     }
-    updateFormattedDate(): void {
+    /*updateFormattedDate(): void {
       if (this.selectedDate) {
         const date = new Date(this.selectedDate);
         const day = String(date.getDate()).padStart(2, '0');
@@ -77,7 +78,7 @@ export class GestionComponent {
       } else {
         this.formattedDate = '';
       }
-    }
+    }*/
     clearDate(): void {
       this.selectedDate = '';
       this.formattedDate = '';
@@ -87,46 +88,70 @@ export class GestionComponent {
     }
     
     filtrarPorFecha(fecha: string): void {
-      console.log('Filtrando por fecha:', fecha);
-      // Implementar lógica de filtrado por fecha
+      if (!fecha) {
+        this.documentosFiltrados = this.documents; // Si no hay fecha, muestra todos los documentos
+      } else {
+        const fechaSeleccionada = new Date(fecha);
+        this.documentosFiltrados = this.documents.filter(doc => {
+          const fechaDocumento = new Date(doc.fechaEmision); // Asegúrate de que `doc.fecha` sea una propiedad válida
+          return (
+            fechaDocumento.getDate() === fechaSeleccionada.getDate() &&
+            fechaDocumento.getMonth() === fechaSeleccionada.getMonth() &&
+            fechaDocumento.getFullYear() === fechaSeleccionada.getFullYear()
+          );
+        });
+      }
+      this.paginaActual = 1; // Reinicia a la primera página
+      this.actualizarDocumentosPaginados();
     }
+    
     agregarDocumento(): void {
       console.log('Agregar nuevo documento');
       // Implementar lógica para agregar documento
     }
     descargarDocumento(documento: Documento): void {
       Swal.fire({
-        title: '¿Desea descargar este registro?',
-        text: `Documento:'sin número'}`,
-        icon: 'warning',
+        title: '¿Estás seguro?',
+        text: `¿Deseas descargar el documento "${documento.numeroDocumento || 'sin número'}"?`,
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, descargar',
+        cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            title: 'Descargado!',
-            text: 'El documento se ha descargado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-              // Aquí puedes colocar tu lógica real de descarga:
-              console.log('Descargando documento:', documento);
+          const doc = new jsPDF();
     
-              // Simulación o llamada real a servicio de descarga:
-              // this.servicioDescarga.descargar(documento).subscribe(...)
-            }
+          // Título del PDF
+          doc.setFontSize(16);
+          doc.text('Detalles de la Compra', 10, 10);
+    
+          // Información del documento
+          const data = [
+            ['Fecha de Emisión', documento.fechaEmision || 'N/A'],
+            ['Tipo de Documento', documento.tipoDocumento || 'N/A'],
+            ['Número de Documento', documento.numeroDocumento || 'N/A'],
+            ['Cliente', documento.cliente || 'N/A'],
+            ['Monto Total', documento.montoTotal ? `S/. ${documento.montoTotal}` : 'N/A'],
+            ['Estado de Pago', documento.estado || 'N/A'],
+          ];
+    
+          // Agregar tabla con los datos
+          (doc as any).autoTable({
+            head: [['Campo', 'Valor']],
+            body: data,
+            startY: 20,
           });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire({
-            title: 'Cancelado',
-            text: 'La descarga ha sido cancelada.',
-            icon: 'error',
-            showConfirmButton: false,
-            timer: 2000
-          });
+    
+          // Guardar el PDF
+          doc.save(`compra-${documento.numeroDocumento || 'sin-numero'}.pdf`);
+    
+          Swal.fire(
+            '¡Descargado!',
+            'El documento ha sido descargado con éxito.',
+            'success'
+          );
         }
       });
     }
@@ -166,8 +191,14 @@ export class GestionComponent {
       return Array.from({ length: totalPaginas }, (_, i) => i + 1);
     }
   
+    // Calcular el total de páginas
+    totalPaginas(): number {
+      return Math.ceil(this.documents.length / this.documentosPorPagina);
+    }
+
     toggleSidebar(): void {
       this.isSidebarVisible = !this.isSidebarVisible;
       this.sidebarToggle.emit();
     }
+
 }
