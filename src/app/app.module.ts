@@ -20,7 +20,6 @@ import { InventarioComponent } from './features/inventario/inventario.component'
 import { GestionComponent } from './features/gestion/gestion.component';  
 
 
-
 // Importaciones de Font Awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -85,7 +84,6 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     VentasComponent,
     AgregarClienteComponent,
     InventarioComponent,
-    GestionComponent,
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
@@ -126,6 +124,7 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     EditarCategoriaComponent,
     ClienteDetalleComponent,
     PermisosComponent,
+    GestionComponent
   ],
   imports: [
     BrowserModule,

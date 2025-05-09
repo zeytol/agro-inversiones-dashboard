@@ -12,7 +12,6 @@ export class CreatePermissionComponent {
 
   onSubmit() {
     if (this.permissionName && this.permissionDescription) {
-      // Aquí agregar lógica para crear el permiso, por ejemplo, llamar a un servicio
       console.log('Permiso creado:', this.permissionName, this.permissionDescription);
     }
   }
