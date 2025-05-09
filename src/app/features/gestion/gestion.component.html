@@ -34,7 +34,7 @@
               matInput
               [matDatepicker]="picker"
               [(ngModel)]="selectedDate"
-              (dateChange)="updateFormattedDate()"
+              (dateChange)="filtrarPorFecha(selectedDate)"
               placeholder="Selecciona una fecha"
             />
             <mat-datepicker-toggle
