@@ -7,6 +7,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +17,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import {NgxPaginationModule, } from 'ngx-pagination';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { InventarioComponent } from './features/inventario/inventario.component';
+import { GestionComponent } from './features/gestion/gestion.component';  
+
 
 
 // Importaciones de Font Awesome
@@ -41,6 +45,7 @@ import { EditarDocComponent } from './features/documentos/modals/editar-doc/edit
 import { AgregarDocComponent } from './features/documentos/modals/agregar-doc/agregar-doc.component';
 import { EnviarDocComponent } from './features/documentos/modals/enviar-doc/enviar-doc.component';
 import { EliminarDocComponent } from './features/documentos/modals/eliminar-doc/eliminar-doc.component';
+
 
  // Asegúrate de importar FormsModule
 import { AgregarClienteComponent } from './features/clientes/agregar-cliente/agregar-cliente.component';
@@ -80,6 +85,7 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     VentasComponent,
     AgregarClienteComponent,
     InventarioComponent,
+    GestionComponent,
     ClientesComponent,
     ConfirmDeleteModalComponent,
     AgregarUsuarioComponent,
@@ -134,8 +140,9 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    HttpClientModule, 
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule, 
     NgxPaginationModule,
     MatPaginatorModule,
     ReactiveFormsModule,
@@ -144,8 +151,11 @@ import { EditUserComponent } from './components/User/edit-user/edit-user.compone
   providers: [
     provideClientHydration(),
     provideAnimationsAsync(),
+    MatDatepickerModule, // Asegúrate de que esté aquí
+    MatNativeDateModule,
   ],
   bootstrap: [AppComponent],
+  
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
