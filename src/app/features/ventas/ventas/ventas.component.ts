@@ -1,4 +1,4 @@
- import { Component } from '@angular/core';
+import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 import { customers } from '../../../models/client.model'; // o donde tengas la interfaz
 import { CarritoService } from '../../../services/carrito.service';
@@ -55,7 +55,6 @@ export class VentasComponent {
   email: string = '';
 
 
-
   constructor(
     private carritoService: CarritoService,
     private clienteService: ClienteService,
@@ -84,6 +83,7 @@ export class VentasComponent {
     });
   }
 
+  // Cambiar la cuota según el método de pago
   onPaymentMethodChange() {
     this.selectedPaymentMethod = Number(this.selectedPaymentMethod);
     if (this.selectedPaymentMethod === 1) {
@@ -437,7 +437,7 @@ export class VentasComponent {
     );
   }
 
-    clienteAgregadoHandler(cliente: customers) {
+  clienteAgregadoHandler(cliente: customers) {
     // Actualiza el DNI con el número de documento del cliente agregado
     this.dni = cliente.documentNumber;
 

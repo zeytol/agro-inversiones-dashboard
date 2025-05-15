@@ -389,7 +389,7 @@
                 <select id="payment-method" [(ngModel)]="selectedPaymentMethod" name="payment-method"
                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm rounded-md transition duration-150 ease-in-out"
                   (change)="onPaymentMethodChange()">
-                  <option selected disabled>Seleccione un método de pago</option>
+                  <option [ngValue]="null" disabled>Seleccione un método de pago</option>
                   <option *ngFor="let method of paymentMethods" [value]="method.id">{{ method.name }}</option>
                 </select>
               </div>
