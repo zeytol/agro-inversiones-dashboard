@@ -17,7 +17,7 @@ export interface InvoiceItem {
 export interface InvoiceRequest {
   tipoDeComprobante: number;
   serie: string;
-  sunatTransaction?: number; // si aplica
+  sunatTransaction?: number;
   clienteTipoDocumento: string;
   clienteNumeroDeDocumento: string;
   clienteDenominacion: string;
@@ -30,18 +30,32 @@ export interface InvoiceRequest {
   total: number;
   items: InvoiceItem[];
   paymentMethod: number;
-  operationNumber?: string; // Agregado para evitar error
+  operationNumber?: string;
+  cuotas: number;
+}
+
+export interface InvoiceResponse {
+  tipoDeComprobante: number;
+  serie: string;
+  numero: number; // O string si el número puede tener ceros a la izquierda y es tratado como tal
+  enlace: string;
+  aceptadaPorSunat: boolean;
+  enlaceDelPdf: string;
+  enlaceDelXml: string;
+  enlaceDelCdr: string;
+  error?: string; // Optional
+  tipo: string; // 'Factura', 'Boleta', etc.
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class InvoiceService {
-  private apiUrl = 'http://localhost:8091/api/invoice/enviar';
-  private numeroFacturaUrl = 'http://localhost:8091/api/numeroFactura'; // Endpoint para obtener el número de factura
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/invoice/enviar';
+  private numeroFacturaUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/numeroFactura';
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   enviarFactura(invoice: InvoiceRequest): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -50,12 +64,10 @@ export class InvoiceService {
     return this.http.post<any>(this.apiUrl, invoice, options);
   }
 
-  
   obtenerNumeroFactura(tipo: string): Observable<string> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, withCredentials: true };
     return this.http.get<string>(`${this.numeroFacturaUrl}?tipo=${tipo}`, options);
   }
 
-  
 }

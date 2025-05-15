@@ -8,15 +8,13 @@ import { of } from 'rxjs';
   providedIn: 'root'
 }) 
 export class ReportesService {
-  //private baseUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/reports';
-
-  private baseUrl = 'http://localhost:8091/api/reports';
+  private baseUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/reports';
 
   constructor(private http: HttpClient) {}
 
   private getOptions() {
     return {
-      withCredentials: true // Permite enviar cookies con la solicitud
+      withCredentials: true
     };
   }
 

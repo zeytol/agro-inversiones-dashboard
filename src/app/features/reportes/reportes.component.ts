@@ -30,14 +30,11 @@ export class ReportesComponent implements OnInit {
       type: 'line',
       height: 350
     },
-    title: {
-      text: 'Ventas Mensuales',
-      align: 'center'
-    },
     xaxis: {
       categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
     }
   };
+
 
   // Gráfico circular
   pieChartOptions: any = {
@@ -104,8 +101,6 @@ export class ReportesComponent implements OnInit {
   
   
   loadReportes(): void {
-
-    //const fechaActual = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato YYYY-MM-DD
 
     const fechaActual = new Date();
     const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Asegurar formato "01", "02", etc.

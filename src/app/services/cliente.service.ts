@@ -11,9 +11,7 @@ export class ClienteService {
     throw new Error('Method not implemented.');
   }
 
-  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers'; // URL API en Azure
-
-  private apiUrl1 = 'http://localhost:8091/api/customers';  // Cambiar a URL local de la API
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/customers';
 
   constructor(private http: HttpClient) { }
 
@@ -37,7 +35,7 @@ export class ClienteService {
   }
 
   getClientePorDni(dni: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl1}/buscar/${dni}`, { withCredentials: true });
+    return this.http.get<any>(`${this.apiUrl}/buscar/${dni}`, { withCredentials: true });
   }
 
 }

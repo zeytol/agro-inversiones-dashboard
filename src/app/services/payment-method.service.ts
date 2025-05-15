@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class PaymentMethodService {
-  private apiUrl = 'http://localhost:8091/api/payment-methods'; 
+  private apiUrl = 'https://api-agroinversiones-gzdgf3cydydde6gm.canadacentral-01.azurewebsites.net/api/payment-methods'; 
 
   constructor(private http: HttpClient) {}
 

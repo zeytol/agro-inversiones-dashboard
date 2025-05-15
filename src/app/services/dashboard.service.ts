@@ -11,7 +11,7 @@ export class DashboardService {
   constructor(private http: HttpClient) {}
 
   getDashboardData(): Observable<any> {
-    const token = localStorage.getItem('token'); // o sessionStorage
+    const token = localStorage.getItem('token');
     
     return this.http.get<any>(this.apiUrl, {withCredentials: true});
   }

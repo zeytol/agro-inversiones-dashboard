@@ -11,7 +11,6 @@ export class TipoReporteComponent {
   @Output() onClose = new EventEmitter<void>();
   @Output() onSelect = new EventEmitter<string>();
 
- 
   // Solo los tipos de reporte "Finanzas" y "Venta"
   reportTypes = [
     { name: 'Finanzas' },
@@ -19,12 +18,78 @@ export class TipoReporteComponent {
   ];
 
   filteredData: any[] = [];
-  //selectedReportType: string = '';
+
+  currentPage: number = 1;
+  itemsPerPage: number = 4;
+
+  filter = {
+    startDate: '',
+    endDate: '',
+    documentType: '',
+  };
+
+
+  documentTypes: string[] = [];
+  paymentMethods: string[] = [];
+
+  ngOnChanges() {
+    this.extractDropdownValues();
+  }
+
+  extractDropdownValues() {
+    const docSet = new Set<string>();
+    const paySet = new Set<string>();
+
+    for (const item of this.tableData) {
+      if (item.documentType) docSet.add(item.documentType);
+      if (item.paymentMethod) paySet.add(item.paymentMethod);
+    }
+
+    this.documentTypes = Array.from(docSet);
+    this.paymentMethods = Array.from(paySet);
+  }
+
+
+  get paginatedData() {
+    const filtered = this.applyFilters(this.tableData);
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return filtered.slice(start, end);
+  }
+
+  get totalPages(): number {
+    const filtered = this.applyFilters(this.tableData);
+    return Math.ceil(filtered.length / this.itemsPerPage);
+  }
+
+  applyFilters(data: any[]): any[] {
+    if (this.selectedReportType !== 'Ventas') {
+      return data; // No aplicar filtros si no es tipo "Ventas"
+    }
+
+    return data.filter(item => {
+      const issueDate = new Date(item.issueDate);
+      const start = this.filter.startDate ? new Date(this.filter.startDate) : null;
+      const end = this.filter.endDate ? new Date(this.filter.endDate) : null;
+
+      return (!start || issueDate >= start) &&
+        (!end || issueDate <= end) &&
+        (!this.filter.documentType || item.documentType === this.filter.documentType);
+    });
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+
 
   // Filtra los datos según el tipo seleccionado
   selectReportType(reportType: string) {
     this.selectedReportType = reportType;
-  
+
     if (reportType === 'Ventas') {
       this.filteredData = this.tableData;
     } else if (reportType === 'Finanzas') {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ReportesService } from '../../../services/reportes.service';
 
@@ -20,7 +20,9 @@ export class AgregarReporteComponent {
     description: '',
     total: 0,
     subTotal: 0,
-    igv: 0
+    igv: 0,
+    totalFacturas: 0,
+    totalBoletas: 0
   };
 
   @Output() onClose = new EventEmitter<void>();
@@ -29,7 +31,7 @@ export class AgregarReporteComponent {
   selectedReportType: string = '';
   tableData: any[] = [];
 
-  constructor(private http: HttpClient, private reportesService: ReportesService ) { }
+  constructor(private http: HttpClient, private reportesService: ReportesService) { }
 
   ngOnInit() {
     const today = new Date();
@@ -44,59 +46,82 @@ export class AgregarReporteComponent {
     this.loadReportData(type);
   }
 
+  activeTab: 'facturas' | 'boletas' | 'resumen' = 'facturas';
+
+
   openTipoReporteModal() { this.isTipoReporteModalOpen = true; }
 
   closeTipoReporteModal() { this.isTipoReporteModalOpen = false; }
 
-   // Manejar selección del tipo de reporte
-   handleReportTypeSelection(selectedType: string) {
+  // Manejar selección del tipo de reporte
+  handleReportTypeSelection(selectedType: string) {
     this.selectedReportType = selectedType;
     this.report.type = selectedType;
 
-      if (selectedType.toLowerCase() === 'ventas') {
-        this.report.category = 'Ventas';
-      } else if (selectedType.toLowerCase() === 'finanzas') {
-        this.report.category = 'Finanzas';
-      } else {
-        this.report.category = '';
-      }
+    if (selectedType.toLowerCase() === 'ventas') {
+      this.report.category = 'Ventas';
+    } else if (selectedType.toLowerCase() === 'finanzas') {
+      this.report.category = 'Finanzas';
+    } else {
+      this.report.category = '';
+    }
 
     this.loadReportData(selectedType);
   }
 
-   // Cargar datos según el tipo de reporte
+  // Cargar datos según el tipo de reporte
   loadReportData(reportType: string) {
-  const type = reportType.toLowerCase();
+    const type = reportType.toLowerCase();
+    const now = new Date();
+    const mes = String(now.getMonth() + 1).padStart(2, '0');  
+    const anio = now.getFullYear();
+    const periodo = `${mes}-${anio}`;
 
     if (type === 'ventas') {
-      this.reportesService.getReporteVentas('05-2025').subscribe({
+      this.reportesService.getReporteVentas(periodo).subscribe({
         next: (data: any) => {
           const ventas: any[] = data.ventasDelMes || [];
           console.log("Datos de ventas:", ventas);
 
           this.tableData = ventas;
 
-          const total = ventas.reduce((sum, venta) => sum + venta.total, 0);
-          const subtotal = ventas.reduce((sum, venta) => sum + venta.subTotal, 0);
-          const igv = ventas.reduce((sum, venta) => sum + venta.igv, 0);
+          // Subtotal solo para facturas (base para IGV)
+          const subtotalFacturas = ventas.reduce((sum, venta) =>
+            venta.documentType === 'FACTURA' ? sum + (venta.subTotal || 0) : sum, 0);
 
-          this.report.total = total;
-          this.report.subTotal = subtotal;
-          this.report.igv = igv;
-      },
-      error: (err) => {
-        console.error("Error al generar reporte de ventas:", err);
-        alert("Error al obtener las ventas del mes.");
-      }
-    });
-  }
+          // IGV calculado sobre el subtotal de facturas
+          const igv = subtotalFacturas * 0.18;
+
+          // Total solo de facturas
+          const totalFacturas = ventas.reduce((sum, venta) =>
+            venta.documentType === 'FACTURA' ? sum + (venta.total || 0) : sum, 0);
+
+          // Total solo de boletas
+          const totalBoletas = ventas.reduce((sum, venta) =>
+            venta.documentType === 'BOLETA' ? sum + (venta.total || 0) : sum, 0);
+
+          // Total general (facturas + boletas)
+          const totalGeneral = totalFacturas + totalBoletas;
+
+          this.report.subTotal = parseFloat(subtotalFacturas.toFixed(2));
+          this.report.igv = parseFloat(igv.toFixed(2));
+          this.report.totalFacturas = parseFloat(totalFacturas.toFixed(2));
+          this.report.totalBoletas = parseFloat(totalBoletas.toFixed(2));
+          this.report.total = parseFloat(totalGeneral.toFixed(2));
+        },
+        error: (err) => {
+          console.error("Error al generar reporte de ventas:", err);
+          alert("Error al obtener las ventas del mes.");
+        }
+      });
+    }
 
     // Si el tipo es "finanzas", puedes implementar lo siguiente:
     else if (type === 'finanzas') {
-      this.reportesService.getReporteFinanzas('12-2024').subscribe({
+      this.reportesService.getReporteFinanzas(periodo).subscribe({
         next: (data: any) => {
-          const finanzas: any[] = data.finanzasDelMes || [];
-          console.log("Datos de finanzas:", finanzas);  
+          const finanzas: any[] = data.productosVendidos || [];
+          console.log("Datos de finanzas:", finanzas);
 
           this.tableData = finanzas;
 
@@ -107,14 +132,14 @@ export class AgregarReporteComponent {
           this.report.total = total;
           this.report.subTotal = subtotal;
           this.report.igv = igv;
-      },
-      error: (err) => {
-        console.error("Error al generar reporte de finanzas:", err);
-        alert("Error al obtener las finanzas del mes.");
-      }
-    });
+        },
+        error: (err) => {
+          console.error("Error al generar reporte de finanzas:", err);
+          alert("Error al obtener las finanzas del mes.");
+        }
+      });
+    }
   }
-}
 
   // Guardar reporte
   saveReport() {
@@ -122,14 +147,14 @@ export class AgregarReporteComponent {
       alert('Por favor, complete todos los campos obligatorios.');
       return;
     }
-  
+
     // Obtener reportes actuales del localStorage
     const savedReports = JSON.parse(localStorage.getItem('savedReports') || '[]');
     savedReports.push(this.report);
-  
+
     // Guardar el nuevo array en localStorage
     localStorage.setItem('savedReports', JSON.stringify(savedReports));
-  
+
     this.onSave.emit(this.report);
     this.closeModal();
   }
