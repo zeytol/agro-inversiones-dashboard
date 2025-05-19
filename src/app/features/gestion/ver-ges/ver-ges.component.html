@@ -1,17 +1,16 @@
-<h2 mat-dialog-title>Detalle de la Compra</h2>
-<mat-dialog-content>
-  <p><strong>Fecha de Emisión:</strong> {{ data.fechaEmision || "N/A" }}</p>
-  <p><strong>Tipo de Documento:</strong> {{ data.tipoDocumento || "N/A" }}</p>
-  <p>
-    <strong>Número de Documento:</strong> {{ data.numeroDocumento || "N/A" }}
-  </p>
-  <p><strong>Cliente:</strong> {{ data.cliente || "N/A" }}</p>
-  <p>
-    <strong>Monto Total:</strong>
-    {{ data.montoTotal ? "S/. " + data.montoTotal : "N/A" }}
-  </p>
-  <p><strong>Estado de Pago:</strong> {{ data.estado || "N/A" }}</p>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cerrar</button>
-</mat-dialog-actions>
+<div class="custom-modal-backdrop" *ngIf="visible">
+  <div class="custom-modal-window">
+    <div class="custom-modal-header">
+      <h3>Vista previa del Documento</h3>
+      <button class="close-btn" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="custom-modal-body">
+      <iframe
+        [src]="pdfUrl "
+        width="100%"
+        height="100%"
+        frameborder="0"
+      ></iframe>
+    </div>
+  </div>
+</div>

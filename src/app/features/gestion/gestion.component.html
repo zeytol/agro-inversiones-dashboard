@@ -3,9 +3,9 @@
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
   <!-- Contenedor principal -->
-  <div class="main-container flex flex-grow" >
+  <div class="main-container flex flex-grow">
     <!-- Sidebar -->
-   <app-siderbang
+    <app-siderbang
       *ngIf="isSidebarVisible"
       class="siderbang w-64"
     ></app-siderbang>
@@ -17,13 +17,13 @@
         <div class="search-container">
           <input
             type="text"
-            placeholder="Buscar por nombre o cliente"
+            placeholder="Buscar por RUC / DNI"
             class="search-input"
             [(ngModel)]="searchTerm"
             (imput)="buscarDocumentos()"
           />
           <button class="search-button" (click)="buscarDocumentos()">
-             <i class="bi bi-search"></i>
+            <i class="bi bi-search"></i>
           </button>
         </div>
 
@@ -48,7 +48,7 @@
 
       <div class="table-section">
         <div class="table-header">
-          <button class="add-button">
+          <button class="add-button" (click)="mostrarModalRecuperar = true">
             <i class="bi bi-plus-circle"></i>Agregar
           </button>
         </div>
@@ -58,7 +58,7 @@
             <tr>
               <th>FECHA DE EMISIÓN</th>
               <th>TIPO DE DOCUMENTO</th>
-              <th>NÚMERO DOCUMENT</th>
+              <th>NÚMERO DOCUMENTO</th>
               <th>CLIENTE</th>
               <th>MONTO TOTAL B/F</th>
               <th>ESTADO DE PAGO</th>
@@ -67,27 +67,28 @@
           </thead>
           <tbody>
             <tr *ngFor="let doc of documentosPaginados">
-              <td>{{ doc.fechaEmision }}</td>
+              <td>{{ doc.fechaEmision| date:'dd/MM/yyyy'  }}</td>
               <td>{{ doc.tipoDocumento }}</td>
               <td>{{ doc.numeroDocumento }}</td>
               <td>{{ doc.cliente }}</td>
               <td>{{ doc.montoTotal }}</td>
               <td>{{ doc.estado }}</td>
               <td class="actions">
-                <button class="action-btn download-btn" (click)="descargarDocumento(doc)">
+                <button class="action-btn download-btn" (click)="imprimirDocumento(doc)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="m12 16 4-5h-3V4h-2v7H8z"></path>
                     <path
-                      d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"
+                      d="m19,7h-1V2H6v5h-1c-1.65,0-3,1.35-3,3v7c0,1.1.9,2,2,2h2v3h12v-3h2c1.1,0,2-.9,2-2v-7c0-1.65-1.35-3-3-3Zm-11-3h8v3h-8v-3Zm8,16h-8v-4h8v4Zm4-3h-2v-3H6v3h-2v-7c0-.55.45-1,1-1h14c.55,0,1,.45,1,1v7Z"
                     ></path>
+                    <path d="M14 11H18V12H14z"></path>
                   </svg>
                 </button>
-                <button class="action-btn delete-btn">
+                <button class="action-btn delete-btn"(click)="eliminarDocumento(doc)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -100,7 +101,7 @@
                     <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
                   </svg>
                 </button>
-                <button class="action-btn edit-btn" >
+                <button class="action-btn edit-btn" (click)="abrirDocumento(doc)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -112,7 +113,7 @@
                     ></path>
                   </svg>
                 </button>
-                <button class="action-btn send-btn">
+                <button class="action-btn send-btn" (click)="abrirModal()">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -130,7 +131,11 @@
         </table>
 
         <div class="pagination">
-          <button class="page-btn prev-btn" (click)="cambiarPaginaAnterior()" [disabled]="paginaActual === 1">
+          <button
+            class="page-btn prev-btn"
+            (click)="cambiarPaginaAnterior()"
+            [disabled]="paginaActual === 1"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -144,12 +149,20 @@
             Anterior
           </button>
           <div class="page-buttons">
-            <button *ngFor="let page of pageNumbers()" (click)="cambiarPagina(page)" [disabled]="paginaActual === page">
+            <button
+              *ngFor="let page of pageNumbers()"
+              (click)="cambiarPagina(page)"
+              [disabled]="paginaActual === page"
+            >
               {{ page }}
             </button>
           </div>
 
-          <button class="page-btn next-btn"  (click)="cambiarPaginaSiguiente()" [disabled]="paginaActual === totalPaginas()">
+          <button
+            class="page-btn next-btn"
+            (click)="cambiarPaginaSiguiente()"
+            [disabled]="paginaActual === totalPaginas()"
+          >
             Siguiente
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -167,3 +180,12 @@
     </div>
   </div>
 </div>
+<app-ver-ges #modalVerGes></app-ver-ges>
+<app-eliminar-ges
+  [documentosEliminados]="documentosEliminados"
+  [visible]="mostrarModalRecuperar"
+  (cerrarModal)="mostrarModalRecuperar = false"
+  (restaurarDocumento)="recuperarDocumento($event)"
+>
+</app-eliminar-ges>
+<app-enviar-ges (cerrar)="cerrarModal()"></app-enviar-ges>

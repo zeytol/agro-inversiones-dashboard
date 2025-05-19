@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Unificar FormsModule y ReactiveFormsModule aquí
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -75,6 +76,8 @@ import { PermisosComponent } from './components/permisos/permisos.component';
 import { AddUserComponent } from './components/User/add-user/add-user.component';
 import { EditUserComponent } from './components/User/edit-user/edit-user.component';
 import { VerGesComponent } from './features/gestion/ver-ges/ver-ges.component';
+import { EliminarGesComponent } from './features/gestion/eliminar-ges/eliminar-ges.component';
+import { EnviarGesComponent } from './features/gestion/enviar-ges/enviar-ges.component';
 
 @NgModule({
   declarations: [
@@ -127,7 +130,9 @@ import { VerGesComponent } from './features/gestion/ver-ges/ver-ges.component';
     ClienteDetalleComponent,
     PermisosComponent,
     GestionComponent,
-    VerGesComponent
+    VerGesComponent,
+    EliminarGesComponent,
+    EnviarGesComponent
   ],
   imports: [
     BrowserModule,

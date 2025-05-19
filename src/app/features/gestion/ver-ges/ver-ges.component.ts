@@ -1,13 +1,24 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import { Component } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-ver-ges',
   templateUrl: './ver-ges.component.html',
-  styleUrl: './ver-ges.component.css'
+  styleUrls: ['./ver-ges.component.css']
 })
 export class VerGesComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  visible: boolean = false;
+  pdfUrl: SafeResourceUrl = '';
 
+  constructor(private sanitizer: DomSanitizer) {}
+
+  abrirModal(url: string) {
+    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.visible = true;
+  }
+
+  cerrarModal() {
+    this.visible = false;
+    this.pdfUrl = '';
+  }
 }
