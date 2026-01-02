@@ -1,31 +1,53 @@
+// delete-user.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UserService } from '../../../services/user.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-delete-user',
   templateUrl: './delete-user.component.html'
 })
 export class DeleteUserComponent {
-  @Input() user: any;
-  @Output() userDeleted = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<void>();
+  @Input() userId!: number;
+  @Input() username!: string;
+  @Output() userDeleted = new EventEmitter<void>();
+  @Output() closeModal = new EventEmitter<void>();
+
+  isLoading = false;
+  message = { text: '', type: '' };
 
   constructor(private userService: UserService) {}
 
-  deleteUser(): void {
-    if (this.user) {
-      this.userService.deleteUser(this.user.id).subscribe({
-        next: () => {
-          this.userDeleted.emit(this.user);
-        },
-        error: (err) => {
-          console.error('Error deleting user:', err);
+  onConfirmDelete(): void {
+    this.isLoading = true;
+    this.userService.deleteUser(this.userId).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe(
+      () => {
+        this.showMessage('Usuario eliminado con éxito', 'success');
+        this.userDeleted.emit();
+        this.onClose();
+      },
+      (error: HttpErrorResponse) => {
+        if (error.status === 200) {
+          this.showMessage('Usuario eliminado con éxito', 'success');
+          this.userDeleted.emit();
+          this.onClose();
+        } else {
+          this.showMessage('Error al eliminar usuario', 'error');
+          console.error(error);
         }
-      });
-    }
+      }
+    );
   }
 
-  cancelDelete(): void {
-    this.cancel.emit();
+  onClose(): void {
+    this.closeModal.emit();
+  }
+
+  private showMessage(text: string, type: string): void {
+    this.message = { text, type };
+    setTimeout(() => this.message = { text: '', type: '' }, 3000);
   }
 }

@@ -1,53 +1,41 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private jsonUrl = 'assets/dataUsers.json';
-  private users: any[] = [];
+  private apiUrl = 'https://agro-inversiones-oauth-cca2drebeabyhufq.canadacentral-01.azurewebsites.net/api/users';
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<any[]> {
-    if (this.users.length === 0) {
-      return this.http.get<any[]>(this.jsonUrl).pipe(
-        map((data) => {
-          this.users = data; 
-          return this.users;
-        })
-      );
-    } else {
-      return of(this.users);
-    }
+  // Listar usu
+  // 
+  // arios
+  getUsers(): Observable<any> {
+    return this.http.get<any>(this.apiUrl, { withCredentials: true });
   }
 
-  addUser(newUser: any): Observable<any> {
-    newUser.id = this.generateId(); 
-    this.users.push(newUser);
-    return of(newUser);
+  // Obtener detalles de un usuario
+  getUserById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/details/${id}`, { withCredentials: true });
   }
 
-  updateUser(editingUser: any): Observable<any> {
-    const index = this.users.findIndex((user) => user.id === editingUser.id);
-    if (index > -1) {
-      this.users[index] = editingUser;
-      return of(editingUser);
-    }
-    throw new Error('Usuario no encontrado');
+  // Agregar usuario
+  addUser(user: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, user, { withCredentials: true });
   }
 
+  // Editar usuario
+  editUser(id: number, user: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/edit/${id}`, user, { withCredentials: true });
+  }
+
+  // Eliminar usuario
   deleteUser(id: number): Observable<any> {
-    this.users = this.users.filter((user) => user.id !== id);
-    return of({ message: 'Usuario eliminado con éxito' });
+    return this.http.delete(`${this.apiUrl}/delete/${id}`, { withCredentials: true });
   }
-
-  private generateId(): number {
-    return this.users.length > 0
-      ? Math.max(...this.users.map((user) => user.id)) + 1
-      : 1;
-  }
+  
+  
 }
